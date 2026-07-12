@@ -12,7 +12,7 @@ const selectedCargoId = ref(cargo.value.find((item) => item.vehiclePlate)?.id ||
 const nextStatus = ref<Cargo['status']>('IN_TRANSIT')
 const selectedCargo = computed(() => cargo.value.find((item) => item.id === selectedCargoId.value))
 const commandStatus = { SENT: '已发送', RECEIVED: '待执行', EXECUTED: '已执行', REJECTED: '已拒绝', FAILED: '失败' }
-const cargoStatus = { CREATED: '待装货', LOADED: '已装货', IN_TRANSIT: '运输中', DELIVERED: '已送达', CANCELLED: '已取消' }
+const cargoStatus = { CREATED: '待接宠', LOADED: '已登车', IN_TRANSIT: '陪护运输中', DELIVERED: '已安全交接', CANCELLED: '已取消' }
 
 async function reportStatus() {
   if (!selectedCargoId.value) return
@@ -31,15 +31,15 @@ function execute(id: string) {
 <template>
   <div class="view-stack">
     <section class="driver-hero">
-      <div><span class="section-kicker">DRIVER WORKBENCH</span><h2>司机任务工作台</h2><p>上报货物状态、查看调度指令并发送执行回执。</p></div>
+      <div><span class="section-kicker">DRIVER & CARE WORKBENCH</span><h2>司机与随车照护任务</h2><p>上报宠物旅程与照护状态，查看调度指令并发送执行回执。</p></div>
       <div class="driver-online"><i></i><span>车载终端在线</span><strong>心跳刚刚</strong></div>
     </section>
 
     <section class="driver-grid">
       <article class="panel status-report-card">
-        <div class="panel-head"><div><span class="section-kicker">STATUS REPORT</span><h3>货物状态上报</h3></div><el-icon><UploadFilled /></el-icon></div>
+        <div class="panel-head"><div><span class="section-kicker">PET JOURNEY REPORT</span><h3>宠物旅程状态上报</h3></div><el-icon><UploadFilled /></el-icon></div>
         <el-form label-position="top" size="large">
-          <el-form-item label="当前运单">
+          <el-form-item label="当前托运任务">
             <el-select v-model="selectedCargoId" style="width: 100%">
               <el-option v-for="item in cargo.filter(c => c.vehiclePlate)" :key="item.id" :label="`${item.id} · ${item.name}`" :value="item.id" />
             </el-select>
@@ -55,11 +55,11 @@ function execute(id: string) {
               :class="`status-${nextStatus.toLowerCase().replace('_', '-')}`"
             >
               <input id="driver-status-loaded" v-model="nextStatus" type="radio" value="LOADED">
-              <label for="driver-status-loaded">已装货</label>
+              <label for="driver-status-loaded">宠物已登车</label>
               <input id="driver-status-transit" v-model="nextStatus" type="radio" value="IN_TRANSIT">
-              <label for="driver-status-transit">运输中</label>
+              <label for="driver-status-transit">陪护运输中</label>
               <input id="driver-status-delivered" v-model="nextStatus" type="radio" value="DELIVERED">
-              <label for="driver-status-delivered">已送达</label>
+              <label for="driver-status-delivered">已安全交接</label>
               <span class="pill-indicator"></span>
             </div>
           </el-form-item>
@@ -83,7 +83,7 @@ function execute(id: string) {
 
     <section class="panel safety-tip">
       <el-icon><Warning /></el-icon>
-      <div><strong>安全提示</strong><p>请在车辆安全停靠后操作工作台。行驶过程中收到的指令将由车载终端语音播报。</p></div>
+      <div><strong>宠物运输安全提示</strong><p>请在车辆安全停靠后操作工作台，并按要求巡检通风、温湿度、饮水和航空箱固定状态。</p></div>
     </section>
   </div>
 </template>

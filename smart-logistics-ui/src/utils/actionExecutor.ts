@@ -69,6 +69,17 @@ function isPortalRoute() {
   return String(router.currentRoute.value.name || '') === 'portal'
 }
 
+function isReturnToPortalIntent(action: AgentAction) {
+  const text = [
+    action.recognizedText,
+    action.text,
+    action.transcript,
+    action.reply,
+    action.message,
+  ].filter(Boolean).join('')
+  return ['返回导航', '导航窗口', '导航界面', '回到导航', '打开导航'].some((keyword) => text.includes(keyword))
+}
+
 function actionQuery(action: AgentAction) {
   const query = { ...(action.query || {}) }
   if (action.targetType === 'ORDER' && action.targetValue) query.orderId = action.targetValue
@@ -78,6 +89,13 @@ function actionQuery(action: AgentAction) {
 
 export async function executeAgentAction(action: AgentAction) {
   if (!action?.type) return
+
+  // 语音模型可能把“返回导航窗口”生成为 _BACK 或其他动作。
+  // Portal 内统一关闭业务浮层，避免历史回退卸载并重建 3D iframe。
+  if (isPortalRoute() && isReturnToPortalIntent(action)) {
+    window.dispatchEvent(new CustomEvent('smart-logistics:close-floating-page'))
+    return { page: 'portal', preserved: true }
+  }
 
   switch (action.type) {
     case 'NAVIGATE':
@@ -325,7 +343,7 @@ function executeOpenModal(action: AgentAction) {
   window.dispatchEvent(new CustomEvent('agent-open-modal', { detail: action }))
   if (action.targetType === 'HELP') {
     ElMessageBox.alert(
-      '可尝试：打开车辆调度、打开订单 ORD-2026-001、定位沪A C0291、下发改道指令、查看未处理告警、查看在线车辆。',
+      '可尝试：打开托运车辆调度、查询宠物任务 SH20260629001、定位沪A C0291、下发照护巡检指令、查看待处理风险、查看在线车辆。',
       action.title || '语音助手',
       { confirmButtonText: '知道了' },
     )

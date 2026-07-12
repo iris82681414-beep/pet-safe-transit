@@ -46,7 +46,7 @@ const driverAvatarTone = computed(() => {
   return `tone-${seed % 4}`
 })
 let fallbackTimer: number | undefined
-const statusText = { CREATED: '待装货', LOADED: '已装货', IN_TRANSIT: '运输中', DELIVERED: '已送达', CANCELLED: '已取消' }
+const statusText = { CREATED: '待接宠', LOADED: '已登车', IN_TRANSIT: '陪护运输中', DELIVERED: '已安全交接', CANCELLED: '已取消' }
 const refreshedAt = ref('12 秒前')
 const trackingHeroImage = new URL('../assets/login-map-hd.png', import.meta.url).href
 const delayPrediction = ref<DelayPrediction | null>(null)
@@ -125,7 +125,7 @@ const ratingForm = reactive({
   tags: [] as string[],
   comment: '',
 })
-const ratingTagOptions = ['准时送达', '服务热情', '货物完好', '沟通及时', '路线稳定', '主动反馈']
+const ratingTagOptions = ['准时抵达', '照护细致', '宠物状态良好', '沟通及时', '路线稳定', '主动反馈']
 
 function formatRemainingMinutes(minutes?: number) {
   if (typeof minutes !== 'number' || minutes < 0) return '暂无'
@@ -232,9 +232,9 @@ async function confirmReceipt() {
   if (selected.value.status === 'DELIVERED') return
   try {
     await store.confirmReceipt(selected.value.id)
-    ElMessage.success('收货确认成功，运单已完成')
+    ElMessage.success('宠物安全交接成功，托运旅程已完成')
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '确认收货失败')
+    ElMessage.error(error instanceof Error ? error.message : '安全交接确认失败')
   }
 }
 
@@ -351,7 +351,7 @@ async function correctRouteTrajectory() {
 }
 
 async function sendRerouteCommand() {
-  if (!selected.value?.vehiclePlate) return ElMessage.warning('当前货物还没有绑定车辆')
+  if (!selected.value?.vehiclePlate) return ElMessage.warning('当前宠物托运任务还没有安排车辆')
   const currentLocation = pointFromVehicle()
   const destination = pointFromCargo('destination')
   if (!currentLocation || !destination) return ElMessage.warning('当前位置或目的地坐标不足')
@@ -398,7 +398,7 @@ function openAddressDialog() {
 }
 
 async function searchAddressTips() {
-  if (!addressForm.keywords.trim()) return ElMessage.warning('先输入新收货地址关键词')
+  if (!addressForm.keywords.trim()) return ElMessage.warning('先输入新的宠物交接地址关键词')
   addressSearching.value = true
   try {
     addressTips.value = await amapApi.inputTips(addressForm.keywords.trim(), addressForm.city || undefined)
@@ -423,7 +423,7 @@ async function selectAddressTip(tip: AmapInputTip) {
 
 async function geocodeAddress(showMessage = true) {
   const address = addressForm.detail.trim() || addressForm.keywords.trim()
-  if (!address) return ElMessage.warning('请填写新收货地址')
+  if (!address) return ElMessage.warning('请填写新的宠物交接地址')
   addressSearching.value = true
   try {
     const result = await amapApi.geocode({ address, city: addressForm.city || undefined })
@@ -461,7 +461,7 @@ async function calculateAddressImpact() {
 
 async function submitAddressChange() {
   if (!selected.value) return
-  if (!addressForm.detail.trim()) return ElMessage.warning('请填写新收货地址')
+  if (!addressForm.detail.trim()) return ElMessage.warning('请填写新的宠物交接地址')
   if (typeof addressForm.lat !== 'number' || typeof addressForm.lng !== 'number') return ElMessage.warning('请先解析地址坐标')
   addressSubmitting.value = true
   try {
@@ -498,7 +498,7 @@ async function openUnloadDialog() {
     const first = unloadSuggestions.value[0]
     if (first) selectUnloadSuggestion(first)
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '卸货点建议加载失败')
+    ElMessage.error(error instanceof Error ? error.message : '交接点建议加载失败')
   } finally {
     unloadLoading.value = false
   }
@@ -512,8 +512,8 @@ function selectUnloadSuggestion(item: UnloadAddressSuggestion) {
 
 async function confirmUnloadAddress() {
   if (!selected.value) return
-  if (!unloadForm.address.trim()) return ElMessage.warning('请选择或填写卸货地址')
-  if (typeof unloadForm.lat !== 'number' || typeof unloadForm.lng !== 'number') return ElMessage.warning('卸货地址缺少坐标')
+  if (!unloadForm.address.trim()) return ElMessage.warning('请选择或填写宠物交接地址')
+  if (typeof unloadForm.lat !== 'number' || typeof unloadForm.lng !== 'number') return ElMessage.warning('宠物交接地址缺少坐标')
   unloadSubmitting.value = true
   try {
     await orderExtensionApi.confirmUnloadAddress(selected.value.id, {
@@ -526,10 +526,10 @@ async function confirmUnloadAddress() {
     selected.value.destinationLat = unloadForm.lat
     selected.value.destinationLng = unloadForm.lng
     unloadDialogVisible.value = false
-    ElMessage.success('卸货地址已确认')
+    ElMessage.success('宠物交接地址已确认')
     await loadRouteAndInsights()
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '卸货地址确认失败')
+    ElMessage.error(error instanceof Error ? error.message : '宠物交接地址确认失败')
   } finally {
     unloadSubmitting.value = false
   }
@@ -541,7 +541,7 @@ async function openRatingDialog() {
   ratingLoading.value = true
   try {
     driverRating.value = await orderExtensionApi.driverRating(selected.value.id)
-    if (driverRating.value?.rated) ElMessage.info('该运单已经评价过司机')
+    if (driverRating.value?.rated) ElMessage.info('该托运任务已经评价过司机与照护服务')
   } catch {
     driverRating.value = null
   } finally {
@@ -593,8 +593,8 @@ onUnmounted(() => {
   <div class="view-stack tracking-v6-page">
     <section class="filter-strip">
       <div>
-        <span class="section-kicker">CARGO TRACKING</span>
-        <h2>全链路在途监控</h2>
+        <span class="section-kicker">PET JOURNEY TRACKING</span>
+        <h2>宠物托运全旅程监护</h2>
       </div>
       <div class="filter-actions">
         <el-button icon="Refresh" @click="refreshPosition()">刷新位置</el-button>
@@ -614,7 +614,7 @@ onUnmounted(() => {
           <span><strong>{{ item.name }}</strong><small>{{ item.id }}</small></span>
           <em>{{ statusText[item.status] }}</em>
         </button>
-        <el-empty v-if="!cargoGroups.notStarted.length" description="暂无未开始货物" :image-size="54" />
+        <el-empty v-if="!cargoGroups.notStarted.length" description="暂无待出发宠物" :image-size="54" />
       </article>
 
       <article class="panel cargo-stage-panel">
@@ -629,7 +629,7 @@ onUnmounted(() => {
           <span><strong>{{ item.name }}</strong><small>{{ item.id }}</small></span>
           <em>{{ item.vehiclePlate || '待绑定车辆' }}</em>
         </button>
-        <el-empty v-if="!cargoGroups.inTransit.length" description="暂无运输中货物" :image-size="54" />
+        <el-empty v-if="!cargoGroups.inTransit.length" description="暂无在途宠物" :image-size="54" />
       </article>
 
       <article class="panel cargo-stage-panel">
@@ -644,7 +644,7 @@ onUnmounted(() => {
           <span><strong>{{ item.name }}</strong><small>{{ item.id }}</small></span>
           <em>{{ statusText[item.status] }}</em>
         </button>
-        <el-empty v-if="!cargoGroups.completed.length" description="暂无已完成货物" :image-size="54" />
+        <el-empty v-if="!cargoGroups.completed.length" description="暂无已完成宠物旅程" :image-size="54" />
       </article>
     </section>
 
@@ -654,7 +654,7 @@ onUnmounted(() => {
           <div class="shipment-top">
             <div>
               <span class="status-chip success">{{ statusText[selected.status] }}</span>
-              <span class="muted">运单号 {{ selected.id }}</span>
+              <span class="muted">托运任务号 {{ selected.id }}</span>
               <h3>{{ selected.name }}</h3>
               <p>{{ selected.category }} · 承运车辆 {{ selected.vehiclePlate || '暂未绑定' }}</p>
             </div>
@@ -718,7 +718,7 @@ onUnmounted(() => {
             <div><span>剩余距离</span><strong>{{ remainingDistanceText }}</strong></div>
             <div><span>当前速度</span><strong>{{ vehicle?.speed || 0 }} km/h</strong></div>
             <div><span>延误状态</span><strong>{{ delayStatusText }}</strong></div>
-            <div><span>运输风险</span><strong>{{ riskLevelText }}</strong></div>
+            <div><span>动物福利风险</span><strong>{{ riskLevelText }}</strong></div>
           </div>
           <div class="delay-note"><el-icon><WarningFilled /></el-icon><span>{{ delayPrediction?.reasons?.[0] || `按当前速度预计还需 ${remainingTimeText}` }}</span></div>
         </article>
@@ -747,17 +747,17 @@ onUnmounted(() => {
 
         <article class="panel driver-card">
           <div class="driver-avatar large-avatar" :class="driverAvatarTone"><span>{{ driverInitial }}</span></div>
-          <div><strong>{{ vehicle?.driver || '张建国' }}</strong><span>承运司机 · 驾龄 12 年 · 信用评分 98</span></div>
+          <div><strong>{{ vehicle?.driver || '张建国' }}</strong><span>宠物运输司机 · 驾龄 12 年 · 照护评分 98</span></div>
           <el-button circle icon="Phone" type="primary" title="联系司机" @click="contactDriver" />
         </article>
         <article class="panel receipt-card">
           <div class="receipt-icon"><el-icon><GoodsFilled /></el-icon></div>
-          <div><span class="section-kicker">RECEIPT</span><h3>{{ selected.status === 'DELIVERED' ? '已完成' : '确认收货' }}</h3><p>{{ selected.status === 'DELIVERED' ? '该运单已完成，不能重复确认。' : '核对货物后点击确认，后端会把货物状态更新为已送达。' }}</p></div>
+          <div><span class="section-kicker">SAFE HANDOVER</span><h3>{{ selected.status === 'DELIVERED' ? '已安全交接' : '确认宠物交接' }}</h3><p>{{ selected.status === 'DELIVERED' ? '该宠物旅程已完成，不能重复确认。' : '核对宠物身份、健康状态与航空箱后确认安全交接。' }}</p></div>
           <div class="receipt-actions">
             <el-button type="primary" plain @click="openAddressDialog">申请改址</el-button>
-            <el-button plain @click="openUnloadDialog">确认卸货点</el-button>
-            <el-button type="warning" plain :disabled="!canRateDriver" @click="openRatingDialog">{{ driverRating?.rated ? '已评价' : '评价司机' }}</el-button>
-            <el-button type="success" :disabled="selected.status === 'DELIVERED'" @click="confirmReceipt">确认收货</el-button>
+            <el-button plain @click="openUnloadDialog">确认交接点</el-button>
+            <el-button type="warning" plain :disabled="!canRateDriver" @click="openRatingDialog">{{ driverRating?.rated ? '已评价' : '评价托运服务' }}</el-button>
+            <el-button type="success" :disabled="selected.status === 'DELIVERED'" @click="confirmReceipt">确认安全交接</el-button>
           </div>
           <el-icon v-if="selected.status === 'DELIVERED'" class="receipt-done"><CircleCheckFilled /></el-icon>
         </article>
@@ -774,11 +774,11 @@ onUnmounted(() => {
       </template>
     </el-dialog>
 
-    <el-dialog v-model="addressDialogVisible" title="申请修改收货地址" width="620px">
+    <el-dialog v-model="addressDialogVisible" title="申请修改宠物交接地址" width="620px">
       <el-form label-position="top">
         <el-form-item label="地址关键词">
           <div class="inline-form-row">
-            <el-input v-model="addressForm.keywords" placeholder="输入新收货地址关键词" clearable @keyup.enter="searchAddressTips" />
+            <el-input v-model="addressForm.keywords" placeholder="输入新的宠物交接地址关键词" clearable @keyup.enter="searchAddressTips" />
             <el-button :loading="addressSearching" @click="searchAddressTips">查找</el-button>
           </div>
         </el-form-item>
@@ -789,7 +789,7 @@ onUnmounted(() => {
             </button>
           </div>
         </el-form-item>
-        <el-form-item label="新收货地址">
+        <el-form-item label="新交接地址">
           <div class="inline-form-row">
             <el-input v-model="addressForm.detail" placeholder="选择提示后自动带入，也可以手动输入" />
             <el-button :loading="addressSearching" @click="geocodeAddress()">地址转坐标</el-button>
@@ -817,17 +817,17 @@ onUnmounted(() => {
       </template>
     </el-dialog>
 
-    <el-dialog v-model="unloadDialogVisible" title="确认卸货点" width="560px">
+    <el-dialog v-model="unloadDialogVisible" title="确认宠物交接点" width="560px">
       <div v-loading="unloadLoading" class="unload-dialog-body">
         <div class="address-tip-list">
           <button v-for="item in unloadSuggestions" :key="`${item.source}-${item.address}`" type="button" @click="selectUnloadSuggestion(item)">
             <strong>{{ item.address }}</strong>
             <span>{{ item.source }} · 置信度 {{ Math.round(item.confidence * 100) }}% · {{ item.reason }}</span>
           </button>
-          <el-empty v-if="!unloadSuggestions.length && !unloadLoading" description="暂无推荐卸货点" :image-size="54" />
+          <el-empty v-if="!unloadSuggestions.length && !unloadLoading" description="暂无推荐交接点" :image-size="54" />
         </div>
         <el-form label-position="top">
-          <el-form-item label="最终卸货地址"><el-input v-model="unloadForm.address" /></el-form-item>
+          <el-form-item label="最终宠物交接地址"><el-input v-model="unloadForm.address" /></el-form-item>
           <div class="form-coordinate-grid">
             <el-form-item label="经度"><el-input-number v-model="unloadForm.lng" :precision="6" :step="0.000001" style="width: 100%" /></el-form-item>
             <el-form-item label="纬度"><el-input-number v-model="unloadForm.lat" :precision="6" :step="0.000001" style="width: 100%" /></el-form-item>
@@ -837,7 +837,7 @@ onUnmounted(() => {
       </div>
       <template #footer>
         <el-button @click="unloadDialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="unloadSubmitting" @click="confirmUnloadAddress">确认卸货地址</el-button>
+        <el-button type="primary" :loading="unloadSubmitting" @click="confirmUnloadAddress">确认宠物交接地址</el-button>
       </template>
     </el-dialog>
 
@@ -852,7 +852,7 @@ onUnmounted(() => {
           <div class="rating-grid">
             <label>准时程度<el-rate v-model="ratingForm.punctuality" :max="5" /></label>
             <label>服务态度<el-rate v-model="ratingForm.serviceAttitude" :max="5" /></label>
-            <label>货物完好<el-rate v-model="ratingForm.cargoIntegrity" :max="5" /></label>
+            <label>宠物状态<el-rate v-model="ratingForm.cargoIntegrity" :max="5" /></label>
             <label>沟通及时<el-rate v-model="ratingForm.communication" :max="5" /></label>
           </div>
           <el-form-item label="评价标签">

@@ -1,4 +1,4 @@
-# 智慧物流 IoT 前端
+# 伴生云途 · 宠物托运工作人员前端
 
 ## 首次克隆与 Git LFS
 
@@ -14,7 +14,7 @@ npm run dev
 ```
 
 如果没有执行 `git lfs install` 和 `git lfs pull`，仓库中的 MP4 文件可能只是 LFS 指针文本，导航页视频将无法正常播放。
-基于 Vue 3 + Vite + TypeScript + Element Plus + Leaflet + ECharts + Axios + Pinia + Vue Router + WebSocket 的智慧物流工作台。
+基于 Vue 3 + Vite + TypeScript + Element Plus + Leaflet + ECharts + Axios + Pinia + Vue Router + WebSocket 的伴生云途宠物托运工作人员工作台。
 
 ## 功能覆盖
 

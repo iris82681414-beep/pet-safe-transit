@@ -5,9 +5,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useLogisticsStore } from '@/stores/logistics'
 import type { Vehicle } from '@/types'
 
-const personnelBannerImage = new URL('../assets/personnel-warehouse.jpg', import.meta.url).href
-
-
 interface DriverProfile {
   key: string
   name: string
@@ -181,13 +178,10 @@ async function deleteDriver(profile: DriverProfile) {
   <div class="view-stack personnel-page">
     <section class="filter-strip personnel-head">
       <div class="personnel-banner-copy">
-        <span class="section-kicker">PERSONNEL & FLEET</span>
-        <h2>人员管理</h2>
-        <p class="muted">查看司机档案、车辆归属与当前任务状态。</p>
-        <div class="personnel-banner-chips"><span>司机档案</span><span>车辆归属</span><span>任务状态</span></div>
-      </div>
-      <div class="personnel-banner-media" aria-hidden="true">
-        <img :src="personnelBannerImage" alt="" />
+        <span class="section-kicker">PET TRANSPORT STAFF & FLEET</span>
+        <h2>司机 / 照护员管理</h2>
+        <p class="muted">工作人员可查看运输人员档案、照护资质、车辆归属与当前宠物托运任务。</p>
+        <div class="personnel-banner-chips"><span>人员档案</span><span>照护职责</span><span>托运任务</span></div>
       </div>
     </section>
 
@@ -201,7 +195,7 @@ async function deleteDriver(profile: DriverProfile) {
     <section class="personnel-layout">
       <article class="panel personnel-table-card">
         <div class="panel-head">
-          <div><span class="section-kicker">DRIVER DETAILS</span><h3>司机详细情况</h3></div>
+          <div><span class="section-kicker">DRIVER & CARE STAFF</span><h3>运输司机与照护人员</h3></div>
           <div class="personnel-head-actions">
             <el-button type="primary" icon="Plus" @click="openDriverDialog">添加司机</el-button>
             <span class="personnel-stat-note">{{ transitCount }} 辆运输中</span>
@@ -209,7 +203,7 @@ async function deleteDriver(profile: DriverProfile) {
         </div>
         <div class="personnel-table-scroll">
           <div class="data-table driver-detail-table">
-            <div class="table-row table-head"><span>司机</span><span>联系电话</span><span>绑定车辆</span><span>在线车辆</span><span>当前任务</span><span>操作</span></div>
+            <div class="table-row table-head"><span>工作人员</span><span>联系电话</span><span>绑定车辆</span><span>在线车辆</span><span>当前托运任务</span><span>操作</span></div>
             <div v-for="driver in drivers" :key="driver.key" class="table-row">
               <span class="table-primary">
                 <i class="personnel-avatar">{{ driver.name.slice(0, 1) }}</i>

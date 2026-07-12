@@ -10,6 +10,7 @@ import { isDemoMode } from '@/services/config'
 import { useLogisticsStore } from '@/stores/logistics'
 import { executeAgentAction } from '@/utils/actionExecutor'
 import { getAgentApprovalMode, type AgentApprovalMode } from '@/utils/agentApproval'
+import { resolveVoiceFallbackAction } from '@/utils/voiceFallback'
 
 const petImage = new URL('../assets/iot-sheep-pet.png', import.meta.url).href
 
@@ -29,7 +30,7 @@ const activeStorageKey = 'smart-logistics-chat-active'
 const welcomeMessage = (): ChatMessage => ({
   id: Date.now(),
   role: 'assistant',
-  content: '你好，我是物流智能助手。我可以结合当前车辆、货物和告警数据，协助你查询运输状态与处理建议。',
+  content: '你好，我是伴生云途的智能助手羊小智。我可以结合宠物旅程、车辆和动物福利风险数据，协助工作人员查询状态、安排车辆并处理异常。',
   time: '刚刚',
 })
 
@@ -74,6 +75,7 @@ const question = ref('')
 const sending = ref(false)
 const recording = ref(false)
 const recognizingVoice = ref(false)
+const globalVoiceStatus = ref('idle')
 const speechEnabled = ref(localStorage.getItem('smart-logistics-assistant-speech') !== 'off')
 const approvalMode = ref<AgentApprovalMode>(getAgentApprovalMode())
 const speakingMessageId = ref<number | null>(null)
@@ -84,7 +86,7 @@ const conversations = ref<Conversation[]>(restoreConversations())
 const savedActive = localStorage.getItem(activeStorageKey)
 const activeConversation = ref(conversations.value.some((item) => item.id === savedActive) ? savedActive! : conversations.value[0].id)
 const chatRef = ref<HTMLElement>()
-const suggestions = ref(['当前有哪些车辆发生偏航？', '沪A·C0291 预计几点到达？', '设备离线应该如何处理？', '汇总今天的严重告警'])
+const suggestions = ref(['当前有哪些宠物旅程发生偏航？', '豆包预计几点抵达？', '车载照护设备离线怎么处理？', '汇总今天的动物福利风险'])
 const currentConversation = computed(() => conversations.value.find((item) => item.id === activeConversation.value) || conversations.value[0])
 const messages = computed<ChatMessage[]>({
   get: () => currentConversation.value?.messages || [],
@@ -94,7 +96,7 @@ const messages = computed<ChatMessage[]>({
 })
 const petCopy = computed(() => ({
   idle: '嗨！我是智能小羊', listening: '我在认真听…', thinking: '正在理解你的意图…', speaking: '正在为你播报结果',
-  happy: '太好了，任务完成！', working: '正在执行物流任务…', alert: '发现告警，马上处理！', received: '收到！已经安排好了', analysis: '正在分析业务数据…',
+  happy: '太好了，宠物旅程安排完成！', working: '正在处理托运任务…', alert: '发现动物福利风险，马上处理！', received: '收到！已经为小伙伴安排好了', analysis: '正在分析宠物旅程数据…',
 }[petMood.value]))
 const petStatusText = computed(() => ({
   idle: '待命中', listening: '倾听中', thinking: '思考中', speaking: '播报中', happy: '开心', working: '工作中', alert: '告警提醒', received: '已收到', analysis: '数据分析',
@@ -130,7 +132,7 @@ function newConversation() {
     id,
     title: '新会话',
     updatedAt: '刚刚',
-    messages: [{ id: Date.now(), role: 'assistant', content: '新会话已创建，请输入你想咨询的物流问题。', time: '刚刚' }],
+    messages: [{ id: Date.now(), role: 'assistant', content: '新会话已创建。你可以点击中央麦克风，直接告诉羊小智需要查询或处理的宠物托运任务。', time: '刚刚' }],
   })
   activeConversation.value = id
 }
@@ -212,8 +214,9 @@ function moodForAgentFunction(name: unknown): PetMood {
 }
 
 function handleGlobalVoiceState(event: Event) {
-  if (recording.value || recognizingVoice.value || sending.value || speakingMessageId.value != null) return
   const status = String((event as CustomEvent<{ status?: string }>).detail?.status || '')
+  globalVoiceStatus.value = status || 'idle'
+  if (recording.value || recognizingVoice.value || sending.value || speakingMessageId.value != null) return
   if (status === 'requesting' || status === 'recording') setPetMood('listening')
   else if (status === 'uploading') setPetMood('thinking')
   else if (status === 'executing') setPetMood('working')
@@ -226,6 +229,51 @@ function handleAgentComplete(event: Event) {
   const name = detail.functionName || detail.action?.functionName || detail.action?.type || detail.url
   const mood = moodForAgentFunction(name)
   setPetMood(mood === 'alert' ? 'alert' : 'received', 1800)
+}
+
+function browserSpeak(content: string) {
+  if (!('speechSynthesis' in window)) return false
+  const utterance = new SpeechSynthesisUtterance(content)
+  utterance.lang = 'zh-CN'
+  utterance.rate = .96
+  utterance.pitch = 1.22
+  const voices = window.speechSynthesis.getVoices()
+  utterance.voice = voices.find((voice) => /Xiaoxiao|Tingting|Meijia|Female|女/i.test(voice.name) && /^zh/i.test(voice.lang))
+    || voices.find((voice) => /^zh/i.test(voice.lang))
+    || null
+  setPetMood('speaking')
+  utterance.onend = () => setPetMood('idle')
+  utterance.onerror = () => setPetMood('idle')
+  window.speechSynthesis.cancel()
+  window.speechSynthesis.speak(utterance)
+  return true
+}
+
+const sharedVoiceRecording = computed(() => globalVoiceStatus.value === 'recording')
+const sharedVoiceBusy = computed(() => ['requesting', 'uploading', 'executing'].includes(globalVoiceStatus.value))
+const sharedVoiceLabel = computed(() => {
+  if (globalVoiceStatus.value === 'requesting') return '正在请求麦克风权限…'
+  if (globalVoiceStatus.value === 'recording') return '正在倾听，点击结束并发送'
+  if (globalVoiceStatus.value === 'uploading') return '正在识别语音…'
+  if (globalVoiceStatus.value === 'executing') return '羊小智正在执行任务…'
+  return '点击语音告诉羊小智'
+})
+
+function handleGlobalVoiceResult(event: Event) {
+  const detail = (event as CustomEvent<Record<string, any>>).detail || {}
+  const text = String(detail.recognizedText || detail.text || '').trim()
+  const reply = String(detail.reply || detail.message || '').trim()
+  const target = currentConversation.value
+  if (!target || (!text && !reply)) return
+  const now = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+  if (text) target.messages.push({ id: Date.now(), role: 'user', content: text, time: now })
+  if (reply) {
+    const response = { id: Date.now() + 1, role: 'assistant' as const, content: reply, time: now }
+    target.messages.push(response)
+    if (speechEnabled.value) void speak(reply, response.id)
+  }
+  target.updatedAt = '刚刚'
+  void scrollToBottom()
 }
 
 async function speak(content: string, messageId?: number) {
@@ -245,14 +293,14 @@ async function speak(content: string, messageId?: number) {
     speechAudio.onended = () => stopSpeech()
     speechAudio.onerror = () => {
       stopSpeech()
-      ElMessage.error('豆包语音播放失败')
+      ElMessage.error('ElevenLabs 语音播放失败')
     }
     await speechAudio.play()
   } catch (error) {
     if (generationId === speechGenerationId) {
       speakingMessageId.value = null
       if (petMood.value === 'thinking' || petMood.value === 'speaking') setPetMood('idle')
-      ElMessage.error(error instanceof Error ? error.message : '豆包语音生成失败')
+      if (!browserSpeak(text)) ElMessage.warning(error instanceof Error ? error.message : '语音播报暂时不可用')
     }
   }
 }
@@ -368,15 +416,15 @@ async function stopVoiceMessage() {
 }
 
 function toggleVoiceMessage() {
-  if (recording.value) void stopVoiceMessage()
-  else void startVoiceMessage()
+  window.dispatchEvent(new CustomEvent('smart-logistics:toggle-voice-assistant'))
 }
 
 function answerFor(value: string) {
+  if (/你好|在吗|你是谁|叫什么/.test(value)) return '你好呀，我是伴生云途的智能助手羊小智。我可以帮工作人员查询宠物旅程、处理动物福利风险，也可以通过 Agent 执行页面跳转和业务操作。'
   if (value.includes('偏航')) return '当前共有 1 辆车发生偏航：沪A·C0291，位于 G320 国道海宁段，偏离推荐路线约 8 公里，已持续 12 分钟。建议先联系司机确认临时绕行原因。'
-  if (value.includes('0291') || value.includes('到达')) return '沪A·C0291 承运运单 SH20260629001，当前预计今天 16:42 到达杭州余杭物流中心，受偏航影响可能晚到约 18 分钟。'
+  if (value.includes('0291') || value.includes('到达') || value.includes('豆包')) return '沪A·C0291 正在执行豆包的托运任务 SH20260629001，预计今天 16:42 抵达杭州余杭宠物服务站；受路线偏离影响，可能晚到约 18 分钟。'
   if (value.includes('离线')) return '建议依次检查：① 联系司机确认终端供电；② 检查 SIM 卡与网络；③ 尝试远程重启；④ 超过 10 分钟仍未恢复则创建人工巡检任务。'
-  return '根据当前运营数据：5 辆车中 2 辆在途、4 台设备在线，现有 2 项待处理告警，其中 1 项为严重偏航告警。'
+  return `根据伴生云途当前数据：已接入 ${store.vehicles.length} 辆宠物专车，${transitCount.value} 辆在途、${onlineCount.value} 台照护设备在线，现有 ${pendingAlertCount.value} 项待处理风险。你可以继续告诉我宠物称呼、托运任务号或车牌号。`
 }
 
 async function send(value = question.value) {
@@ -434,6 +482,26 @@ async function send(value = question.value) {
       }
     } catch (error) {
       console.warn('智能问答 Agent 暂时不可用，使用问答接口兜底', error)
+      const fallbackAction = resolveVoiceFallbackAction({ recognizedText: content, text: content })
+      if (fallbackAction) {
+        try {
+          const result = await executeAgentAction({
+            ...fallbackAction,
+            recognizedText: content,
+            approvalMode: getAgentApprovalMode(),
+          }) as { message?: string } | undefined
+          appendAssistantMessage({
+            id: Date.now() + 1,
+            role: 'assistant',
+            content: result?.message || fallbackAction.reply || 'Agent 操作已执行。',
+            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+          })
+          setPetMood('received', 1600)
+          handledByAgent = true
+        } catch (fallbackError) {
+          console.warn('本地 Agent 回退执行失败', fallbackError)
+        }
+      }
     }
 
     if (!handledByAgent && isDemoMode()) {
@@ -482,8 +550,16 @@ async function send(value = question.value) {
   } catch (error) {
     setPetMood('alert', 2200)
     const failedMessage = targetConversation.messages.find((item) => item.id === streamingMessageId.value)
-    if (failedMessage && !failedMessage.content) failedMessage.content = '抱歉，智能问答暂时失败，请稍后再试。'
-    ElMessage.error(error instanceof Error ? error.message : '智能问答请求失败')
+    const fallbackReply = answerFor(content)
+    if (failedMessage && !failedMessage.content) {
+      failedMessage.content = fallbackReply
+      failedMessage.time = '本地业务数据回答'
+      speechMessage = failedMessage
+    } else if (!speechMessage) {
+      const response = { id: Date.now() + 1, role: 'assistant' as const, content: fallbackReply, time: '本地业务数据回答' }
+      appendAssistantMessage(response)
+    }
+    ElMessage.warning('智能服务暂时不可用，羊小智已使用本地业务数据回答')
   } finally {
     sending.value = false
     streamingMessageId.value = null
@@ -513,6 +589,7 @@ onMounted(async () => {
   window.addEventListener('smart-logistics:agent-approval-mode', syncApprovalMode)
   window.addEventListener('smart-logistics:voice-state', handleGlobalVoiceState)
   window.addEventListener('smart-logistics:voice-action-complete', handleAgentComplete)
+  window.addEventListener('smart-logistics:voice-result', handleGlobalVoiceResult)
   await nextTick()
   if (chatRef.value) chatRef.value.scrollTop = chatRef.value.scrollHeight
   if (isDemoMode()) return
@@ -527,6 +604,7 @@ onUnmounted(() => {
   window.removeEventListener('smart-logistics:agent-approval-mode', syncApprovalMode)
   window.removeEventListener('smart-logistics:voice-state', handleGlobalVoiceState)
   window.removeEventListener('smart-logistics:voice-action-complete', handleAgentComplete)
+  window.removeEventListener('smart-logistics:voice-result', handleGlobalVoiceResult)
   if (petMoodTimer != null) window.clearTimeout(petMoodTimer)
   stopVoiceHardware()
   stopSpeech()
@@ -537,7 +615,7 @@ onUnmounted(() => {
   <div class="assistant-layout">
     <aside class="panel conversation-side">
       <el-button type="primary" icon="Plus" size="large" @click="newConversation">新建会话</el-button>
-      <p class="section-kicker">最近会话</p>
+      <p class="section-kicker">工作人员最近会话</p>
       <div class="conversation-list">
         <div v-for="item in conversations" :key="item.id" class="conversation" :class="{ active: activeConversation === item.id }" role="button" tabindex="0" @click="loadConversation(item.id)" @keydown.enter="loadConversation(item.id)">
           <el-icon><ChatLineRound /></el-icon><span><strong>{{ item.title }}</strong><small>{{ item.updatedAt }}</small></span>
@@ -548,14 +626,43 @@ onUnmounted(() => {
       </div>
     </aside>
 
-    <section class="panel chat-panel">
+    <main class="assistant-pet-center">
+      <header class="pet-center-head">
+        <span>伴生云途智能助手</span>
+        <h2>和羊小智说说今天的托运任务</h2>
+        <p>面向工作人员的宠物旅程查询、调度与风险处理 Agent</p>
+      </header>
+      <article class="panel assistant-pet-card" :class="[`mood-${petMood}`, { speaking: petMood === 'speaking' }]">
+        <div class="pet-speech-bubble">{{ petCopy }}</div>
+        <div class="pet-stage">
+          <span class="pet-glow"></span>
+          <span class="pet-effect pet-effect-question">?</span>
+          <span class="pet-effect pet-effect-alert">!</span>
+          <span class="pet-effect pet-effect-received">✓</span>
+          <span class="pet-effect pet-effect-sparkle">✦</span>
+          <span class="pet-effect pet-effect-wave">)))</span>
+          <span class="pet-effect pet-effect-panel"><i></i><i></i><i></i></span>
+          <img :src="petImage" alt="伴生云途智能助手羊小智" />
+          <span class="pet-shadow"></span>
+        </div>
+        <div class="pet-status"><i></i><span>{{ petStatusText }}</span></div>
+      </article>
+      <button class="voice-first-button" :class="{ recording: sharedVoiceRecording }" type="button" :disabled="sharedVoiceBusy" @click="toggleVoiceMessage">
+        <el-icon><Microphone /></el-icon>
+        <span>{{ sharedVoiceLabel }}</span>
+      </button>
+      <div class="pet-control-row">
+        <span class="agent-mode-chip">{{ approvalMode === 'request' ? '操作前请求批准' : 'Agent 直接执行' }}</span>
+        <el-button size="small" round :type="speechEnabled ? 'primary' : 'default'" @click="toggleSpeech">
+          {{ speechEnabled ? '语音回复已开启' : '语音回复已关闭' }}
+        </el-button>
+      </div>
+    </main>
+
+    <section class="panel chat-panel assistant-chat-right">
       <div class="chat-head">
         <div class="assistant-avatar"><el-icon><MagicStick /></el-icon></div>
-        <div><h3>物流智能问答 · Agent</h3><span><i></i>LLM 在线 · {{ currentConversation?.title || '新会话' }}</span></div>
-        <span class="agent-mode-chip">{{ approvalMode === 'request' ? '请求批准' : '直接执行' }}</span>
-        <el-button size="small" round :type="speechEnabled ? 'primary' : 'default'" @click="toggleSpeech">
-          {{ speechEnabled ? '播报开启' : '播报关闭' }}
-        </el-button>
+        <div><h3>羊小智 · 工作会话</h3><span><i></i>LLM 在线 · {{ currentConversation?.title || '新会话' }}</span></div>
         <el-button circle icon="MoreFilled" @click="ElMessage.info('会话与消息已自动保存在当前浏览器')" />
       </div>
       <div ref="chatRef" class="chat-messages">
@@ -588,44 +695,23 @@ onUnmounted(() => {
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 3 }"
           resize="none"
-          placeholder="输入物流问题，按 Enter 发送"
+          placeholder="补充托运任务信息，按 Enter 发送"
           @keydown.enter.exact.prevent="send()"
         />
         <el-button
           class="chat-mic-button"
-          :class="{ recording }"
+          :class="{ recording: sharedVoiceRecording }"
           circle
           :type="recording ? 'danger' : 'default'"
           icon="Microphone"
-          :loading="recognizingVoice"
-          :title="recording ? '结束录音并发送' : '发送语音消息'"
+          :loading="sharedVoiceBusy"
+          :title="sharedVoiceRecording ? '结束录音并发送' : '发送语音消息'"
           @click="toggleVoiceMessage"
         />
         <el-button type="primary" circle icon="Promotion" :loading="sending" @click="send()" />
       </div>
-      <p class="ai-note">{{ recording ? '正在录音，再次点击麦克风发送' : '支持文字、语音与 Agent 业务操作' }}</p>
+      <p class="ai-note">{{ sharedVoiceRecording ? '正在录音，再次点击麦克风发送' : '支持文字、语音和 Agent 托运业务操作' }}</p>
     </section>
-
-    <aside class="view-stack assistant-context">
-      <article class="panel assistant-pet-card" :class="[`mood-${petMood}`, { speaking: petMood === 'speaking' }]">
-        <div class="pet-speech-bubble">
-          {{ petCopy }}
-        </div>
-        <div class="pet-stage">
-          <span class="pet-glow"></span>
-          <span class="pet-effect pet-effect-question">?</span>
-          <span class="pet-effect pet-effect-alert">!</span>
-          <span class="pet-effect pet-effect-received">✓</span>
-          <span class="pet-effect pet-effect-sparkle">✦</span>
-          <span class="pet-effect pet-effect-wave">)))</span>
-          <span class="pet-effect pet-effect-panel"><i></i><i></i><i></i></span>
-          <img :src="petImage" alt="伴生云途智能小羊桌面宠物" />
-          <span class="pet-shadow"></span>
-        </div>
-        <div class="pet-status"><i></i><span>{{ petStatusText }}</span></div>
-      </article>
-      <article class="panel context-card"><span class="section-kicker">业务上下文</span><h3>当前运行状态</h3><dl class="info-list"><div><dt>严重告警</dt><dd class="danger-text">{{ criticalAlertCount }} 项</dd></div><div><dt>在途车辆</dt><dd>{{ transitCount }} 辆</dd></div><div><dt>在线设备</dt><dd>{{ onlineCount }} 台</dd></div><div><dt>待处理告警</dt><dd>{{ pendingAlertCount }} 项</dd></div></dl></article>
-    </aside>
   </div>
 </template>
 
@@ -901,10 +987,114 @@ onUnmounted(() => {
   50% { opacity: .7; transform: translateX(-50%) scale(.88); }
 }
 
+.assistant-layout {
+  grid-template-columns: 205px minmax(340px, .9fr) minmax(470px, 1.25fr);
+  gap: 14px;
+  min-height: 650px;
+}
+
+.assistant-pet-center {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.pet-center-head {
+  text-align: center;
+}
+
+.pet-center-head > span {
+  color: #0f9f82;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .16em;
+}
+
+.pet-center-head h2 {
+  margin: 7px 0 5px;
+  color: #163d59;
+  font-size: clamp(20px, 1.7vw, 30px);
+}
+
+.pet-center-head p {
+  margin: 0;
+  color: #7891a2;
+  font-size: 12px;
+}
+
+.assistant-pet-center .assistant-pet-card {
+  flex: 1;
+  min-height: 470px;
+  border-radius: 24px;
+  box-shadow: 0 18px 45px rgba(37, 133, 169, .13);
+}
+
+.assistant-pet-center .pet-stage {
+  height: 385px;
+}
+
+.assistant-pet-center .pet-stage img {
+  width: min(410px, 94%);
+  max-height: 380px;
+}
+
+.voice-first-button {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(13, 160, 131, .28);
+  border-radius: 18px;
+  color: white;
+  background: linear-gradient(135deg, #20bca0, #198bcb);
+  box-shadow: 0 12px 30px rgba(25, 155, 169, .2);
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.voice-first-button .el-icon { font-size: 22px; }
+.voice-first-button.recording { background: linear-gradient(135deg, #ff6678, #ed3d61); animation: chat-mic-pulse 1.2s ease-in-out infinite; }
+.voice-first-button:disabled { cursor: wait; opacity: .72; }
+
+.pet-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pet-operation-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(41, 140, 173, .14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .76);
+}
+
+.pet-operation-stats > div { padding: 9px 6px; text-align: center; border-right: 1px solid rgba(41, 140, 173, .1); }
+.pet-operation-stats > div:last-child { border-right: 0; }
+.pet-operation-stats dt { color: #7891a2; font-size: 10px; }
+.pet-operation-stats dd { margin: 3px 0 0; color: #164a68; font-size: 18px; font-weight: 900; }
+
+.assistant-chat-right { min-width: 0; }
+.assistant-chat-right .bubble { max-width: 86%; }
+
 @media (max-width: 1180px) {
-  .assistant-pet-card { min-height: 245px; }
-  .pet-stage { height: 178px; }
-  .pet-stage img { width: 155px; max-height: 176px; }
+  .assistant-layout { grid-template-columns: 180px minmax(300px, .8fr) minmax(410px, 1.2fr); }
+  .assistant-pet-center .assistant-pet-card { min-height: 290px; }
+  .assistant-pet-center .pet-stage { height: 210px; }
+  .assistant-pet-center .pet-stage img { width: 190px; max-height: 205px; }
+}
+
+@media (max-width: 960px) {
+  .assistant-layout { height: auto; grid-template-columns: 1fr; }
+  .conversation-side { max-height: 230px; }
+  .assistant-chat-right { min-height: 620px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

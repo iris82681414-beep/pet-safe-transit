@@ -112,7 +112,7 @@ async function planSelectedRoute(showMessage = true) {
   const origin = selectedOriginPoint()
   const destination = selectedDestinationPoint()
   if (!origin || !destination) {
-    if (showMessage) ElMessage.warning('当前车辆或绑定运单缺少坐标，暂时不能规划路线')
+    if (showMessage) ElMessage.warning('当前车辆或宠物托运任务缺少坐标，暂时不能规划路线')
     return
   }
   routeLoading.value = true
@@ -217,14 +217,14 @@ async function uploadVehicleImage(event: Event) {
         <div><span>当前速度</span><strong>{{ selected.speed }} <small>km/h</small></strong></div>
         <div><span>设备心跳</span><strong>{{ selected.heartbeat }}</strong></div>
         <div><span>当前位置</span><strong>{{ selectedLocationText }}</strong></div>
-        <div><span>绑定运单</span><strong>{{ selected.cargoId || '暂无' }}</strong></div>
+        <div><span>托运任务</span><strong>{{ selected.cargoId || '暂无' }}</strong></div>
       </div>
-      <div class="detail-route"><span>当前任务</span><strong>{{ selectedCargoCount }} 单</strong><div><i :style="{ width: selectedTaskWidth }"></i></div><small>{{ selected.cargoId || '暂无绑定运单' }}</small></div>
+      <div class="detail-route"><span>当前宠物旅程</span><strong>{{ selectedCargoCount }} 项</strong><div><i :style="{ width: selectedTaskWidth }"></i></div><small>{{ selected.cargoId || '暂无托运任务' }}</small></div>
       <div class="detail-route dispatch-route-plan">
         <span>规划路线</span>
         <strong>{{ selectedRoute ? `${selectedRoute.distanceKm.toFixed(1)} km · ${selectedRoute.durationMinutes.toFixed(0)} 分钟` : '暂未规划' }}</strong>
         <div><i :style="{ width: selectedRoute ? '100%' : '8%' }"></i></div>
-        <small>{{ selectedCargo?.destination || '请选择绑定了运单的车辆' }}</small>
+        <small>{{ selectedCargo?.destination || '请选择已安排宠物托运任务的车辆' }}</small>
       </div>
       <div class="quick-create-actions">
         <el-button :loading="routeLoading" @click="planSelectedRoute()">规划路线</el-button>

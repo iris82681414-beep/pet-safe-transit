@@ -10,8 +10,8 @@ import type { AlertDto, CargoDto, CommandDto, DeviceDto, UserProfile, VehicleDto
 import type { AlertItem, AlertStatus, Cargo, CommandRecord, DeletedAlertItem, Device, NotificationItem, UserRole, Vehicle } from '@/types'
 
 const roleLabels: Record<UserRole, string> = {
-  SHIPPER: '货主',
-  WAREHOUSE: '仓库管理员',
+  SHIPPER: '宠物家长服务专员',
+  WAREHOUSE: '中转照护员',
   DISPATCHER: '调度员',
   DRIVER: '司机',
   ADMIN: '系统管理员',
@@ -28,7 +28,7 @@ const demoAccounts: Record<string, string> = {
 export const useLogisticsStore = defineStore('logistics', () => {
   const defaultCommands = (): CommandRecord[] => [
     { id: 'CMD-0629-001', plate: '沪A·C0291', type: '路线调整', content: '请回到 G60 推荐路线，保持 30 秒一次心跳上报。', status: 'RECEIVED', createdAt: '14:31' },
-    { id: 'CMD-0629-002', plate: '浙B·L8821', type: '停靠指令', content: '请在下一服务区安全停靠并检查货箱。', status: 'EXECUTED', createdAt: '13:58', executedAt: '14:06' },
+    { id: 'CMD-0629-002', plate: '浙B·L8821', type: '照护巡检指令', content: '请在下一服务区安全停靠，检查宠物状态、饮水与航空箱固定情况。', status: 'EXECUTED', createdAt: '13:58', executedAt: '14:06' },
   ]
   const defaultNotifications = (): NotificationItem[] => [
     { id: 'NTF-1', title: '严重偏航告警', content: '沪A·C0291 偏离 G60 推荐路线约 8 公里。', type: 'alert', time: '14:28', read: false, targetPage: 'alerts', targetId: 'ALT-0629-01' },
@@ -506,7 +506,7 @@ export const useLogisticsStore = defineStore('logistics', () => {
       if (index >= 0) cargo.value[index] = mapCargo(updated)
       syncVehicleCargoBindings()
       addNotification({
-        title: '货物状态已更新',
+        title: '宠物旅程状态已更新',
         content: `${cargoId} 已更新为 ${status}`,
         type: 'system',
         targetPage: 'tracking',
@@ -519,7 +519,7 @@ export const useLogisticsStore = defineStore('logistics', () => {
     item.status = status
     if (status === 'DELIVERED') item.progress = 100
     addNotification({
-      title: '货物状态已更新',
+      title: '宠物旅程状态已更新',
       content: `${cargoId} 已更新为 ${status}`,
       type: 'system',
       targetPage: 'tracking',
@@ -531,7 +531,7 @@ export const useLogisticsStore = defineStore('logistics', () => {
     const item = cargo.value.find((entry) => entry.id === cargoId)
     if (!item) return
     if (item.status === 'DELIVERED') return
-    await updateCargoStatus(cargoId, 'DELIVERED', '前端确认收货')
+    await updateCargoStatus(cargoId, 'DELIVERED', '工作人员确认宠物安全交接')
     const updated = cargo.value.find((entry) => entry.id === cargoId)
     if (updated) updated.received = true
   }
@@ -665,7 +665,7 @@ export const useLogisticsStore = defineStore('logistics', () => {
       plate: '浙B·L8821',
       location: '嘉兴服务区',
       createdAt: now,
-      description: '货箱温度连续 3 分钟高于设定阈值，请立即联系司机检查制冷设备。',
+      description: '宠物舱温度连续 3 分钟高于舒适阈值，请立即联系司机检查通风和温控设备，并确认宠物状态。',
     }
     alerts.value.unshift(item)
     addNotification({

@@ -149,22 +149,22 @@ export function resolveVoiceFallbackAction(payload: Record<string, any>) {
   const orderId = extractOrderId(recognizedText)
 
   if (plate && orderId && includesAny(text, ['调度货物', '分配货物', '绑定车辆', '装到', '装入', '派给'])) {
-    return functionCall('bind_cargo_vehicle', { cargoId: orderId, plate }, recognizedText, `准备将货物 ${orderId} 调度到 ${plate}`)
+    return functionCall('bind_cargo_vehicle', { cargoId: orderId, plate }, recognizedText, `准备将宠物托运任务 ${orderId} 安排到 ${plate}`)
   }
   if (orderId && includesAny(text, ['解除绑定', '取消绑定', '移出车辆', '卸下货物'])) {
-    return functionCall('unbind_cargo_vehicle', { cargoId: orderId }, recognizedText, `准备解除货物 ${orderId} 的车辆绑定`)
+    return functionCall('unbind_cargo_vehicle', { cargoId: orderId }, recognizedText, `准备解除宠物托运任务 ${orderId} 的车辆安排`)
   }
   if (orderId && includesAny(text, ['确认收货', '完成收货', '签收货物', '货物签收'])) {
-    return functionCall('confirm_receipt', { cargoId: orderId }, recognizedText, `准备确认货物 ${orderId} 收货`)
+    return functionCall('confirm_receipt', { cargoId: orderId }, recognizedText, `准备确认宠物旅程 ${orderId} 安全交接`)
   }
   if (orderId && includesAny(text, ['更新状态', '改成已装货', '设为已装货', '开始运输', '设为运输中', '取消货物', '取消订单'])) {
     const status = includesAny(text, ['已装货']) ? 'LOADED'
       : includesAny(text, ['运输中', '开始运输']) ? 'IN_TRANSIT'
         : includesAny(text, ['取消']) ? 'CANCELLED' : 'CREATED'
-    return functionCall('update_cargo_status', { cargoId: orderId, status }, recognizedText, `准备更新货物 ${orderId} 状态`)
+    return functionCall('update_cargo_status', { cargoId: orderId, status }, recognizedText, `准备更新宠物旅程 ${orderId} 状态`)
   }
   if (orderId && includesAny(text, ['创建货物', '新增货物', '新建货物', '创建订单', '新增订单'])) {
-    return functionCall('create_cargo', { cargoId: orderId }, recognizedText, `准备创建货物 ${orderId}`)
+    return functionCall('create_cargo', { cargoId: orderId }, recognizedText, `准备创建宠物托运任务 ${orderId}`)
   }
   if (plate && includesAny(text, ['删除车辆', '移除车辆'])) {
     return functionCall('delete_vehicle', { plate }, recognizedText, `准备删除车辆 ${plate}`)
@@ -232,17 +232,17 @@ export function resolveVoiceFallbackAction(payload: Record<string, any>) {
 
   if (includesAny(text, ['首页', '主页', '总览', '仪表盘', '大屏'])) return navigate('Dashboard', '正在打开首页')
   if (includesAny(text, ['车辆调度', '车俩调度', '车量调度', '车队总览', '调度台', '调度页面'])) return navigate('FleetOverview', '正在打开车辆调度')
-  if (includesAny(text, ['货物追踪', '货物跟踪', '货物运输', '物流追踪', '追踪页'])) return navigate('CargoTracking', '正在打开货物追踪')
+  if (includesAny(text, ['宠物追踪', '宠物旅程', '宠物运输', '货物追踪', '货物跟踪', '货物运输', '物流追踪', '追踪页'])) return navigate('CargoTracking', '正在打开宠物旅程追踪')
   if (includesAny(text, ['人员管理', '人员页面', '员工管理', '人员列表', '司机管理', '驾驶员管理'])) return navigate('PersonnelManagement', '正在打开人员管理')
   if (includesAny(text, ['司机任务', '司机页面', '司机工作台', '司机端', '驾驶任务', '任务页面'])) return navigate('DriverTasks', '正在打开司机任务')
   if (includesAny(text, ['智能问答', '智能助手', '问答页面', '问答中心', 'AI问答', '助手页面', '知识库问答'])) return navigate('SmartAssistant', '正在打开智能问答')
-  if (includesAny(text, ['仓库管理', '仓储管理', '仓库页面', '仓储页面', '设备管理', '库存管理'])) return navigate('WarehouseManagement', '正在打开仓库管理')
+  if (includesAny(text, ['宠物中转', '舱位管理', '照护管理', '仓库管理', '仓储管理', '仓库页面', '仓储页面', '设备管理', '库存管理'])) return navigate('WarehouseManagement', '正在打开宠物中转与舱位管理')
   if (includesAny(text, ['设备在线', '在线设备', '设备状态', '终端在线', 'GPS在线', 'GPS状态'])) return navigate('DeviceStatus', '正在打开设备在线')
   if (includesAny(text, ['风险中心', '风险订单', '告警中心', '报警中心', '异常中心', '未处理告警', '未处理报警'])) return navigate('RiskCenter', '正在打开风险中心')
   if (includesAny(text, ['返回导航', '导航窗口', '导航界面', '回到导航', '打开导航'])) return navigate('NavigationPortal', '正在返回导航窗口')
   if (includesAny(text, ['司机评分', '司机评价', '驾驶员评分', '张建国评分'])) return navigate('DriverRating', '正在打开司机评分', text.includes('张建国') ? { driverName: '张建国' } : {})
   if (includesAny(text, ['改址审核', '地址审核', '改地址审核'])) return navigate('AddressChangeReview', '正在打开改址审核')
-  if (includesAny(text, ['卸货地址', '卸货点', '卸货确认'])) return navigate('UnloadAddressConfirm', '正在打开卸货地址确认')
+  if (includesAny(text, ['宠物交接地址', '宠物交接点', '交接确认', '卸货地址', '卸货点', '卸货确认'])) return navigate('UnloadAddressConfirm', '正在打开宠物交接地址确认')
 
   return null
 }

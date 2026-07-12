@@ -1399,13 +1399,11 @@ body::-webkit-scrollbar-thumb,
 /* 5/6: The duplicated personnel title becomes a visual command banner. */
 .app-shell.content-mode .personnel-page .personnel-head,
 .portal-floating-body .personnel-page .personnel-head {
-  min-height: 220px !important;
+  min-height: 132px !important;
   align-items: flex-end !important;
   overflow: hidden !important;
   border-radius: 18px !important;
-  background-image:
-    linear-gradient(90deg, rgba(4,12,22,.86), rgba(6,20,32,.44) 52%, rgba(4,12,22,.82)),
-    url('../图2.png') !important;
+  background-image: radial-gradient(circle at 82% 20%, rgba(73,220,200,.18), transparent 30%), linear-gradient(110deg, #071b2a, #0a4955) !important;
   background-position: center !important;
   background-size: cover !important;
 }
@@ -1977,7 +1975,7 @@ body::-webkit-scrollbar-thumb,
 
 .app-shell.content-mode .truck-cross-section::after,
 .portal-floating-body .truck-cross-section::after {
-  content: '拖拽货物到车厢槽位完成绑定' !important;
+  content: '将待托运宠物安排到专车安全舱位' !important;
   position: absolute !important;
   left: 50% !important;
   top: 34px !important;
@@ -2768,13 +2766,9 @@ body::-webkit-scrollbar-thumb,
   inset: 0 !important;
   z-index: -2 !important;
   pointer-events: none !important;
-  background-image:
-    linear-gradient(90deg, rgba(4,13,24,.86), rgba(4,13,24,.22) 48%, rgba(4,13,24,.84)),
-    url('./assets/console-slide-1.png'),
-    url('./assets/console-slide-2.png'),
-    url('./assets/console-slide-3.png') !important;
-  background-size: cover, cover, cover, cover !important;
-  background-position: center, center, center, center !important;
+  background-image: radial-gradient(circle at 78% 22%, rgba(76,224,204,.18), transparent 30%), linear-gradient(110deg, rgba(4,13,24,.94), rgba(7,67,75,.84)) !important;
+  background-size: cover !important;
+  background-position: center !important;
   background-repeat: no-repeat !important;
   opacity: .42 !important;
   filter: saturate(.72) brightness(.58) contrast(1.16) !important;
@@ -2881,9 +2875,7 @@ body::-webkit-scrollbar-thumb,
   min-height: 210px !important;
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
-  background:
-    linear-gradient(110deg, rgba(4,13,24,.92), rgba(8,40,58,.84)),
-    url('./assets/console-slide-2.png') center / cover no-repeat !important;
+  background: radial-gradient(circle at 72% 36%, rgba(77,213,225,.16), transparent 28%), linear-gradient(110deg, rgba(4,13,24,.96), rgba(8,58,68,.9)) !important;
 }
 
 .app-shell.content-mode .vehicle-photo-empty :is(.el-icon,span),
@@ -2923,9 +2915,9 @@ body::-webkit-scrollbar-thumb,
 /* Structural fixes for screenshots: real carousel panels, visible alert metrics, dark vehicle media */
 .app-shell.content-mode :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.alert-metrics)::before,
 .portal-floating-body :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.alert-metrics)::before {
-  background-image: linear-gradient(90deg, rgba(4,13,24,.86), rgba(4,13,24,.18) 48%, rgba(4,13,24,.84)), url('./assets/console-slide-1.png') !important;
-  background-size: cover, cover !important;
-  background-position: center, center !important;
+  background-image: radial-gradient(circle at 76% 24%, rgba(77,222,202,.16), transparent 28%), linear-gradient(110deg, rgba(4,13,24,.94), rgba(7,66,74,.86)) !important;
+  background-size: cover !important;
+  background-position: center !important;
   background-repeat: no-repeat !important;
   animation: logisticsPhotoCarousel 24s steps(1, end) infinite !important;
   opacity: .50 !important;
@@ -2947,10 +2939,8 @@ body::-webkit-scrollbar-thumb,
 }
 
 @keyframes logisticsPhotoCarousel {
-  0%, 24.9% { background-image: linear-gradient(90deg, rgba(4,13,24,.88), rgba(4,13,24,.20) 48%, rgba(4,13,24,.86)), url('./assets/console-slide-1.png'); }
-  25%, 49.9% { background-image: linear-gradient(90deg, rgba(4,13,24,.88), rgba(4,13,24,.20) 48%, rgba(4,13,24,.86)), url('./assets/console-slide-2.png'); }
-  50%, 74.9% { background-image: linear-gradient(90deg, rgba(4,13,24,.88), rgba(4,13,24,.20) 48%, rgba(4,13,24,.86)), url('./assets/console-slide-3.png'); }
-  75%, 100% { background-image: linear-gradient(90deg, rgba(4,13,24,.88), rgba(4,13,24,.20) 48%, rgba(4,13,24,.86)), url('./assets/console-map.jpg'); }
+  0%, 49.9% { background-image: radial-gradient(circle at 76% 24%, rgba(77,222,202,.16), transparent 28%), linear-gradient(110deg, rgba(4,13,24,.94), rgba(7,66,74,.86)); }
+  50%, 100% { background-image: radial-gradient(circle at 68% 30%, rgba(74,169,235,.15), transparent 30%), linear-gradient(110deg, rgba(4,13,24,.94), rgba(8,49,76,.88)); }
 }
 
 .app-shell.page-alerts .alert-metrics,
@@ -3465,11 +3455,9 @@ body::-webkit-scrollbar-thumb,
 
 /* Screenshot follow-up: brighter personnel visual and a composed alert photo panel. */
 .personnel-page .personnel-head {
-  min-height: 285px !important;
+  min-height: 132px !important;
   background-color: #12364d !important;
-  background-image:
-    linear-gradient(90deg, rgba(7, 24, 37, .48) 0%, rgba(7, 25, 39, .16) 48%, rgba(8, 28, 42, .08) 100%),
-    url('./assets/console-slide-1.png') !important;
+  background-image: radial-gradient(circle at 78% 20%, rgba(76,224,204,.18), transparent 30%), linear-gradient(110deg, #081d2c, #0a5360) !important;
   background-size: cover !important;
   background-position: center 54% !important;
   filter: none !important;
@@ -3496,14 +3484,12 @@ body::-webkit-scrollbar-thumb,
 
 .alert-metrics.alert-conveyor-scene {
   position: relative !important;
-  min-height: 430px !important;
-  padding: 220px 24px 24px !important;
+  min-height: 210px !important;
+  padding: 24px !important;
   overflow: hidden !important;
   border: 1px solid rgba(101, 215, 255, .25) !important;
   border-radius: 18px !important;
-  background-image:
-    linear-gradient(180deg, rgba(5, 18, 29, .04) 0%, rgba(5, 18, 29, .18) 46%, rgba(5, 18, 29, .94) 72%, #071521 100%),
-    url('./assets/console-slide-2.png') !important;
+  background-image: radial-gradient(circle at 25% 15%, rgba(255,95,111,.1), transparent 28%), linear-gradient(135deg, #081c2a, #0a3d4b) !important;
   background-size: cover !important;
   background-position: center 46% !important;
   box-shadow: 0 20px 48px rgba(0, 0, 0, .22) !important;
@@ -3558,24 +3544,24 @@ body::-webkit-scrollbar-thumb,
   }
 }
 
-/* Local three-image logistics carousel; no remote runtime dependency. */
+/* Staff-facing pet transport panels use code-native backgrounds. */
 @keyframes personnelLogisticsCarousel {
   0%, 30% {
-    background-image: linear-gradient(90deg, rgba(5, 20, 31, .38), rgba(7, 28, 41, .05) 64%), url('./assets/logistics-carousel-1.jpg');
+    background-image: radial-gradient(circle at 80% 20%, rgba(67,219,197,.22), transparent 30%), linear-gradient(120deg, #092a3d, #0b5860);
   }
   33%, 63% {
-    background-image: linear-gradient(90deg, rgba(5, 20, 31, .38), rgba(7, 28, 41, .05) 64%), url('./assets/logistics-carousel-2.jpg');
+    background-image: radial-gradient(circle at 74% 28%, rgba(75,174,239,.2), transparent 32%), linear-gradient(120deg, #092a3d, #0b5860);
   }
   66%, 96% {
-    background-image: linear-gradient(90deg, rgba(5, 20, 31, .38), rgba(7, 28, 41, .05) 64%), url('./assets/logistics-carousel-3.jpg');
+    background-image: radial-gradient(circle at 84% 34%, rgba(119,116,255,.18), transparent 30%), linear-gradient(120deg, #092a3d, #0b5860);
   }
   100% {
-    background-image: linear-gradient(90deg, rgba(5, 20, 31, .38), rgba(7, 28, 41, .05) 64%), url('./assets/logistics-carousel-1.jpg');
+    background-image: radial-gradient(circle at 80% 20%, rgba(67,219,197,.22), transparent 30%), linear-gradient(120deg, #092a3d, #0b5860);
   }
 }
 
 .personnel-page .personnel-head {
-  min-height: 290px !important;
+  min-height: 132px !important;
   background-color: #17445c !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
@@ -3584,7 +3570,7 @@ body::-webkit-scrollbar-thumb,
 }
 
 .personnel-page .personnel-head > div:first-child {
-  display: none !important;
+  display: block !important;
 }
 
 .personnel-page .personnel-head::after {
@@ -3601,22 +3587,22 @@ body::-webkit-scrollbar-thumb,
 
 @keyframes alertLogisticsCarousel {
   0%, 30% {
-    background-image: linear-gradient(180deg, rgba(5,18,29,.02) 0%, rgba(5,18,29,.10) 42%, rgba(5,18,29,.93) 72%, #071521 100%), url('./assets/logistics-carousel-2.jpg');
+    background-image: radial-gradient(circle at 25% 20%, rgba(255,95,111,.12), transparent 28%), linear-gradient(135deg, #092738, #0b3d4c);
   }
   33%, 63% {
-    background-image: linear-gradient(180deg, rgba(5,18,29,.02) 0%, rgba(5,18,29,.10) 42%, rgba(5,18,29,.93) 72%, #071521 100%), url('./assets/logistics-carousel-3.jpg');
+    background-image: radial-gradient(circle at 55% 18%, rgba(255,202,77,.1), transparent 30%), linear-gradient(135deg, #092738, #0b3d4c);
   }
   66%, 96% {
-    background-image: linear-gradient(180deg, rgba(5,18,29,.02) 0%, rgba(5,18,29,.10) 42%, rgba(5,18,29,.93) 72%, #071521 100%), url('./assets/logistics-carousel-1.jpg');
+    background-image: radial-gradient(circle at 78% 24%, rgba(54,231,177,.1), transparent 28%), linear-gradient(135deg, #092738, #0b3d4c);
   }
   100% {
-    background-image: linear-gradient(180deg, rgba(5,18,29,.02) 0%, rgba(5,18,29,.10) 42%, rgba(5,18,29,.93) 72%, #071521 100%), url('./assets/logistics-carousel-2.jpg');
+    background-image: radial-gradient(circle at 25% 20%, rgba(255,95,111,.12), transparent 28%), linear-gradient(135deg, #092738, #0b3d4c);
   }
 }
 
 .alert-metrics.alert-conveyor-scene {
-  min-height: 470px !important;
-  padding-top: 245px !important;
+  min-height: 210px !important;
+  padding-top: 24px !important;
   background-color: #12384e !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
@@ -3839,9 +3825,7 @@ body::-webkit-scrollbar-thumb,
 .driver-hero {
   min-height: 180px !important;
   padding: 30px 38px !important;
-  background:
-    linear-gradient(90deg, rgba(5,18,30,.90), rgba(8,31,47,.56) 58%, rgba(8,35,50,.78)),
-    url('./assets/console-slide-1.png') center 52% / cover no-repeat !important;
+  background: radial-gradient(circle at 78% 20%, rgba(76,224,204,.18), transparent 30%), linear-gradient(110deg, #081d2c, #0a5360) !important;
   box-shadow: 0 14px 34px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05) !important;
 }
 

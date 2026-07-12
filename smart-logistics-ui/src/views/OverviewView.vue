@@ -86,9 +86,9 @@ function selectVehicle(_vehicle: Vehicle) {
   <div class="view-stack overview-tech">
     <section class="hero-banner overview-hero">
       <div>
-        <span class="section-kicker">实时运营态势</span>
-        <h2>下午好，调度中心</h2>
-        <p>车辆实时分布已接入当前数据，{{ pendingAlertCount }} 项告警需要优先处理。</p>
+        <span class="section-kicker">伴生云途 · 实时运营态势</span>
+        <h2>下午好，托运服务团队</h2>
+        <p>宠物旅程与车辆位置已实时接入，{{ pendingAlertCount }} 项动物福利风险需要优先处理。</p>
       </div>
       <div class="hero-time">
         <span>数据刷新</span>
@@ -144,8 +144,8 @@ function selectVehicle(_vehicle: Vehicle) {
     <section class="dashboard-grid lower">
       <article class="panel">
         <div class="panel-head">
-          <div><span class="section-kicker">TRANSPORT TREND</span><h3>近 7 日运输趋势</h3></div>
-          <div class="trend-summary"><strong>{{ maxTrend }}</strong><span>峰值单量</span></div>
+          <div><span class="section-kicker">PET JOURNEY TREND</span><h3>近 7 日宠物托运趋势</h3></div>
+          <div class="trend-summary"><strong>{{ maxTrend }}</strong><span>峰值任务量</span></div>
         </div>
         <div class="line-chart pro">
           <svg viewBox="0 0 660 220" preserveAspectRatio="none" aria-hidden="true">
@@ -183,11 +183,11 @@ function selectVehicle(_vehicle: Vehicle) {
 
       <article class="panel alert-summary">
         <div class="panel-head">
-          <div><span class="section-kicker">ALERT OVERVIEW</span><h3>告警概览</h3></div>
-          <button class="text-button" @click="emit('navigate', 'alerts')">全部告警</button>
+          <div><span class="section-kicker">WELFARE RISK OVERVIEW</span><h3>动物福利风险概览</h3></div>
+          <button class="text-button" @click="emit('navigate', 'alerts')">全部风险事件</button>
         </div>
         <div class="donut-row">
-          <div class="donut" :style="{ background: donutBackground }"><strong>{{ alertTotal }}</strong><span>告警总数</span></div>
+          <div class="donut" :style="{ background: donutBackground }"><strong>{{ alertTotal }}</strong><span>风险总数</span></div>
           <div class="legend-list">
             <div><span><i class="danger-dot"></i>路线偏离</span><strong>{{ alertSummary.route }}</strong></div>
             <div><span><i class="gray-dot"></i>设备离线</span><strong>{{ alertSummary.offline }}</strong></div>
@@ -198,10 +198,10 @@ function selectVehicle(_vehicle: Vehicle) {
       </article>
     </section>
 
-    <section class="metric-grid compact-kpis" aria-label="运输准确指标">
-      <article class="metric-card"><div><span>运输中货物</span><strong>{{ inProgressCargoCount }}</strong><small>来自真实货物列表</small></div></article>
-      <article class="metric-card"><div><span>已完成货物</span><strong>{{ completedCargoCount }}</strong><small>状态 DELIVERED</small></div></article>
-      <article class="metric-card"><div><span>告警处理率</span><strong>{{ alertTotal ? Math.round((alertTotal - pendingAlertCount) / alertTotal * 100) : 100 }}%</strong><small>确认或关闭即计入</small></div></article>
+    <section class="metric-grid compact-kpis" aria-label="宠物托运质量指标">
+      <article class="metric-card"><div><span>在途宠物</span><strong>{{ inProgressCargoCount }}</strong><small>来自实时托运任务</small></div></article>
+      <article class="metric-card"><div><span>已安全交接</span><strong>{{ completedCargoCount }}</strong><small>本期已完成旅程</small></div></article>
+      <article class="metric-card"><div><span>风险处理率</span><strong>{{ alertTotal ? Math.round((alertTotal - pendingAlertCount) / alertTotal * 100) : 100 }}%</strong><small>确认或关闭即计入</small></div></article>
       <article class="metric-card"><div><span>车辆在线率</span><strong>{{ onlineRate }}%</strong><small>{{ onlineCount }} / {{ vehicles.length || 0 }}</small></div></article>
     </section>
   </div>

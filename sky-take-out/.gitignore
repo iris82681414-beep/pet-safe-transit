@@ -5,3 +5,4 @@
 *Test.java
 **/test/
 .env.properties
+*.log

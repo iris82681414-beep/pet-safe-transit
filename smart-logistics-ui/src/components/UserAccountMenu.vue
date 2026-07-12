@@ -13,8 +13,8 @@ const emit = defineEmits<{
 }>()
 
 const roleLabels: Record<UserRole, string> = {
-  SHIPPER: '货主',
-  WAREHOUSE: '仓库管理员',
+  SHIPPER: '宠物家长服务专员',
+  WAREHOUSE: '中转照护员',
   DISPATCHER: '调度员',
   DRIVER: '司机',
   ADMIN: '系统管理员',

@@ -74,10 +74,10 @@ export const chongqingMockVehicle: Vehicle = {
 
 export const chongqingMockCargo: Cargo = {
   id: chongqingCargoId,
-  name: '重庆硬件 GPS 实测货物',
-  category: '硬件实测数据',
-  origin: '重庆实测起点',
-  destination: '重庆实测终点',
+  name: '重庆实测宠物托运任务',
+  category: '宠物定位设备实测',
+  origin: '重庆宠物照护起点',
+  destination: '重庆宠物交接终点',
   progress: 82,
   status: 'IN_TRANSIT',
   vehicleId: chongqingMockVehicle.id,

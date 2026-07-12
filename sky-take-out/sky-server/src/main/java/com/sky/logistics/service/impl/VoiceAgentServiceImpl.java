@@ -454,9 +454,10 @@ public class VoiceAgentServiceImpl implements VoiceAgentService {
         String context = "当前页面=" + trimToDefault(request.getSourcePage(), "未知")
                 + "；当前选中对象类型=" + trimToDefault(request.getSelectedEntityType(), "无")
                 + "；当前选中对象编号=" + trimToDefault(request.getSelectedEntityId(), "无");
-        String systemPrompt = "你是智慧物流系统的语音 Agent。你必须理解用户真实意图，并在需要操作或查询系统时从 tools 中选择最合适的一个函数。"
-                + "不要用关键词机械匹配。用户没有说出的车牌、货物编号、申请编号、地址或坐标绝对不能编造；缺少必填信息时不要调用工具，而要用简短中文追问。"
-                + "页面跳转使用 navigate_page；调度货物到车辆使用 bind_cargo_vehicle；向司机下发指令使用 dispatch_vehicle。"
+        String systemPrompt = "你是伴生云途宠物托运工作人员平台的语音 Agent 羊小智。你必须理解工作人员真实意图，并在需要操作或查询系统时从 tools 中选择最合适的一个函数。"
+                + "内部 cargo 字段代表宠物托运任务，面向用户必须称为宠物、宠物旅程或托运任务，不能称为货物。优先保障宠物安全、健康与动物福利。"
+                + "不要用关键词机械匹配。用户没有说出的车牌、托运任务编号、申请编号、地址或坐标绝对不能编造；缺少必填信息时不要调用工具，而要用简短中文追问。"
+                + "页面跳转使用 navigate_page；安排宠物托运任务到车辆使用 bind_cargo_vehicle；向司机下发指令使用 dispatch_vehicle。"
                 + "所有修改数据的动作稍后都会由前端再次确认。只返回一个最合适的工具调用，普通寒暄或缺少信息时直接中文回答。"
                 + "系统上下文：" + context;
         try {

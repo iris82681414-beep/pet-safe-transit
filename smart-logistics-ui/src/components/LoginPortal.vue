@@ -6,9 +6,6 @@ import { useRouter } from 'vue-router'
 import { useLogisticsStore } from '@/stores/logistics'
 import type { UserRole } from '@/types'
 import mapImage from '@/assets/login-map-hd.png'
-import overviewLogisticsImage from '../../图1.png'
-import overviewAirImage from '../../图2.png'
-import overviewDriverImage from '../../图3.png'
 
 const emit = defineEmits<{
   transitionStart: []
@@ -18,9 +15,9 @@ const emit = defineEmits<{
 const store = useLogisticsStore()
 const router = useRouter()
 const form = reactive<{ username: string; password: string; role: UserRole }>({
-  username: 'shipper',
+  username: 'dispatcher',
   password: '123456',
-  role: 'SHIPPER',
+  role: 'DISPATCHER',
 })
 const mode = ref<'password' | 'face'>('password')
 const phase = ref<'idle' | 'authenticating' | 'locating' | 'complete'>('idle')
@@ -32,8 +29,8 @@ const mapPanel = ref<HTMLElement | null>(null)
 const loginButton = ref<HTMLButtonElement | null>(null)
 const video = ref<HTMLVideoElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
-const locationLabel = ref('动态画布接入点')
-const ipLabel = ref('身份链路已聚合')
+const locationLabel = ref('工作人员工作台')
+const ipLabel = ref('伴生云途服务节点已连接')
 const target = reactive({ x: 69, y: 55 })
 let cameraStream: MediaStream | null = null
 let sceneFrame = 0
@@ -267,12 +264,6 @@ async function showFaceError(message: string) {
 onBeforeUnmount(stopCamera)
 onMounted(() => {
   window.addEventListener('resize', updateRouteGeometry)
-  const preload = () => [overviewLogisticsImage, overviewAirImage, overviewDriverImage].forEach((src) => {
-    const image = new Image()
-    image.decoding = 'async'
-    image.src = src
-  })
-  window.setTimeout(preload, 300)
 })
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateRouteGeometry)
@@ -291,7 +282,7 @@ onBeforeUnmount(() => {
   >
     <div class="scene-depth-stars"></div>
     <div class="scene-depth-plane"></div>
-    <section ref="mapPanel" class="neo-map-zone" aria-label="伴生云途实时运输网络地图">
+    <section ref="mapPanel" class="neo-map-zone" aria-label="宠物托运服务网络地图">
       <img class="neo-map-image" :src="mapImage" alt="" aria-hidden="true" />
       <div class="native-node-pulses" aria-hidden="true">
         <i v-for="node in 6" :key="node" :class="`pulse-${node}`"></i>
@@ -311,7 +302,7 @@ onBeforeUnmount(() => {
     <header class="neo-login-head">
       <div class="neo-brand">
         <span><el-icon><Van /></el-icon></span>
-        <div><strong>伴生云途</strong><small>智能宠物托运与全程感知平台</small></div>
+        <div><strong>伴生云途</strong><small>BANSHENG PET JOURNEY CLOUD</small></div>
       </div>
       <div class="neo-security"><i></i> SECURE NODE · CN-07</div>
     </header>
@@ -320,7 +311,7 @@ onBeforeUnmount(() => {
       <div class="auth-card-head">
         <div>
           <span>IDENTITY GATEWAY</span>
-          <h2>欢迎回来</h2>
+          <h2>工作人员登录</h2>
         </div>
         <b>01</b>
       </div>
@@ -343,15 +334,15 @@ onBeforeUnmount(() => {
           <span>身份 / ROLE</span>
           <select v-model="form.role">
             <option value="DISPATCHER">调度员</option>
-            <option value="WAREHOUSE">仓库管理员</option>
-            <option value="DRIVER">司机</option>
-            <option value="SHIPPER">货主</option>
+            <option value="WAREHOUSE">中转照护员</option>
+            <option value="DRIVER">运输照护司机</option>
+            <option value="SHIPPER">宠物家长服务专员</option>
             <option value="ADMIN">系统管理员</option>
           </select>
         </label>
         <p v-if="loginError" class="login-error-tip">{{ loginError }}</p>
         <button ref="loginButton" class="neo-login-button" type="submit" :disabled="loading">
-          <span>{{ loading ? '正在验证身份' : '进入伴生云途' }}</span>
+          <span>{{ loading ? '正在验证工作人员身份' : '进入伴生云途工作台' }}</span>
           <el-icon><ArrowRight /></el-icon>
           <i class="login-spark"></i>
         </button>
@@ -377,7 +368,7 @@ onBeforeUnmount(() => {
         <p>真实接口：<code>POST /auth/face-login</code></p>
       </div>
 
-      <footer><span><i></i> AES-256 ENCRYPTED</span><small>演示账号 shipper / 123456</small></footer>
+      <footer><span><i></i> AES-256 ENCRYPTED</span><small>演示账号 dispatcher / 123456</small></footer>
     </section>
 
     <svg v-if="isTransitioning" class="login-route-beams" :viewBox="routeViewBox" preserveAspectRatio="none" aria-hidden="true">

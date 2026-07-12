@@ -18,10 +18,10 @@ const detailCargoId = ref('')
 const cargoForm = reactive({
   id: '',
   name: '',
-  category: '普通货物',
-  weight: 800,
-  origin: '上海仓储中心',
-  destination: '杭州分拨中心',
+  category: '犬类',
+  weight: 8,
+  origin: '上海萌宠照护中心',
+  destination: '杭州余杭宠物服务站',
   eta: '明天 12:00',
 })
 
@@ -29,7 +29,7 @@ const vehicleForm = reactive({
   plate: '',
   driver: '',
   phone: '',
-  location: '上海仓储中心',
+  location: '上海萌宠照护中心',
   vehicleType: 'TRUCK',
   capacity: 10,
   deviceImei: '',
@@ -43,8 +43,8 @@ function inferCargoWeight(item: Cargo) {
   const storedWeight = Number(item.weight)
   if (Number.isFinite(storedWeight) && storedWeight > 0) return Math.round(storedWeight)
   const seed = Array.from(`${item.id}${item.name}${item.category}`).reduce((sum, char) => sum + char.charCodeAt(0), 0)
-  const baseWeights = [680, 920, 1180, 1460]
-  return baseWeights[seed % baseWeights.length] + (seed % 180)
+  const baseWeights = [4, 7, 12, 22]
+  return baseWeights[seed % baseWeights.length] + (seed % 5)
 }
 
 watch(cargo, () => {
@@ -65,8 +65,8 @@ const detailDialog = computed({
 })
 
 const loadedWeight = computed(() => selectedVehicleCargo.value.reduce((sum, item) => sum + inferCargoWeight(item), 0))
-const capacityKg = computed(() => Math.max(1, (selectedVehicle.value?.capacity || 10) * 1000))
-const loadPercent = computed(() => Math.min(100, Math.round((loadedWeight.value / capacityKg.value) * 100)))
+const capacityCount = computed(() => Math.max(1, Math.round(selectedVehicle.value?.capacity || 10)))
+const loadPercent = computed(() => Math.min(100, Math.round((selectedVehicleCargo.value.length / capacityCount.value) * 100)))
 const trailerSlots = computed(() => {
   const count = Math.max(8, selectedVehicleCargo.value.length + 2)
   return Array.from({ length: count }, (_, index) => selectedVehicleCargo.value[index])
@@ -79,8 +79,8 @@ const statusText: Record<Vehicle['status'], string> = {
 }
 
 const cargoStatus: Record<Cargo['status'], string> = {
-  CREATED: '待装货',
-  LOADED: '已装货',
+  CREATED: '待接宠',
+  LOADED: '已登车',
   IN_TRANSIT: '运输中',
   DELIVERED: '已送达',
   CANCELLED: '已取消',
@@ -113,9 +113,9 @@ async function dropCargo(event?: DragEvent, cargoId = draggedCargoId.value || ev
   }
   try {
     await store.bindCargo(cargoId, vehicle.plate)
-    ElMessage.success(`${item.name} 已装入 ${vehicle.plate}`)
+    ElMessage.success(`${item.name} 已安排至 ${vehicle.plate} 的安全舱位`)
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '装车绑定失败')
+    ElMessage.error(error instanceof Error ? error.message : '托运任务分配失败')
   } finally {
     draggedCargoId.value = ''
   }
@@ -124,7 +124,7 @@ async function dropCargo(event?: DragEvent, cargoId = draggedCargoId.value || ev
 async function unbindCargo(cargoId: string) {
   try {
     await store.unbindCargo(cargoId)
-    ElMessage.success('已移出车厢')
+    ElMessage.success('已解除当前车辆安排')
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : '解除绑定失败')
   }
@@ -132,7 +132,7 @@ async function unbindCargo(cargoId: string) {
 
 async function createCargo() {
   if (!cargoForm.name.trim() || !cargoForm.origin.trim() || !cargoForm.destination.trim()) {
-    ElMessage.warning('请填写货物名称和运输路线')
+    ElMessage.warning('请填写宠物称呼和托运路线')
     return
   }
   const id = cargoForm.id.trim() || `YD${new Date().toISOString().slice(0, 10).replace(/-/g, '')}${String(cargo.value.length + 1).padStart(3, '0')}`
@@ -152,11 +152,11 @@ async function createCargo() {
       destinationLat: 30.2741,
       destinationLng: 120.1551,
     })
-    Object.assign(cargoForm, { id: '', name: '', category: '普通货物', weight: 800, origin: '上海仓储中心', destination: '杭州分拨中心', eta: '明天 12:00' })
+    Object.assign(cargoForm, { id: '', name: '', category: '犬类', weight: 8, origin: '上海萌宠照护中心', destination: '杭州余杭宠物服务站', eta: '明天 12:00' })
     cargoDialog.value = false
-    ElMessage.success('货物已创建')
+    ElMessage.success('宠物托运任务已创建')
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '货物创建失败')
+    ElMessage.error(error instanceof Error ? error.message : '托运任务创建失败')
   }
 }
 
@@ -186,7 +186,7 @@ async function createVehicle() {
       deviceImei: vehicleForm.deviceImei,
     })
     selectedPlate.value = plate
-    Object.assign(vehicleForm, { plate: '', driver: '', phone: '', location: '上海仓储中心', vehicleType: 'TRUCK', capacity: 10, deviceImei: '' })
+    Object.assign(vehicleForm, { plate: '', driver: '', phone: '', location: '上海萌宠照护中心', vehicleType: '宠物专用运输车', capacity: 10, deviceImei: '' })
     vehicleDialog.value = false
     ElMessage.success('车辆已新增')
   } catch (error) {
@@ -196,7 +196,7 @@ async function createVehicle() {
 
 async function removeVehicle(plate: string) {
   try {
-    await ElMessageBox.confirm(`确定删除车辆 ${plate} 吗？相关货物会自动解除绑定。`, '删除车辆', { type: 'warning' })
+    await ElMessageBox.confirm(`确定删除车辆 ${plate} 吗？相关宠物托运任务会自动解除安排。`, '删除车辆', { type: 'warning' })
     await store.removeVehicle(plate)
     if (selectedPlate.value === plate) selectedPlate.value = vehicles.value[0]?.plate || ''
     ElMessage.success('车辆已删除')
@@ -210,12 +210,12 @@ async function removeVehicle(plate: string) {
   <div class="warehouse-planner view-stack">
     <section class="warehouse-hero">
       <div>
-        <span class="section-kicker">LOAD PLANNING</span>
-        <h2>仓库装车管理</h2>
-        <p>把左侧货物拖进车厢槽位，系统会自动完成货物与车辆绑定。</p>
+        <span class="section-kicker">PET TRANSFER & CARE PLANNING</span>
+        <h2>宠物中转与安全舱位管理</h2>
+        <p>将左侧待托运宠物安排到专用车辆舱位，工作人员可核对宠物、航空箱与车辆绑定关系。</p>
       </div>
       <div class="warehouse-actions">
-        <el-button icon="Box" @click="cargoDialog = true">新建货物</el-button>
+        <el-button icon="Box" @click="cargoDialog = true">新建托运任务</el-button>
         <el-button type="primary" icon="Plus" @click="vehicleDialog = true">新增车辆</el-button>
       </div>
     </section>
@@ -223,14 +223,14 @@ async function removeVehicle(plate: string) {
     <section class="warehouse-stats">
       <div><span class="vehicle-badge"><el-icon><Van /></el-icon></span><p><strong>{{ vehicles.length }}</strong><span>车辆总数</span></p></div>
       <div><span class="vehicle-badge green-bg"><el-icon><Connection /></el-icon></span><p><strong>{{ onlineCount }}</strong><span>在线设备</span></p></div>
-      <div><span class="vehicle-badge orange-bg"><el-icon><Box /></el-icon></span><p><strong>{{ unassignedCargo.length }}</strong><span>待装货物</span></p></div>
-      <div><span class="vehicle-badge purple-bg"><el-icon><Link /></el-icon></span><p><strong>{{ cargo.filter(c => c.vehiclePlate).length }}</strong><span>已绑定运单</span></p></div>
+      <div><span class="vehicle-badge orange-bg"><el-icon><Box /></el-icon></span><p><strong>{{ unassignedCargo.length }}</strong><span>待安排宠物</span></p></div>
+      <div><span class="vehicle-badge purple-bg"><el-icon><Link /></el-icon></span><p><strong>{{ cargo.filter(c => c.vehiclePlate).length }}</strong><span>已安排旅程</span></p></div>
     </section>
 
     <section class="load-workbench">
       <aside class="cargo-pool">
         <div class="panel-title">
-          <span>待装货物</span>
+          <span>待安排宠物</span>
           <b>{{ unassignedCargo.length }}</b>
         </div>
         <article
@@ -247,7 +247,7 @@ async function removeVehicle(plate: string) {
           <small>{{ item.origin }} -> {{ item.destination }}</small>
           <em>{{ inferCargoWeight(item) }} kg</em>
         </article>
-        <el-empty v-if="!unassignedCargo.length" description="暂无待装货物" />
+        <el-empty v-if="!unassignedCargo.length" description="暂无待安排宠物" />
       </aside>
 
       <main class="truck-planner">
@@ -273,7 +273,7 @@ async function removeVehicle(plate: string) {
             </div>
             <div class="load-meter">
               <strong>{{ loadPercent }}%</strong>
-              <span>{{ loadedWeight }} / {{ capacityKg }} kg</span>
+              <span>{{ selectedVehicleCargo.length }} / {{ capacityCount }} 个安全舱位 · 宠物总重 {{ loadedWeight }} kg</span>
             </div>
           </div>
 
@@ -306,7 +306,7 @@ async function removeVehicle(plate: string) {
                     <span>{{ inferCargoWeight(item) }}kg</span>
                   </template>
                   <template v-else>
-                    <span>空槽 {{ index + 1 }}</span>
+                    <span>空闲舱位 {{ index + 1 }}</span>
                   </template>
                 </button>
               </div>
@@ -318,7 +318,7 @@ async function removeVehicle(plate: string) {
 
       <aside class="load-manifest">
         <div class="panel-title">
-          <span>装载清单</span>
+          <span>随车宠物清单</span>
           <b>{{ selectedVehicleCargo.length }}</b>
         </div>
         <article v-for="item in selectedVehicleCargo" :key="item.id" class="manifest-row">
@@ -328,7 +328,7 @@ async function removeVehicle(plate: string) {
           </div>
           <el-button link type="warning" @click="unbindCargo(item.id)">移出</el-button>
         </article>
-        <el-empty v-if="!selectedVehicleCargo.length" description="车厢暂无货物" />
+        <el-empty v-if="!selectedVehicleCargo.length" description="当前车辆暂无托运宠物" />
         <div class="device-summary">
           <span>车载终端</span>
           <strong>{{ devices.find(d => d.plate === selectedVehicle?.plate)?.imei || selectedVehicle?.deviceImei || '未绑定' }}</strong>
@@ -337,15 +337,15 @@ async function removeVehicle(plate: string) {
       </aside>
     </section>
 
-    <el-dialog v-model="cargoDialog" title="新建货物" width="520px">
+    <el-dialog v-model="cargoDialog" title="新建宠物托运任务" width="520px">
       <el-form label-position="top">
         <div class="form-grid">
-          <el-form-item label="货物编号"><el-input v-model="cargoForm.id" placeholder="留空自动生成" /></el-form-item>
-          <el-form-item label="货物名称"><el-input v-model="cargoForm.name" /></el-form-item>
+          <el-form-item label="托运任务编号"><el-input v-model="cargoForm.id" placeholder="留空自动生成" /></el-form-item>
+          <el-form-item label="宠物称呼"><el-input v-model="cargoForm.name" placeholder="例如：豆包" /></el-form-item>
         </div>
         <div class="form-grid">
-          <el-form-item label="货物类型"><el-input v-model="cargoForm.category" /></el-form-item>
-          <el-form-item label="重量 kg"><el-input-number v-model="cargoForm.weight" :min="0" /></el-form-item>
+          <el-form-item label="宠物种类 / 品种"><el-input v-model="cargoForm.category" /></el-form-item>
+          <el-form-item label="宠物体重 kg"><el-input-number v-model="cargoForm.weight" :min="0" /></el-form-item>
         </div>
         <el-form-item label="始发地"><el-input v-model="cargoForm.origin" /></el-form-item>
         <el-form-item label="目的地"><el-input v-model="cargoForm.destination" /></el-form-item>
@@ -353,7 +353,7 @@ async function removeVehicle(plate: string) {
       </el-form>
       <template #footer>
         <el-button @click="cargoDialog = false">取消</el-button>
-        <el-button type="primary" @click="createCargo">创建货物</el-button>
+        <el-button type="primary" @click="createCargo">创建托运任务</el-button>
       </template>
     </el-dialog>
 
@@ -366,7 +366,7 @@ async function removeVehicle(plate: string) {
         <el-form-item label="联系电话"><el-input v-model="vehicleForm.phone" /></el-form-item>
         <div class="form-grid">
           <el-form-item label="车辆类型"><el-input v-model="vehicleForm.vehicleType" /></el-form-item>
-          <el-form-item label="载重 吨"><el-input-number v-model="vehicleForm.capacity" :min="1" /></el-form-item>
+          <el-form-item label="安全舱位数"><el-input-number v-model="vehicleForm.capacity" :min="1" /></el-form-item>
         </div>
         <el-form-item label="设备 IMEI"><el-input v-model="vehicleForm.deviceImei" /></el-form-item>
         <el-form-item label="当前位置"><el-input v-model="vehicleForm.location" /></el-form-item>
@@ -377,7 +377,7 @@ async function removeVehicle(plate: string) {
       </template>
     </el-dialog>
 
-    <el-dialog v-model="detailDialog" title="货物详情" width="480px">
+    <el-dialog v-model="detailDialog" title="宠物托运详情" width="480px">
       <div v-if="selectedCargo" class="cargo-detail-dialog">
         <div class="cargo-detail-title">
           <span class="vehicle-badge orange-bg"><el-icon><Box /></el-icon></span>
@@ -387,14 +387,14 @@ async function removeVehicle(plate: string) {
         <dl class="info-list">
           <div><dt>始发地</dt><dd>{{ selectedCargo.origin }}</dd></div>
           <div><dt>目的地</dt><dd>{{ selectedCargo.destination }}</dd></div>
-          <div><dt>承运车辆</dt><dd>{{ selectedCargo.vehiclePlate || '暂未装车' }}</dd></div>
+          <div><dt>承运车辆</dt><dd>{{ selectedCargo.vehiclePlate || '暂未安排' }}</dd></div>
           <div><dt>预计到达</dt><dd>{{ selectedCargo.eta }}</dd></div>
-          <div><dt>重量</dt><dd>{{ selectedCargo ? inferCargoWeight(selectedCargo) : 0 }} kg</dd></div>
+          <div><dt>宠物体重</dt><dd>{{ selectedCargo ? inferCargoWeight(selectedCargo) : 0 }} kg</dd></div>
         </dl>
       </div>
       <template #footer>
         <el-button @click="detailCargoId = ''">关闭</el-button>
-        <el-button v-if="selectedCargo?.vehiclePlate" type="warning" @click="unbindCargo(selectedCargo.id); detailCargoId = ''">移出车厢</el-button>
+        <el-button v-if="selectedCargo?.vehiclePlate" type="warning" @click="unbindCargo(selectedCargo.id); detailCargoId = ''">解除车辆安排</el-button>
       </template>
     </el-dialog>
   </div>

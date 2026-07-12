@@ -44,37 +44,37 @@ const loginForm = reactive<{ username: string; password: string; role: UserRole 
 
 const loginSlides = [
   {
-    title: '智能仓储',
+    title: '宠物中转照护',
     image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=640&q=80',
   },
   {
-    title: '车辆调度',
+    title: '宠物专车调度',
     image: 'https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?auto=format&fit=crop&w=640&q=80',
   },
   {
-    title: '港口联运',
+    title: '跨城安心托运',
     image: 'https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=640&q=80',
   },
   {
-    title: '自动分拣',
+    title: '宠物身份核验',
     image: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=640&q=80',
   },
   {
-    title: '冷链监控',
+    title: '温湿度与健康监护',
     image: 'https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&w=640&q=80',
   },
 ]
 
 const menus = [
-  { key: 'pet-owner', label: '萌宠护送', icon: 'FirstAidKit', roles: ['SHIPPER', 'ADMIN'] },
-  { key: 'overview', label: '运营总览', icon: 'DataBoard', roles: ['SHIPPER', 'WAREHOUSE', 'DISPATCHER', 'DRIVER', 'ADMIN'] },
-  { key: 'tracking', label: '货物追踪', icon: 'Location', roles: ['SHIPPER', 'DISPATCHER', 'ADMIN'] },
-  { key: 'dispatch', label: '车辆调度', icon: 'Van', roles: ['DISPATCHER', 'ADMIN'] },
-  { key: 'personnel', label: '人员管理', icon: 'UserFilled', roles: ['DISPATCHER', 'ADMIN'] },
-  { key: 'driver', label: '司机任务', icon: 'Guide', roles: ['DRIVER', 'DISPATCHER', 'ADMIN'] },
-  { key: 'alerts', label: '告警中心', icon: 'Warning', roles: ['WAREHOUSE', 'DISPATCHER', 'ADMIN'] },
-  { key: 'warehouse', label: '仓库管理', icon: 'Box', roles: ['WAREHOUSE', 'DISPATCHER', 'ADMIN'] },
-  { key: 'assistant', label: '智能问答', icon: 'ChatDotRound', roles: ['SHIPPER', 'WAREHOUSE', 'DISPATCHER', 'DRIVER', 'ADMIN'] },
+  { key: 'pet-owner', label: '宠物家长安心旅程', icon: 'FirstAidKit', roles: ['SHIPPER', 'ADMIN'] },
+  { key: 'assistant', label: '伴生智能助手', icon: 'ChatDotRound', roles: ['SHIPPER', 'WAREHOUSE', 'DISPATCHER', 'DRIVER', 'ADMIN'] },
+  { key: 'overview', label: '托运运营总览', icon: 'DataBoard', roles: ['SHIPPER', 'WAREHOUSE', 'DISPATCHER', 'DRIVER', 'ADMIN'] },
+  { key: 'tracking', label: '宠物旅程追踪', icon: 'Location', roles: ['SHIPPER', 'DISPATCHER', 'ADMIN'] },
+  { key: 'dispatch', label: '托运车辆调度', icon: 'Van', roles: ['DISPATCHER', 'ADMIN'] },
+  { key: 'personnel', label: '司机 / 照护员管理', icon: 'UserFilled', roles: ['DISPATCHER', 'ADMIN'] },
+  { key: 'driver', label: '司机与照护任务', icon: 'Guide', roles: ['DRIVER', 'DISPATCHER', 'ADMIN'] },
+  { key: 'alerts', label: '动物福利风险中心', icon: 'Warning', roles: ['WAREHOUSE', 'DISPATCHER', 'ADMIN'] },
+  { key: 'warehouse', label: '宠物中转与笼位管理', icon: 'Box', roles: ['WAREHOUSE', 'DISPATCHER', 'ADMIN'] },
 ]
 const availableMenus = computed(() => menus.filter((item) => user.value && item.roles.includes(user.value.role)))
 
@@ -91,7 +91,7 @@ const pageMap: Record<string, Component> = {
   'pet-owner': PetOwnerDashboardView,
 }
 
-const pageTitle = computed(() => active.value === 'portal' ? '导航窗口' : menus.find((item) => item.key === active.value)?.label || '运营总览')
+const pageTitle = computed(() => active.value === 'portal' ? '伴生云途导航' : menus.find((item) => item.key === active.value)?.label || '托运运营总览')
 const liveStatusText = computed(() => {
   if (store.usingDemo) return '演示数据模式'
   return store.realtimeState === 'open' ? '实时连接正常' : '实时连接恢复中'
@@ -181,10 +181,10 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
 
     <section class="login-story">
       <div class="brand-mark large"><el-icon><Van /></el-icon></div>
-      <p class="eyebrow">PET TRANSIT · IOT</p>
-      <h1>伴生云途<br />智能宠物托运与全程感知平台</h1>
+      <p class="eyebrow">BANSHENG PET JOURNEY CLOUD</p>
+      <h1>伴生云途<br />宠物托运协同平台</h1>
       <p class="login-description">
-        连接车辆、仓储、订单与运输链路，让调度决策更清晰，让每一次运输都有迹可循。
+        连接宠物、车辆、中转照护与托运任务，让工作人员及时掌握每一段安心旅程。
       </p>
       <div class="logistics-visual" aria-hidden="true">
         <div class="visual-grid"></div>
@@ -236,7 +236,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
         </div>
         <p class="eyebrow">WELCOME BACK</p>
         <h2>登录工作台</h2>
-        <p class="muted">选择演示角色进入对应工作台，体验车辆、仓储、调度与运输协同流程。</p>
+        <p class="muted">选择工作人员角色进入对应工作台，体验宠物托运、途中照护与安全交接流程。</p>
         <el-form label-position="top" size="large" @submit.prevent="enterPlatform">
           <el-form-item label="账号">
             <el-input v-model="loginForm.username" placeholder="请输入账号" prefix-icon="User" />
@@ -246,15 +246,15 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
           </el-form-item>
           <el-form-item label="演示角色">
             <el-select v-model="loginForm.role" style="width: 100%">
-              <el-option label="货主" value="SHIPPER" />
-              <el-option label="仓库管理员" value="WAREHOUSE" />
+              <el-option label="宠物家长服务专员" value="SHIPPER" />
+              <el-option label="中转照护员" value="WAREHOUSE" />
               <el-option label="调度员" value="DISPATCHER" />
               <el-option label="司机" value="DRIVER" />
               <el-option label="系统管理员" value="ADMIN" />
             </el-select>
           </el-form-item>
           <el-button class="login-button" type="primary" native-type="submit" :loading="loginLoading" @click="enterPlatform">
-            进入伴生云途
+            进入伴生云途工作台
           </el-button>
         </el-form>
         <div class="demo-tip"><el-icon><InfoFilled /></el-icon>演示账号 dispatcher / 123456</div>
@@ -269,7 +269,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
         <div class="brand-mark"><el-icon><Van /></el-icon></div>
         <div class="brand-copy">
           <strong>伴生云途</strong>
-          <span>智能宠物托运与全程感知平台</span>
+          <span>BANSHENG PET JOURNEY</span>
         </div>
       </div>
 
@@ -300,7 +300,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
     <main class="workspace">
       <header v-if="active !== 'portal' && active !== 'pet-owner'" class="topbar">
         <div>
-          <p class="eyebrow">LIVE LOGISTICS COMMAND CENTER</p>
+          <p class="eyebrow">伴生云途 · 工作人员业务中心</p>
           <h1>{{ pageTitle }}</h1>
         </div>
         <div class="topbar-actions">

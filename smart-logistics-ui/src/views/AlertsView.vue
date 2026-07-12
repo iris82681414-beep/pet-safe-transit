@@ -6,12 +6,6 @@ import { useLogisticsStore } from '@/stores/logistics'
 import type { AlertItem, AlertSeverity, AlertStatus } from '@/types'
 import { alertApi } from '@/services/api'
 
-const logisticsCarouselImages = [
-  new URL('../assets/logistics-carousel-1.jpg', import.meta.url).href,
-  new URL('../assets/logistics-carousel-2.jpg', import.meta.url).href,
-  new URL('../assets/logistics-carousel-3.jpg', import.meta.url).href,
-]
-
 const store = useLogisticsStore()
 const { alerts, archivedAlerts } = storeToRefs(store)
 const selected = ref<AlertItem | null>(alerts.value[0] || null)
@@ -54,7 +48,7 @@ function formatAlertTime(value: string) {
 
 function openAction(statusValue: 'ACKNOWLEDGED' | 'RESOLVED') {
   if (statusValue === 'RESOLVED' && selected.value?.status === 'PENDING') {
-    ElMessage.warning('请先确认告警，再关闭告警')
+    ElMessage.warning('请先确认风险事件，再完成关闭')
     return
   }
   actionKind.value = statusValue
@@ -81,7 +75,7 @@ function update() {
   actionDialog.value = false
   saving.value = false
   Object.assign(actionForm, { resolution: '', remark: '' })
-  ElMessage.success(nextStatus === 'ACKNOWLEDGED' ? '告警已确认，正在后台同步' : '告警已关闭，正在后台同步')
+  ElMessage.success(nextStatus === 'ACKNOWLEDGED' ? '风险事件已确认，正在后台同步' : '风险事件已关闭，正在后台同步')
 
   void store.updateAlert(alertId, nextStatus, resolution, remark)
     .then(() => {
@@ -110,7 +104,7 @@ function deleteAlert(alertId: string, event: MouseEvent) {
   }
   store.removeAlerts([alertId])
   if (selected.value?.id === alertId) selected.value = filtered.value[0] || null
-  ElMessage.success('告警已删除，可在“已删除告警”中查看')
+  ElMessage.success('风险事件已归档，可在“历史风险”中查看')
 }
 
 function simulateAlert() {
@@ -165,9 +159,6 @@ onUnmounted(() => {
 <template>
   <div class="view-stack">
     <section class="metric-grid alert-metrics alert-conveyor-scene">
-      <div class="visual-carousel" aria-hidden="true">
-        <img v-for="(image, index) in logisticsCarouselImages" :key="image" :src="image" alt="" :style="{ '--slide-index': index }" />
-      </div>
       <span class="alert-scene-machine" aria-hidden="true"><i></i></span>
       <span class="alert-scene-worker" aria-hidden="true">
         <i class="worker-head"></i><i class="worker-body"></i>
@@ -176,8 +167,8 @@ onUnmounted(() => {
       </span>
       <div class="alert-conveyor-track">
         <div class="alert-conveyor-set">
-          <article class="metric-card red"><span class="box-label">CRIT</span><span class="box-barcode"></span><div class="metric-icon"><el-icon><WarningFilled /></el-icon></div><div><span>严重告警</span><strong>{{ store.usingDemo ? criticalPendingCount : stats.critical }}</strong><small>待处理严重告警</small></div></article>
-          <article class="metric-card orange"><span class="box-label">TODO</span><span class="box-barcode"></span><div class="metric-icon"><el-icon><BellFilled /></el-icon></div><div><span>待处理</span><strong>{{ store.usingDemo ? pendingCount : stats.pending }}</strong><small>来自当前告警列表</small></div></article>
+          <article class="metric-card red"><span class="box-label">CRIT</span><span class="box-barcode"></span><div class="metric-icon"><el-icon><WarningFilled /></el-icon></div><div><span>严重福利风险</span><strong>{{ store.usingDemo ? criticalPendingCount : stats.critical }}</strong><small>需要工作人员立即处理</small></div></article>
+          <article class="metric-card orange"><span class="box-label">TODO</span><span class="box-barcode"></span><div class="metric-icon"><el-icon><BellFilled /></el-icon></div><div><span>待处理风险</span><strong>{{ store.usingDemo ? pendingCount : stats.pending }}</strong><small>来自当前风险列表</small></div></article>
           <article class="metric-card blue"><span class="box-label">ACK</span><span class="box-barcode"></span><div class="metric-icon"><el-icon><CircleCheckFilled /></el-icon></div><div><span>已确认</span><strong>{{ acknowledgedCount }}</strong><small>处理中</small></div></article>
           <article class="metric-card green"><span class="box-label">DONE</span><span class="box-barcode"></span><div class="metric-icon"><el-icon><Select /></el-icon></div><div><span>今日已关闭</span><strong>{{ store.usingDemo ? resolvedCount : stats.resolved }}</strong><small>平均 18 分钟</small></div></article>
         </div>
@@ -187,12 +178,12 @@ onUnmounted(() => {
     <section class="alerts-layout">
       <article class="panel alerts-table-panel">
         <div class="panel-head">
-          <div><span class="section-kicker">ALERT LOG</span><h3>告警与处理日志</h3></div>
+          <div><span class="section-kicker">ANIMAL WELFARE RISK LOG</span><h3>动物福利风险与处理日志</h3></div>
           <div class="filter-actions">
-            <el-button v-if="store.usingDemo" type="danger" plain icon="Bell" @click="simulateAlert">模拟告警推送</el-button>
-            <el-button plain icon="Clock" @click="historyDialog = true">已删除告警 {{ archivedAlerts.length }}</el-button>
-            <el-select v-model="severity" clearable placeholder="告警级别" style="width: 130px"><el-option label="严重" value="CRITICAL" /><el-option label="警告" value="WARNING" /><el-option label="提示" value="INFO" /></el-select>
-            <el-select v-model="type" clearable placeholder="告警类型" style="width: 150px"><el-option v-for="item in alertTypes" :key="item" :label="item" :value="item" /></el-select>
+            <el-button v-if="store.usingDemo" type="danger" plain icon="Bell" @click="simulateAlert">模拟风险推送</el-button>
+            <el-button plain icon="Clock" @click="historyDialog = true">历史风险 {{ archivedAlerts.length }}</el-button>
+            <el-select v-model="severity" clearable placeholder="风险级别" style="width: 130px"><el-option label="严重" value="CRITICAL" /><el-option label="警告" value="WARNING" /><el-option label="提示" value="INFO" /></el-select>
+            <el-select v-model="type" clearable placeholder="风险类型" style="width: 150px"><el-option v-for="item in alertTypes" :key="item" :label="item" :value="item" /></el-select>
             <el-select v-model="status" clearable placeholder="处理状态" style="width: 130px"><el-option label="待处理" value="PENDING" /><el-option label="已确认" value="ACKNOWLEDGED" /><el-option label="已关闭" value="RESOLVED" /></el-select>
             <el-select v-model="vehiclePlate" clearable placeholder="关联车辆" style="width: 150px"><el-option v-for="plate in plates" :key="plate" :label="plate" :value="plate" /></el-select>
           </div>
@@ -208,7 +199,7 @@ onUnmounted(() => {
             <span
               class="alert-row-delete"
               :class="{ disabled: !canDeleteAlert(item) }"
-              :title="canDeleteAlert(item) ? '删除告警' : '确认并关闭后才能删除'"
+              :title="canDeleteAlert(item) ? '归档风险事件' : '确认并关闭后才能归档'"
               @click="deleteAlert(item.id, $event)"
             >
               <el-icon><Close /></el-icon>
@@ -219,33 +210,33 @@ onUnmounted(() => {
             <span class="alert-status">{{ statusText[item.status] || '未知' }}</span>
             <span class="alert-time">{{ formatAlertTime(item.createdAt) }}</span>
           </button>
-          <el-empty v-if="!filtered.length" description="暂无符合条件的告警" :image-size="72" />
+          <el-empty v-if="!filtered.length" description="暂无符合条件的风险事件" :image-size="72" />
         </div>
       </article>
 
       <aside v-if="selected" class="panel alert-detail">
         <div class="alert-detail-head" :class="[(selected.severity || 'INFO').toLowerCase(), alertTone(selected.type)]">
           <span class="severity-icon" :class="[(selected.severity || 'INFO').toLowerCase(), alertTone(selected.type)]"><el-icon><WarningFilled /></el-icon></span>
-          <div><span>{{ severityText[selected.severity] || '提示' }}告警</span><h3>{{ selected.title }}</h3><small>{{ selected.id }} · {{ formatAlertTime(selected.createdAt) }}</small></div>
+          <div><span>{{ severityText[selected.severity] || '提示' }}风险</span><h3>{{ selected.title }}</h3><small>{{ selected.id }} · {{ formatAlertTime(selected.createdAt) }}</small></div>
         </div>
         <p class="alert-description" :class="alertTone(selected.type)">{{ selected.description }}</p>
         <dl class="info-list">
           <div><dt>关联车辆</dt><dd>{{ selected.plate }}</dd></div>
           <div><dt>发生位置</dt><dd>{{ selected.location }}</dd></div>
-          <div><dt>告警类型</dt><dd>{{ selected.type }}</dd></div>
+          <div><dt>风险类型</dt><dd>{{ selected.type }}</dd></div>
           <div><dt>当前状态</dt><dd>{{ statusText[selected.status] || '未知' }}</dd></div>
         </dl>
-        <div class="recommendation"><el-icon><Opportunity /></el-icon><div><strong>处理建议</strong><p>优先确认是否为临时绕行；若 10 分钟内未回到规划路线，请下发路线调整指令。</p></div></div>
+        <div class="recommendation"><el-icon><Opportunity /></el-icon><div><strong>工作人员处理建议</strong><p>先确认宠物状态、车内温湿度与停车安全；路线偏离超过 10 分钟时，请联系司机并下发调整指令。</p></div></div>
         <div v-if="selected.logs?.length" class="timeline">
           <div v-for="log in selected.logs" :key="`${log.time}-${log.action}`"><i></i><span>{{ log.time }}</span><strong>{{ log.action }}</strong><small>{{ log.operator }}</small></div>
         </div>
-        <el-button v-if="selected.status === 'PENDING'" type="primary" size="large" @click="openAction('ACKNOWLEDGED')">确认告警</el-button>
-        <el-button v-if="selected.status === 'ACKNOWLEDGED'" size="large" @click="openAction('RESOLVED')">关闭告警</el-button>
+        <el-button v-if="selected.status === 'PENDING'" type="primary" size="large" @click="openAction('ACKNOWLEDGED')">确认风险事件</el-button>
+        <el-button v-if="selected.status === 'ACKNOWLEDGED'" size="large" @click="openAction('RESOLVED')">关闭风险事件</el-button>
         <el-tag v-if="selected.status === 'RESOLVED'" type="success" effect="dark">已确认并关闭，可从列表右侧删除</el-tag>
       </aside>
     </section>
 
-    <el-dialog v-model="actionDialog" :title="actionKind === 'ACKNOWLEDGED' ? '确认告警' : '关闭告警'" width="480px">
+    <el-dialog v-model="actionDialog" :title="actionKind === 'ACKNOWLEDGED' ? '确认风险事件' : '关闭风险事件'" width="480px">
       <el-form label-position="top">
         <el-form-item v-if="actionKind === 'RESOLVED'" label="解决方案（必填）"><el-input v-model="actionForm.resolution" type="textarea" :rows="3" /></el-form-item>
         <el-form-item label="处理备注（必填）"><el-input v-model="actionForm.remark" type="textarea" :rows="3" /></el-form-item>
@@ -253,7 +244,7 @@ onUnmounted(() => {
       <template #footer><el-button @click="actionDialog = false">取消</el-button><el-button type="primary" :loading="saving" @click="update">提交处理</el-button></template>
     </el-dialog>
 
-    <el-dialog v-model="historyDialog" title="已删除告警" width="760px">
+    <el-dialog v-model="historyDialog" title="历史风险事件" width="760px">
       <div class="deleted-alert-list">
         <article v-for="item in archivedAlerts" :key="`${item.id}-${item.deletedAt}`" class="deleted-alert-row">
           <span class="severity-icon" :class="[(item.severity || 'INFO').toLowerCase(), alertTone(item.type)]"><el-icon><Warning /></el-icon></span>

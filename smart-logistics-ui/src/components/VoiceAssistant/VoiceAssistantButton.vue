@@ -98,6 +98,14 @@ function showInfo(message: string) {
   ElMessage.info(message)
 }
 
+function friendlyVoiceError(error: unknown) {
+  const raw = error instanceof Error ? error.message : String(error || '')
+  if (/502|network error|failed to fetch|econnrefused/i.test(raw)) {
+    return '语音服务暂时未连接，请确认伴生云途后端已启动后重试'
+  }
+  return raw || '语音指令执行失败'
+}
+
 watch(capturing, (active) => {
   document.body.classList.toggle('voice-capturing', active && portalMode.value)
 }, { immediate: true })
@@ -148,7 +156,8 @@ async function startRecording() {
     })
     const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext
     if (!AudioContextCtor) throw new Error('当前浏览器不支持 AudioContext')
-    audioContext = new AudioContextCtor({ sampleRate: 16000 })
+    // 使用声卡原生采样率，上传前再统一转换为 16k PCM，避免浏览器实时重采样失真。
+    audioContext = new AudioContextCtor()
     if (audioContext.state === 'suspended') await audioContext.resume()
     inputSampleRate = audioContext.sampleRate
     sourceNode = audioContext.createMediaStreamSource(stream)
@@ -218,9 +227,10 @@ async function stopAndSend() {
       })
     }
 
+    let executionResult: unknown
     if (action) {
       status.value = 'executing'
-      await executeAgentAction({
+      executionResult = await executeAgentAction({
         ...action,
         recognizedText,
         reply,
@@ -232,8 +242,11 @@ async function stopAndSend() {
     } else {
       ElMessage.warning('没有识别到可执行操作')
     }
+    window.dispatchEvent(new CustomEvent('smart-logistics:voice-result', {
+      detail: { ...payload, recognizedText, reply, action, result: executionResult },
+    }))
   } catch (error) {
-    detailMessage.value = error instanceof Error ? error.message : '语音指令执行失败'
+    detailMessage.value = friendlyVoiceError(error)
     ElMessage.error(detailMessage.value)
   } finally {
     status.value = 'idle'
@@ -266,7 +279,7 @@ function resample(input: Float32Array, fromRate: number, toRate: number) {
 }
 
 function encodeWavBlob(samples: Float32Array, fromRate: number, toRate: number) {
-  const pcm = resample(samples, fromRate, toRate)
+  const pcm = prepareVoiceSamples(resample(samples, fromRate, toRate), toRate)
   const buffer = new ArrayBuffer(44 + pcm.length * 2)
   const view = new DataView(buffer)
   writeAscii(view, 0, 'RIFF')
@@ -288,6 +301,61 @@ function encodeWavBlob(samples: Float32Array, fromRate: number, toRate: number) 
     view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true)
   }
   return new Blob([view], { type: 'audio/wav' })
+}
+
+function prepareVoiceSamples(input: Float32Array, sampleRate: number) {
+  if (!input.length) return input
+
+  let mean = 0
+  for (let i = 0; i < input.length; i += 1) mean += input[i]
+  mean /= input.length
+  const centered = new Float32Array(input.length)
+  for (let i = 0; i < input.length; i += 1) centered[i] = input[i] - mean
+
+  const frameSize = Math.max(1, Math.round(sampleRate * 0.02))
+  const frameRms: number[] = []
+  for (let offset = 0; offset < centered.length; offset += frameSize) {
+    const end = Math.min(centered.length, offset + frameSize)
+    let energy = 0
+    for (let i = offset; i < end; i += 1) energy += centered[i] * centered[i]
+    frameRms.push(Math.sqrt(energy / Math.max(1, end - offset)))
+  }
+
+  const sortedRms = [...frameRms].sort((a, b) => a - b)
+  const noiseFloor = sortedRms[Math.floor(sortedRms.length * 0.2)] || 0
+  const maxRms = Math.max(...frameRms, 0)
+  const threshold = Math.max(0.004, Math.min(0.03, noiseFloor * 2.8), maxRms * 0.08)
+  let firstFrame = frameRms.findIndex((value) => value >= threshold)
+  let lastFrame = -1
+  for (let i = frameRms.length - 1; i >= 0; i -= 1) {
+    if (frameRms[i] >= threshold) {
+      lastFrame = i
+      break
+    }
+  }
+  if (firstFrame < 0 || lastFrame < firstFrame) {
+    firstFrame = 0
+    lastFrame = frameRms.length - 1
+  }
+
+  const padding = Math.round(sampleRate * 0.18)
+  const start = Math.max(0, firstFrame * frameSize - padding)
+  const end = Math.min(centered.length, (lastFrame + 1) * frameSize + padding)
+  const trimmed = centered.slice(start, end)
+  let energy = 0
+  let peak = 0
+  for (let i = 0; i < trimmed.length; i += 1) {
+    energy += trimmed[i] * trimmed[i]
+    peak = Math.max(peak, Math.abs(trimmed[i]))
+  }
+  const rms = Math.sqrt(energy / Math.max(1, trimmed.length))
+  let gain = rms > 0.0001 ? Math.min(8, Math.max(0.75, 0.12 / rms)) : 1
+  if (peak > 0 && peak * gain > 0.96) gain = 0.96 / peak
+  const normalized = new Float32Array(trimmed.length)
+  for (let i = 0; i < trimmed.length; i += 1) {
+    normalized[i] = Math.max(-1, Math.min(1, trimmed[i] * gain))
+  }
+  return normalized
 }
 
 function writeAscii(view: DataView, offset: number, text: string) {
@@ -398,9 +466,14 @@ function chooseApprovalMode(mode: AgentApprovalMode) {
   ElMessage.success(mode === 'request' ? 'Agent 已切换为请求批准模式' : 'Agent 已切换为直接执行模式')
 }
 
+function handleExternalToggle() {
+  handleClick()
+}
+
 onMounted(() => {
   restorePosition()
   window.addEventListener('resize', handleResize)
+  window.addEventListener('smart-logistics:toggle-voice-assistant', handleExternalToggle)
 })
 
 onUnmounted(() => {
@@ -408,6 +481,7 @@ onUnmounted(() => {
   stopStream()
   document.body.classList.remove('voice-capturing')
   window.removeEventListener('resize', handleResize)
+  window.removeEventListener('smart-logistics:toggle-voice-assistant', handleExternalToggle)
   window.removeEventListener('pointermove', handlePointerMove)
   window.removeEventListener('pointerup', finishDrag)
   window.removeEventListener('pointercancel', finishDrag)

@@ -15,6 +15,7 @@ const floatingPage = ref('')
 const notificationDrawer = ref(false)
 
 const pageRoles: Record<string, UserRole[]> = {
+  assistant: ['SHIPPER', 'WAREHOUSE', 'DISPATCHER', 'DRIVER', 'ADMIN'],
   overview: ['SHIPPER', 'WAREHOUSE', 'DISPATCHER', 'DRIVER', 'ADMIN'],
   tracking: ['SHIPPER', 'DISPATCHER', 'ADMIN'],
   dispatch: ['DISPATCHER', 'ADMIN'],
@@ -22,18 +23,17 @@ const pageRoles: Record<string, UserRole[]> = {
   driver: ['DRIVER', 'DISPATCHER', 'ADMIN'],
   alerts: ['WAREHOUSE', 'DISPATCHER', 'ADMIN'],
   warehouse: ['WAREHOUSE', 'DISPATCHER', 'ADMIN'],
-  assistant: ['SHIPPER', 'WAREHOUSE', 'DISPATCHER', 'DRIVER', 'ADMIN'],
 }
 
 const pageLabels: Record<string, string> = {
-  overview: '运营总览',
-  tracking: '货物追踪',
-  dispatch: '车辆调度',
-  personnel: '人员管理',
-  driver: '司机任务',
-  alerts: '告警中心',
-  warehouse: '仓库管理',
-  assistant: '智能问答',
+  assistant: '伴生智能助手',
+  overview: '托运运营总览',
+  tracking: '宠物旅程追踪',
+  dispatch: '托运车辆调度',
+  personnel: '司机 / 照护员管理',
+  driver: '司机与照护任务',
+  alerts: '动物福利风险中心',
+  warehouse: '宠物中转与笼位管理',
 }
 
 const pageMap: Record<string, Component> = {
@@ -59,7 +59,7 @@ const iframeSrc = computed(() => {
   const params = new URLSearchParams({
     role: store.user?.role || '',
     pages: allowedPages.value.join(','),
-    v: 'portal-20260707-06',
+    v: 'portal-20260712-07',
   })
   return `/active-theory/index.html?${params.toString()}`
 })
@@ -70,6 +70,10 @@ const floatingComponent = computed(() => pageMap[floatingPage.value])
 async function backToLogin() {
   await store.logout()
   await router.push('/login')
+}
+
+function enterWorkbench() {
+  openFloatingPage('overview')
 }
 
 function canOpenPage(page: string) {
@@ -150,11 +154,14 @@ onBeforeUnmount(() => {
     <button class="portal-back" type="button" @click="backToLogin">
       返回登录
     </button>
+    <button v-if="!floatingComponent" class="portal-enter" type="button" @click="enterWorkbench">
+      直接进入工作台
+    </button>
     <iframe
       :key="store.user?.role"
       :src="iframeSrc"
-      title="伴生云途导航窗口"
-      allow="fullscreen; autoplay; microphone"
+      title="伴生云途工作人员导航"
+      allow="fullscreen; microphone"
     />
     <button v-if="floatingComponent" class="portal-page-return" type="button" @click="closeFloatingPage">
       返回导航窗口
@@ -170,7 +177,7 @@ onBeforeUnmount(() => {
       <div v-if="floatingComponent" class="portal-floating-page" @dragover.prevent @drop.prevent>
         <header class="portal-floating-header">
           <div class="portal-floating-title">
-            <span>伴生云途 · 智能宠物托运与全程感知平台</span>
+            <span>伴生云途 · 工作人员业务模块</span>
             <strong>{{ floatingTitle }}</strong>
           </div>
         </header>

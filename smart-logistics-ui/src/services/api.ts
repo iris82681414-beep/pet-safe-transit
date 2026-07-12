@@ -216,7 +216,7 @@ async function streamAssistantSpeech(text: string) {
     headers,
     body: JSON.stringify({ text }),
   })
-  if (!response.ok) throw new Error(`豆包流式语音生成失败：HTTP ${response.status}`)
+  if (!response.ok) throw new Error(`羊小智语音生成失败：HTTP ${response.status}`)
   if (!response.body) throw new Error('当前浏览器不支持流式音频读取')
   return response
 }

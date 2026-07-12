@@ -190,9 +190,9 @@ public class AssistantServiceImpl implements AssistantService {
         if ("DISPATCHER".equals(role)) {
             return Arrays.asList("如何查看未处理的告警？", "当前有哪些车辆在线？", "偏航告警如何关闭？");
         } else if ("SHIPPER".equals(role)) {
-            return Arrays.asList("我的货物现在在哪里？", "如何查看货物的预计到达时间？", "货物运输过程中出现了问题怎么办？");
+            return Arrays.asList("托运宠物现在在哪里？", "如何查看宠物旅程的预计抵达时间？", "宠物运输途中出现风险怎么办？");
         } else {
-            return Arrays.asList("如何使用智能物流平台？", "平台支持哪些功能？", "常见问题如何处理？");
+            return Arrays.asList("如何使用伴生云途工作人员平台？", "平台支持哪些宠物托运功能？", "动物福利风险如何处理？");
         }
     }
 
@@ -355,7 +355,8 @@ public class AssistantServiceImpl implements AssistantService {
     private String buildSystemPrompt(String role, String userName, Map<String, Object> businessContext,
                                      List<KnowledgeChunk> chunks) {
         StringBuilder sb = new StringBuilder();
-        sb.append("你是智慧物流平台智能助手。当前时间: ").append(java.time.OffsetDateTime.now()).append("。");
+        sb.append("你是伴生云途宠物托运工作人员平台的智能助手羊小智。当前时间: ").append(java.time.OffsetDateTime.now()).append("。");
+        sb.append("你的服务对象是调度员、运输司机和中转照护员；回答时优先关注宠物安全、健康、通风、温湿度、饮水、航空箱固定和安全交接。内部 cargo 字段代表宠物托运任务，不要把宠物称为货物。");
         if (role != null) {
             sb.append("当前用户角色:").append(role).append("(").append(userName != null ? userName : "").append(")。");
         }
