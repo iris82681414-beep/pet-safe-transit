@@ -1,0 +1,47 @@
+/* Final compositor-only performance overrides. */
+.neo-login-split .neo-map-image {
+  filter: saturate(.92) contrast(1.1) brightness(.82);
+  animation: map-opacity-breathe 6.8s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+@keyframes map-opacity-breathe {
+  0%, 100% { opacity: .72; transform: scale(1.32); }
+  50% { opacity: .9; transform: scale(1.32); }
+}
+
+.native-node-pulses { position:absolute;inset:0;z-index:5;pointer-events:none; }
+.native-node-pulses i {
+  --pulse-size:42px;
+  position:absolute;
+  width:var(--pulse-size);
+  height:var(--pulse-size);
+  margin:calc(var(--pulse-size) / -2) 0 0 calc(var(--pulse-size) / -2);
+  border-radius:50%;
+  opacity:.08;
+  background:radial-gradient(circle,rgba(211,255,235,.42) 0 7%,rgba(96,255,199,.22) 25%,rgba(65,229,182,.08) 48%,transparent 72%);
+  mix-blend-mode:screen;
+  will-change:opacity,transform;
+  animation:native-node-breathe var(--pulse-duration) var(--pulse-delay) ease-in-out infinite;
+}
+.native-node-pulses .pulse-1{left:78.2%;top:34.8%;--pulse-duration:2.2s;--pulse-delay:-1.3s;--pulse-size:34px}
+.native-node-pulses .pulse-2{left:75.3%;top:40.1%;--pulse-duration:2.85s;--pulse-delay:-.35s;--pulse-size:46px}
+.native-node-pulses .pulse-3{left:66.4%;top:44.1%;--pulse-duration:3.4s;--pulse-delay:-2.1s;--pulse-size:40px}
+.native-node-pulses .pulse-4{left:50.1%;top:50.7%;--pulse-duration:2.55s;--pulse-delay:-1.75s;--pulse-size:50px}
+.native-node-pulses .pulse-5{left:75.3%;top:54.6%;--pulse-duration:3.05s;--pulse-delay:-.8s;--pulse-size:54px}
+.native-node-pulses .pulse-6{left:63.4%;top:63.9%;--pulse-duration:3.75s;--pulse-delay:-2.6s;--pulse-size:48px}
+@keyframes native-node-breathe {
+  0%,100%{opacity:.04;transform:scale(.72)}
+  28%{opacity:.25;transform:scale(.9)}
+  54%{opacity:.88;transform:scale(1.18)}
+  72%{opacity:.32;transform:scale(.94)}
+}
+
+.neo-login-split .scene-depth-stars{filter:none;animation:depth-stars-opacity 7s ease-in-out infinite}
+@keyframes depth-stars-opacity{0%,100%{opacity:.12}50%{opacity:.3}}
+.neo-login-split .neo-auth-card{animation:none}
+.neo-login-split.is-complete .neo-map-zone,
+.neo-login-split.is-complete .neo-auth-card,
+.neo-login-split.is-complete .neo-auth-zone{filter:none}
+.neo-login-split.is-complete .neo-auth-card,
+.neo-login-split.is-complete .neo-auth-zone{opacity:0}
+.gateway-canvas-entry{clip-path:none;filter:none;animation:none}

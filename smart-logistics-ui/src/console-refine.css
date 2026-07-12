@@ -1,0 +1,751 @@
+/*
+  Smart Logistics Console Refinement
+  目标：把功能页从“满屏绿色后台”统一为深蓝黑 + 冷青色的高端物流调度控制台。
+  只覆盖视觉层，不改业务逻辑。
+*/
+
+:root {
+  --sl-bg-0: #050B12;
+  --sl-bg-1: #07111C;
+  --sl-bg-2: #0A1824;
+  --sl-card: rgba(10, 24, 36, .78);
+  --sl-card-strong: rgba(12, 30, 44, .9);
+  --sl-card-soft: rgba(18, 42, 58, .58);
+  --sl-line: rgba(113, 214, 255, .16);
+  --sl-line-strong: rgba(126, 229, 255, .28);
+  --sl-cyan: #57D6FF;
+  --sl-aqua: #6EF3D6;
+  --sl-blue: #4B8DFF;
+  --sl-purple: #A37BFF;
+  --sl-success: #41D39E;
+  --sl-warning: #F6B94C;
+  --sl-danger: #FF6B6B;
+  --sl-offline: #7D92A7;
+  --sl-text: rgba(236, 248, 255, .94);
+  --sl-text-soft: rgba(190, 213, 226, .74);
+  --sl-text-muted: rgba(139, 166, 184, .58);
+  --sl-shadow: 0 24px 70px rgba(0, 0, 0, .36);
+  --sl-glow-cyan: 0 0 26px rgba(87, 214, 255, .14);
+}
+
+html,
+body {
+  background: var(--sl-bg-0) !important;
+}
+
+/* 功能页总背景：冷色、克制、少绿 */
+.app-shell.content-mode:not(.canvas-mode) {
+  color: var(--sl-text) !important;
+  background:
+    radial-gradient(circle at 78% 12%, rgba(87, 214, 255, .13), transparent 34%),
+    radial-gradient(circle at 12% 8%, rgba(110, 243, 214, .08), transparent 30%),
+    linear-gradient(rgba(92, 198, 255, .033) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 198, 255, .033) 1px, transparent 1px),
+    linear-gradient(135deg, var(--sl-bg-1), var(--sl-bg-0) 62%, #06101A) !important;
+  background-size: auto, auto, 40px 40px, 40px 40px, auto !important;
+  --navy: var(--sl-text);
+  --muted: var(--sl-text-soft);
+  --line: var(--sl-line);
+  --primary: var(--sl-cyan);
+  --primary-soft: rgba(87, 214, 255, .1);
+  --success: var(--sl-success);
+  --warning: var(--sl-warning);
+  --danger: var(--sl-danger);
+  --shadow: var(--sl-shadow);
+  --el-color-primary: var(--sl-cyan);
+  --el-color-success: var(--sl-success);
+  --el-color-warning: var(--sl-warning);
+  --el-color-danger: var(--sl-danger);
+  --el-bg-color: #08131F;
+  --el-bg-color-overlay: #0B1926;
+  --el-fill-color-blank: rgba(8, 19, 31, .94);
+  --el-fill-color-light: rgba(87, 214, 255, .08);
+  --el-border-color: var(--sl-line);
+  --el-border-color-light: rgba(113, 214, 255, .12);
+  --el-text-color-primary: var(--sl-text);
+  --el-text-color-regular: var(--sl-text-soft);
+  --el-text-color-secondary: var(--sl-text-muted);
+}
+
+.app-shell.content-mode:not(.canvas-mode)::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.025), transparent 18%, transparent 74%, rgba(0,0,0,.3)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 5px);
+  mix-blend-mode: screen;
+  opacity: .25;
+}
+
+.app-shell.content-mode:not(.canvas-mode) .workspace,
+.app-shell.content-mode:not(.canvas-mode) .page-content,
+.app-shell.content-mode:not(.canvas-mode) .view-stack {
+  position: relative;
+  z-index: 1;
+}
+
+.app-shell.content-mode:not(.canvas-mode) .page-content {
+  padding: 26px 34px 48px !important;
+}
+
+/* 背景动效从绿色改为蓝青色，减轻“网吧绿光感” */
+.app-shell.content-mode:not(.canvas-mode) .spatial-horizon {
+  opacity: .22 !important;
+  background-image:
+    linear-gradient(rgba(87, 214, 255, .11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87, 214, 255, .11) 1px, transparent 1px) !important;
+  box-shadow: inset 0 28px 80px rgba(87, 214, 255, .05) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .aurora-a { background: #57D6FF !important; opacity: .1 !important; }
+.app-shell.content-mode:not(.canvas-mode) .aurora-b { background: #6A7DFF !important; opacity: .1 !important; }
+.app-shell.content-mode:not(.canvas-mode) .spatial-routes path {
+  stroke: rgba(87, 214, 255, .48) !important;
+  filter: drop-shadow(0 0 5px rgba(87, 214, 255, .36)) !important;
+}
+
+/* 顶栏 */
+.app-shell.content-mode:not(.canvas-mode) .topbar {
+  height: 86px !important;
+  border-bottom: 1px solid rgba(113, 214, 255, .13) !important;
+  background: linear-gradient(180deg, rgba(5, 13, 22, .88), rgba(5, 13, 22, .62)) !important;
+  backdrop-filter: blur(24px) saturate(1.1) !important;
+  box-shadow: 0 18px 48px rgba(0,0,0,.22) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .topbar .eyebrow,
+.app-shell.content-mode:not(.canvas-mode) .section-kicker {
+  color: var(--sl-aqua) !important;
+  letter-spacing: .18em !important;
+  text-shadow: 0 0 16px rgba(110, 243, 214, .18) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .topbar h1 {
+  color: var(--sl-text) !important;
+  opacity: .98 !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .portal-return-button {
+  height: 40px !important;
+  padding: 0 18px !important;
+  color: var(--sl-text) !important;
+  border: 1px solid rgba(113, 214, 255, .36) !important;
+  border-radius: 12px !important;
+  background: rgba(8, 22, 34, .68) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 0 0 1px rgba(87,214,255,.03) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .portal-return-button:hover {
+  color: #07111A !important;
+  border-color: rgba(110, 243, 214, .86) !important;
+  background: linear-gradient(135deg, var(--sl-cyan), var(--sl-aqua)) !important;
+  box-shadow: 0 0 28px rgba(87, 214, 255, .2) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .live-pill {
+  color: var(--sl-aqua) !important;
+  border: 1px solid rgba(110, 243, 214, .22) !important;
+  background: rgba(110, 243, 214, .075) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .live-pill i,
+.app-shell.content-mode:not(.canvas-mode) .live-text i,
+.app-shell.content-mode:not(.canvas-mode) .system-status i,
+.app-shell.content-mode:not(.canvas-mode) .chat-head span i {
+  background: var(--sl-aqua) !important;
+  box-shadow: 0 0 0 4px rgba(110, 243, 214, .12), 0 0 16px rgba(110, 243, 214, .48) !important;
+}
+
+/* 通用面板：不要白底，不要通体绿 */
+.app-shell.content-mode:not(.canvas-mode) .panel,
+.app-shell.content-mode:not(.canvas-mode) .shipment-card,
+.app-shell.content-mode:not(.canvas-mode) .status-report-card,
+.app-shell.content-mode:not(.canvas-mode) .command-tasks,
+.app-shell.content-mode:not(.canvas-mode) .safety-tip,
+.app-shell.content-mode:not(.canvas-mode) .cargo-stage-panel,
+.app-shell.content-mode:not(.canvas-mode) .warehouse-hero,
+.app-shell.content-mode:not(.canvas-mode) .load-workbench,
+.app-shell.content-mode:not(.canvas-mode) .personnel-table-card,
+.app-shell.content-mode:not(.canvas-mode) .conversation,
+.app-shell.content-mode:not(.canvas-mode) .context-card,
+.app-shell.content-mode:not(.canvas-mode) .source-card,
+.app-shell.content-mode:not(.canvas-mode) .eta-card,
+.app-shell.content-mode:not(.canvas-mode) .receipt-card,
+.app-shell.content-mode:not(.canvas-mode) .order-insight-card,
+.app-shell.content-mode:not(.canvas-mode) .warehouse-stats > div,
+.app-shell.content-mode:not(.canvas-mode) .device-grid article,
+.app-shell.content-mode:not(.canvas-mode) .notification-list article {
+  color: var(--sl-text) !important;
+  border: 1px solid var(--sl-line) !important;
+  border-radius: 18px !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(87, 214, 255, .1), transparent 34%),
+    linear-gradient(145deg, rgba(12, 30, 44, .84), rgba(5, 16, 26, .78)) !important;
+  box-shadow: var(--sl-shadow), inset 0 1px 0 rgba(255,255,255,.05) !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .panel:hover,
+.app-shell.content-mode:not(.canvas-mode) .metric-card:hover,
+.app-shell.content-mode:not(.canvas-mode) .conversation:hover {
+  border-color: rgba(113, 214, 255, .26) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .panel-head {
+  border-color: var(--sl-line) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) h1,
+.app-shell.content-mode:not(.canvas-mode) h2,
+.app-shell.content-mode:not(.canvas-mode) h3,
+.app-shell.content-mode:not(.canvas-mode) h4,
+.app-shell.content-mode:not(.canvas-mode) .panel h2,
+.app-shell.content-mode:not(.canvas-mode) .panel h3,
+.app-shell.content-mode:not(.canvas-mode) .panel h4,
+.app-shell.content-mode:not(.canvas-mode) .table-primary strong,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-main strong,
+.app-shell.content-mode:not(.canvas-mode) .command-main strong,
+.app-shell.content-mode:not(.canvas-mode) .fleet-rows strong,
+.app-shell.content-mode:not(.canvas-mode) .dispatch-list strong,
+.app-shell.content-mode:not(.canvas-mode) .alert-main strong,
+.app-shell.content-mode:not(.canvas-mode) .source-card strong {
+  color: var(--sl-text) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) p,
+.app-shell.content-mode:not(.canvas-mode) small,
+.app-shell.content-mode:not(.canvas-mode) dd,
+.app-shell.content-mode:not(.canvas-mode) .muted,
+.app-shell.content-mode:not(.canvas-mode) .panel p,
+.app-shell.content-mode:not(.canvas-mode) .panel small,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-main small,
+.app-shell.content-mode:not(.canvas-mode) .fleet-rows small,
+.app-shell.content-mode:not(.canvas-mode) .command-main p,
+.app-shell.content-mode:not(.canvas-mode) .command-main span {
+  color: var(--sl-text-soft) !important;
+}
+
+/* Hero / banner：改冷色，不用绿色亮点图强行铺底 */
+.app-shell.content-mode:not(.canvas-mode) .hero-banner,
+.app-shell.content-mode:not(.canvas-mode) .driver-hero,
+.app-shell.content-mode:not(.canvas-mode) .overview-hero,
+.app-shell.content-mode:not(.canvas-mode) .warehouse-hero {
+  color: var(--sl-text) !important;
+  border: 1px solid rgba(113, 214, 255, .18) !important;
+  border-radius: 20px !important;
+  background-image:
+    radial-gradient(circle at 38% 50%, rgba(87, 214, 255, .22), transparent 20%),
+    linear-gradient(90deg, rgba(5, 14, 24, .96), rgba(9, 28, 43, .86) 48%, rgba(8, 38, 54, .48)) !important;
+  box-shadow: 0 26px 70px rgba(0,0,0,.34), 0 0 38px rgba(87, 214, 255, .08) !important;
+  filter: none !important;
+  overflow: hidden !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .hero-banner::after,
+.app-shell.content-mode:not(.canvas-mode) .driver-hero::after,
+.app-shell.content-mode:not(.canvas-mode) .overview-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 0 28%, rgba(87,214,255,.11) 45%, transparent 66%),
+    repeating-linear-gradient(90deg, transparent 0 18px, rgba(87,214,255,.08) 18px 19px, transparent 19px 36px);
+  opacity: .42;
+  mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+}
+.app-shell.content-mode:not(.canvas-mode) .hero-banner h2,
+.app-shell.content-mode:not(.canvas-mode) .driver-hero h2,
+.app-shell.content-mode:not(.canvas-mode) .overview-hero h2 {
+  color: var(--sl-text) !important;
+}
+
+/* KPI：去掉玩具火车 / 传送带质感，变成高端信息卡 */
+.app-shell.content-mode:not(.canvas-mode) .metric-grid,
+.app-shell.content-mode:not(.canvas-mode) .logistics-train,
+.app-shell.content-mode:not(.canvas-mode) .alert-metrics {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: none !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .alert-conveyor-track,
+.app-shell.content-mode:not(.canvas-mode) .alert-conveyor-set {
+  display: contents !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .alert-scene-machine,
+.app-shell.content-mode:not(.canvas-mode) .alert-scene-worker,
+.app-shell.content-mode:not(.canvas-mode) .train-smoke,
+.app-shell.content-mode:not(.canvas-mode) .engine-nose,
+.app-shell.content-mode:not(.canvas-mode) .wagon-roof,
+.app-shell.content-mode:not(.canvas-mode) .wagon-cargo,
+.app-shell.content-mode:not(.canvas-mode) .train-wheels,
+.app-shell.content-mode:not(.canvas-mode) .wagon-coupler,
+.app-shell.content-mode:not(.canvas-mode) .box-barcode {
+  display: none !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .metric-card,
+.app-shell.content-mode:not(.canvas-mode) .train-card {
+  position: relative !important;
+  min-height: 126px !important;
+  height: auto !important;
+  display: grid !important;
+  grid-template-columns: 54px minmax(0, 1fr) !important;
+  align-items: center !important;
+  justify-content: initial !important;
+  gap: 14px !important;
+  padding: 22px !important;
+  color: var(--sl-text) !important;
+  border: 1px solid var(--sl-line) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.035), transparent),
+    radial-gradient(circle at 100% 0%, rgba(87, 214, 255, .12), transparent 35%),
+    rgba(10, 24, 36, .78) !important;
+  box-shadow: var(--sl-shadow), inset 0 1px 0 rgba(255,255,255,.055) !important;
+  transform: none !important;
+  cursor: default !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .metric-card::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 18px !important;
+  bottom: 18px !important;
+  width: 3px !important;
+  border-radius: 99px !important;
+  background: var(--sl-cyan) !important;
+  box-shadow: 0 0 18px rgba(87, 214, 255, .45) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .metric-card::after { display: none !important; }
+.app-shell.content-mode:not(.canvas-mode) .metric-card.green::before { background: var(--sl-success) !important; box-shadow: 0 0 18px rgba(65,211,158,.42) !important; }
+.app-shell.content-mode:not(.canvas-mode) .metric-card.orange::before { background: var(--sl-warning) !important; box-shadow: 0 0 18px rgba(246,185,76,.42) !important; }
+.app-shell.content-mode:not(.canvas-mode) .metric-card.red::before { background: var(--sl-danger) !important; box-shadow: 0 0 18px rgba(255,107,107,.42) !important; }
+.app-shell.content-mode:not(.canvas-mode) .metric-card.blue::before,
+.app-shell.content-mode:not(.canvas-mode) .metric-card.cyan::before { background: var(--sl-cyan) !important; }
+.app-shell.content-mode:not(.canvas-mode) .metric-icon,
+.app-shell.content-mode:not(.canvas-mode) .metric-card .metric-icon {
+  width: 52px !important;
+  height: 52px !important;
+  flex: 0 0 52px !important;
+  color: var(--sl-cyan) !important;
+  border: 1px solid rgba(87, 214, 255, .24) !important;
+  border-radius: 16px !important;
+  background: rgba(87, 214, 255, .09) !important;
+  box-shadow: inset 0 0 20px rgba(87, 214, 255, .1), 0 0 22px rgba(87, 214, 255, .08) !important;
+  filter: none !important;
+  font-size: 24px !important;
+  transform: none !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .metric-card.green .metric-icon { color: var(--sl-success) !important; border-color: rgba(65,211,158,.26) !important; background: rgba(65,211,158,.1) !important; }
+.app-shell.content-mode:not(.canvas-mode) .metric-card.orange .metric-icon { color: var(--sl-warning) !important; border-color: rgba(246,185,76,.26) !important; background: rgba(246,185,76,.1) !important; }
+.app-shell.content-mode:not(.canvas-mode) .metric-card.red .metric-icon { color: var(--sl-danger) !important; border-color: rgba(255,107,107,.28) !important; background: rgba(255,107,107,.1) !important; }
+.app-shell.content-mode:not(.canvas-mode) .metric-card > div:last-child {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  min-width: 0 !important;
+  transform: none !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .metric-card span,
+.app-shell.content-mode:not(.canvas-mode) .metric-card small,
+.app-shell.content-mode:not(.canvas-mode) .box-label {
+  color: var(--sl-text-soft) !important;
+  text-shadow: none !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .box-label {
+  position: absolute !important;
+  right: 16px !important;
+  top: 14px !important;
+  padding: 3px 8px !important;
+  border: 1px solid rgba(113, 214, 255, .18) !important;
+  border-radius: 999px !important;
+  background: rgba(8, 20, 32, .7) !important;
+  font-size: 11px !important;
+  letter-spacing: .1em !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .metric-card strong {
+  margin: 4px 0 !important;
+  color: var(--sl-text) !important;
+  font-size: 34px !important;
+  line-height: 1.05 !important;
+  letter-spacing: -.04em !important;
+  text-shadow: 0 0 22px rgba(87,214,255,.12) !important;
+}
+
+/* 按钮：避免大面积浅薄荷绿 / 纯白 */
+.app-shell.content-mode:not(.canvas-mode) .el-button:not(.is-link):not(.is-text),
+.app-shell.content-mode:not(.canvas-mode) .text-button,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-photo-action,
+.app-shell.content-mode:not(.canvas-mode) .route-actions button,
+.app-shell.content-mode:not(.canvas-mode) .quick-create-actions button,
+.app-shell.content-mode:not(.canvas-mode) .warehouse-actions button,
+.app-shell.content-mode:not(.canvas-mode) .source-card-tools button {
+  color: var(--sl-text) !important;
+  border: 1px solid rgba(113, 214, 255, .22) !important;
+  border-radius: 12px !important;
+  background: rgba(9, 23, 36, .76) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .el-button--primary,
+.app-shell.content-mode:not(.canvas-mode) .dispatch-push-button.primary,
+.app-shell.content-mode:not(.canvas-mode) .chat-input button,
+.app-shell.content-mode:not(.canvas-mode) .ai-soft-input > button {
+  color: #06121D !important;
+  border-color: transparent !important;
+  background: linear-gradient(135deg, var(--sl-cyan), var(--sl-aqua)) !important;
+  box-shadow: 0 14px 34px rgba(87, 214, 255, .2), inset 0 1px 0 rgba(255,255,255,.36) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .el-button:hover,
+.app-shell.content-mode:not(.canvas-mode) .text-button:hover,
+.app-shell.content-mode:not(.canvas-mode) .suggestions button:hover {
+  color: var(--sl-aqua) !important;
+  border-color: rgba(110, 243, 214, .5) !important;
+  box-shadow: 0 0 22px rgba(87,214,255,.12), inset 0 1px 0 rgba(255,255,255,.055) !important;
+}
+
+/* 输入框、筛选框、弹层 */
+.app-shell.content-mode:not(.canvas-mode) .el-input__wrapper,
+.app-shell.content-mode:not(.canvas-mode) .el-select__wrapper,
+.app-shell.content-mode:not(.canvas-mode) .el-textarea__inner,
+.app-shell.content-mode:not(.canvas-mode) .el-input-number,
+.app-shell.content-mode:not(.canvas-mode) .chat-input,
+.app-shell.content-mode:not(.canvas-mode) .ai-soft-input {
+  color: var(--sl-text) !important;
+  border: 1px solid rgba(113, 214, 255, .18) !important;
+  border-radius: 12px !important;
+  background: rgba(4, 13, 22, .72) !important;
+  box-shadow: inset 0 0 0 1px rgba(87,214,255,.035) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .el-input__wrapper.is-focus,
+.app-shell.content-mode:not(.canvas-mode) .el-select__wrapper.is-focused,
+.app-shell.content-mode:not(.canvas-mode) .el-textarea__inner:focus,
+.app-shell.content-mode:not(.canvas-mode) .chat-input:focus-within {
+  border-color: rgba(87, 214, 255, .52) !important;
+  box-shadow: 0 0 0 3px rgba(87, 214, 255, .08), inset 0 0 0 1px rgba(87,214,255,.12) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .el-input__inner,
+.app-shell.content-mode:not(.canvas-mode) .el-textarea__inner,
+.app-shell.content-mode:not(.canvas-mode) .el-select__placeholder,
+.app-shell.content-mode:not(.canvas-mode) .el-select__selected-item {
+  color: var(--sl-text) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .el-input__inner::placeholder,
+.app-shell.content-mode:not(.canvas-mode) .el-textarea__inner::placeholder {
+  color: var(--sl-text-muted) !important;
+}
+.el-popper,
+.el-select-dropdown,
+.el-picker-panel,
+.el-dialog,
+.el-drawer {
+  color: var(--sl-text) !important;
+  border: 1px solid rgba(113,214,255,.18) !important;
+  background: linear-gradient(145deg, rgba(10,24,36,.98), rgba(4,13,22,.98)) !important;
+  box-shadow: 0 30px 80px rgba(0,0,0,.46) !important;
+}
+.el-select-dropdown__item { color: var(--sl-text-soft) !important; }
+.el-select-dropdown__item.hover,
+.el-select-dropdown__item:hover,
+.el-select-dropdown__item.selected {
+  color: var(--sl-aqua) !important;
+  background: rgba(87,214,255,.08) !important;
+}
+
+/* 表格 / 列表统一 */
+.app-shell.content-mode:not(.canvas-mode) .table-row,
+.app-shell.content-mode:not(.canvas-mode) .alert-list button,
+.app-shell.content-mode:not(.canvas-mode) .fleet-rows button,
+.app-shell.content-mode:not(.canvas-mode) .dispatch-list button,
+.app-shell.content-mode:not(.canvas-mode) .command-list > article,
+.app-shell.content-mode:not(.canvas-mode) .manifest-row,
+.app-shell.content-mode:not(.canvas-mode) .cargo-drag-card,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-rail button,
+.app-shell.content-mode:not(.canvas-mode) .cargo-stage-panel > button,
+.app-shell.content-mode:not(.canvas-mode) .receipt-preview > div,
+.app-shell.content-mode:not(.canvas-mode) .conversation,
+.app-shell.content-mode:not(.canvas-mode) .source-card > div {
+  color: var(--sl-text) !important;
+  border-color: rgba(113, 214, 255, .12) !important;
+  background: rgba(5, 17, 27, .58) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .table-row.table-head,
+.app-shell.content-mode:not(.canvas-mode) .alert-color-key,
+.app-shell.content-mode:not(.canvas-mode) .current-shipment,
+.app-shell.content-mode:not(.canvas-mode) .device-summary,
+.app-shell.content-mode:not(.canvas-mode) .knowledge-status,
+.app-shell.content-mode:not(.canvas-mode) .suggestions button,
+.app-shell.content-mode:not(.canvas-mode) .status-tabs,
+.app-shell.content-mode:not(.canvas-mode) .management-tabs {
+  color: var(--sl-text-soft) !important;
+  border-color: rgba(113, 214, 255, .14) !important;
+  background: rgba(87, 214, 255, .06) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .table-row:not(.table-head):hover,
+.app-shell.content-mode:not(.canvas-mode) .alert-list button:hover,
+.app-shell.content-mode:not(.canvas-mode) .dispatch-list button:hover,
+.app-shell.content-mode:not(.canvas-mode) .fleet-rows button:hover,
+.app-shell.content-mode:not(.canvas-mode) .conversation:hover,
+.app-shell.content-mode:not(.canvas-mode) .conversation.active {
+  border-color: rgba(87, 214, 255, .32) !important;
+  background: rgba(87, 214, 255, .1) !important;
+  box-shadow: inset 3px 0 0 rgba(87, 214, 255, .8), 0 0 22px rgba(87,214,255,.07) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .management-tabs button,
+.app-shell.content-mode:not(.canvas-mode) .status-tabs button {
+  color: var(--sl-text-soft) !important;
+  background: transparent !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .management-tabs button.active,
+.app-shell.content-mode:not(.canvas-mode) .status-tabs button.active {
+  color: #06121D !important;
+  background: linear-gradient(135deg, var(--sl-cyan), var(--sl-aqua)) !important;
+  box-shadow: 0 8px 22px rgba(87,214,255,.16) !important;
+}
+
+/* 标签与状态色 */
+.app-shell.content-mode:not(.canvas-mode) .status-chip,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-state,
+.app-shell.content-mode:not(.canvas-mode) .severity-label,
+.app-shell.content-mode:not(.canvas-mode) .command-status,
+.app-shell.content-mode:not(.canvas-mode) .receipt-preview b,
+.app-shell.content-mode:not(.canvas-mode) .deviation-badge {
+  min-height: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--sl-cyan) !important;
+  border: 1px solid rgba(87,214,255,.22) !important;
+  border-radius: 999px !important;
+  background: rgba(87,214,255,.1) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .status-chip.success,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-state.in_transit,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-state.in-transit,
+.app-shell.content-mode:not(.canvas-mode) .command-status.executed,
+.app-shell.content-mode:not(.canvas-mode) .receipt-preview b.executed {
+  color: var(--sl-success) !important;
+  border-color: rgba(65,211,158,.26) !important;
+  background: rgba(65,211,158,.1) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .severity-label.critical,
+.app-shell.content-mode:not(.canvas-mode) .severity-icon.critical,
+.app-shell.content-mode:not(.canvas-mode) .danger-text,
+.app-shell.content-mode:not(.canvas-mode) .state-panel.error-panel {
+  color: var(--sl-danger) !important;
+  border-color: rgba(255,107,107,.3) !important;
+  background: rgba(255,107,107,.1) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .severity-label.warning,
+.app-shell.content-mode:not(.canvas-mode) .severity-icon.warning,
+.app-shell.content-mode:not(.canvas-mode) .command-status.pending,
+.app-shell.content-mode:not(.canvas-mode) .deviation-badge {
+  color: var(--sl-warning) !important;
+  border-color: rgba(246,185,76,.3) !important;
+  background: rgba(246,185,76,.1) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .vehicle-badge,
+.app-shell.content-mode:not(.canvas-mode) .severity-icon,
+.app-shell.content-mode:not(.canvas-mode) .command-icon,
+.app-shell.content-mode:not(.canvas-mode) .device-icon,
+.app-shell.content-mode:not(.canvas-mode) .assistant-avatar,
+.app-shell.content-mode:not(.canvas-mode) .personnel-avatar,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-table-image {
+  color: var(--sl-cyan) !important;
+  border: 1px solid rgba(87,214,255,.22) !important;
+  background: rgba(87,214,255,.1) !important;
+  box-shadow: inset 0 0 18px rgba(87,214,255,.1) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .green-bg { color: var(--sl-success) !important; background: rgba(65,211,158,.11) !important; }
+.app-shell.content-mode:not(.canvas-mode) .orange-bg { color: var(--sl-warning) !important; background: rgba(246,185,76,.12) !important; }
+.app-shell.content-mode:not(.canvas-mode) .purple-bg { color: var(--sl-purple) !important; background: rgba(163,123,255,.12) !important; }
+
+/* 地图：默认亮色地图加深，防止割裂 */
+.app-shell.content-mode:not(.canvas-mode) .map-panel,
+.app-shell.content-mode:not(.canvas-mode) .tracking-map,
+.app-shell.content-mode:not(.canvas-mode) .dispatch-map,
+.app-shell.content-mode:not(.canvas-mode) .leaflet-fleet-map,
+.app-shell.content-mode:not(.canvas-mode) .smart-map,
+.app-shell.content-mode:not(.canvas-mode) .mock-map {
+  border-color: rgba(113,214,255,.18) !important;
+  background:
+    linear-gradient(rgba(87,214,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.05) 1px, transparent 1px),
+    rgba(7, 17, 28, .92) !important;
+  background-size: 32px 32px, 32px 32px, auto !important;
+  box-shadow: inset 0 0 46px rgba(87,214,255,.08), 0 20px 56px rgba(0,0,0,.28) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .leaflet-container {
+  background: #07111C !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .leaflet-tile {
+  filter: invert(1) hue-rotate(180deg) brightness(.68) contrast(.95) saturate(.58) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .leaflet-control-zoom a,
+.app-shell.content-mode:not(.canvas-mode) .map-controls button {
+  color: var(--sl-text) !important;
+  border-color: rgba(113,214,255,.16) !important;
+  background: rgba(8, 20, 32, .86) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .fleet-map-marker span,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-pin {
+  border-color: rgba(236,248,255,.92) !important;
+  color: #06121D !important;
+  background: linear-gradient(135deg, var(--sl-cyan), var(--sl-aqua)) !important;
+  box-shadow: 0 0 0 8px rgba(87,214,255,.14), 0 0 30px rgba(87,214,255,.35) !important;
+}
+
+/* 车辆、人员、图片占位：彻底去掉纯白块 */
+.app-shell.content-mode:not(.canvas-mode) .vehicle-photo-card,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-photo-empty,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-image-field,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-image-preview,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-table-image,
+.app-shell.content-mode:not(.canvas-mode) .small-avatar img,
+.app-shell.content-mode:not(.canvas-mode) .avatar img {
+  color: var(--sl-text-soft) !important;
+  border-color: rgba(113,214,255,.18) !important;
+  background:
+    linear-gradient(rgba(87,214,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.035) 1px, transparent 1px),
+    rgba(8, 20, 32, .72) !important;
+  background-size: 22px 22px, 22px 22px, auto !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .vehicle-photo-empty .el-icon,
+.app-shell.content-mode:not(.canvas-mode) .vehicle-image-preview .el-icon {
+  color: var(--sl-cyan) !important;
+  opacity: .8 !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .detail-stats div,
+.app-shell.content-mode:not(.canvas-mode) .eta-grid div,
+.app-shell.content-mode:not(.canvas-mode) .state-panel,
+.app-shell.content-mode:not(.canvas-mode) .impact-card,
+.app-shell.content-mode:not(.canvas-mode) .detail-route,
+.app-shell.content-mode:not(.canvas-mode) .route-summary,
+.app-shell.content-mode:not(.canvas-mode) .recommendation {
+  color: var(--sl-text) !important;
+  border: 1px solid rgba(113,214,255,.14) !important;
+  background: rgba(8, 20, 32, .55) !important;
+}
+
+/* 告警中心：右侧详情要像高优先级情报卡，不要浅色提示框 */
+.app-shell.content-mode:not(.canvas-mode) .alert-detail {
+  border-color: rgba(255,107,107,.22) !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255,107,107,.11), transparent 36%),
+    linear-gradient(145deg, rgba(17, 26, 38, .86), rgba(7, 16, 26, .82)) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .alert-description,
+.app-shell.content-mode:not(.canvas-mode) .recommendation {
+  border-color: rgba(246,185,76,.25) !important;
+  color: var(--sl-text) !important;
+  background: rgba(246,185,76,.09) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .alert-row-delete {
+  color: var(--sl-text-muted) !important;
+  background: rgba(255,255,255,.06) !important;
+}
+
+/* 智能问答：更像 AI 决策助手 */
+.app-shell.content-mode:not(.canvas-mode) .assistant-layout {
+  gap: 18px !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .chat-panel {
+  overflow: hidden !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .chat-head {
+  border-bottom-color: rgba(113,214,255,.14) !important;
+  background: linear-gradient(90deg, rgba(87,214,255,.08), transparent) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .assistant-avatar {
+  color: #06121D !important;
+  background: linear-gradient(135deg, var(--sl-cyan), var(--sl-purple)) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .chat-messages,
+.app-shell.content-mode:not(.canvas-mode) .truck-planner,
+.app-shell.content-mode:not(.canvas-mode) .cargo-pool,
+.app-shell.content-mode:not(.canvas-mode) .load-manifest {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(87,214,255,.08), transparent 28%),
+    rgba(4, 13, 22, .62) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .bubble {
+  color: var(--sl-text) !important;
+  border: 1px solid rgba(113,214,255,.16) !important;
+  background: rgba(11, 28, 42, .86) !important;
+  box-shadow: 0 12px 34px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .message.user .bubble {
+  color: #06121D !important;
+  border-color: transparent !important;
+  background: linear-gradient(135deg, var(--sl-cyan), var(--sl-aqua)) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .suggestions button {
+  border-radius: 999px !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .source-dot.red { background: var(--sl-danger) !important; }
+.app-shell.content-mode:not(.canvas-mode) .source-dot.yellow { background: var(--sl-warning) !important; }
+.app-shell.content-mode:not(.canvas-mode) .source-dot.green { background: var(--sl-success) !important; }
+
+/* 司机任务 / 仓储 */
+.app-shell.content-mode:not(.canvas-mode) .driver-online {
+  color: var(--sl-text) !important;
+  border-color: rgba(87,214,255,.24) !important;
+  background: rgba(87,214,255,.1) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .pill-radio-container,
+.app-shell.content-mode:not(.canvas-mode) .driver-status-pills {
+  border: 1px solid rgba(113,214,255,.16) !important;
+  background: rgba(5, 17, 27, .72) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .pill-radio-container button {
+  color: var(--sl-text-soft) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .pill-radio-container button.active {
+  color: #06121D !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .safety-tip {
+  color: var(--sl-warning) !important;
+  border-color: rgba(246,185,76,.2) !important;
+  background: rgba(246,185,76,.08) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .cargo-slot,
+.app-shell.content-mode:not(.canvas-mode) .truck-cross-section,
+.app-shell.content-mode:not(.canvas-mode) .truck-body {
+  color: var(--sl-text-soft) !important;
+  border-color: rgba(113,214,255,.16) !important;
+  background: rgba(5,17,27,.72) !important;
+}
+.app-shell.content-mode:not(.canvas-mode) .cargo-slot.occupied {
+  color: var(--sl-text) !important;
+  background: linear-gradient(135deg, rgba(87,214,255,.16), rgba(110,243,214,.08)) !important;
+}
+
+/* 细节：滚动条也不要白色 */
+.app-shell.content-mode:not(.canvas-mode) * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(87,214,255,.38) rgba(5, 13, 22, .76);
+}
+.app-shell.content-mode:not(.canvas-mode) *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.app-shell.content-mode:not(.canvas-mode) *::-webkit-scrollbar-track {
+  background: rgba(5, 13, 22, .76);
+}
+.app-shell.content-mode:not(.canvas-mode) *::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(5, 13, 22, .76);
+  border-radius: 999px;
+  background: rgba(87,214,255,.38);
+}
+.app-shell.content-mode:not(.canvas-mode) *::-webkit-scrollbar-thumb:hover {
+  background: rgba(110,243,214,.55);
+}
+
+@media (max-width: 1280px) {
+  .app-shell.content-mode:not(.canvas-mode) .metric-grid,
+  .app-shell.content-mode:not(.canvas-mode) .logistics-train,
+  .app-shell.content-mode:not(.canvas-mode) .alert-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}

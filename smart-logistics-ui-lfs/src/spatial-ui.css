@@ -1,0 +1,197 @@
+/* Shared spatial design layer for business views. The overview keeps its own infinite canvas. */
+.spatial-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 72% 38%, rgba(25, 101, 83, .18), transparent 30%),
+    radial-gradient(circle at 30% 86%, rgba(31, 88, 125, .14), transparent 34%),
+    linear-gradient(145deg, #05080d 0%, #080e15 46%, #04070b 100%);
+}
+
+.spatial-atmosphere canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .9; }
+.spatial-horizon {
+  position: absolute;
+  right: -18%;
+  bottom: -46%;
+  width: 112%;
+  height: 90%;
+  border-radius: 50%;
+  opacity: .36;
+  background-image:
+    linear-gradient(rgba(115, 255, 202, .14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(115, 255, 202, .14) 1px, transparent 1px);
+  background-size: 58px 58px;
+  box-shadow: inset 0 28px 80px rgba(69, 255, 190, .07);
+  transform: perspective(520px) rotateX(63deg) rotateZ(-8deg);
+  transform-origin: center top;
+  mask-image: radial-gradient(ellipse at center, #000 0%, rgba(0,0,0,.6) 44%, transparent 74%);
+}
+
+.spatial-aurora { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .16; animation: spatial-drift 13s ease-in-out infinite alternate; }
+.aurora-a { top: 8%; right: 6%; width: 36vw; height: 36vw; background: #3affb5; }
+.aurora-b { left: 18%; bottom: -22%; width: 42vw; height: 34vw; background: #2798ff; animation-delay: -6s; }
+@keyframes spatial-drift { to { opacity: .28; transform: translate3d(-3vw, 2vh, 0) scale(1.08); } }
+
+.spatial-routes { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .34; }
+.spatial-routes path {
+  fill: none;
+  stroke: rgba(116, 255, 204, .58);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 2 15;
+  filter: drop-shadow(0 0 5px rgba(94, 255, 195, .5));
+  animation: spatial-route 9s linear infinite;
+}
+.spatial-routes path:nth-child(2) { opacity: .54; animation-duration: 13s; animation-direction: reverse; }
+.spatial-routes path:nth-child(3) { opacity: .3; animation-duration: 16s; }
+@keyframes spatial-route { to { stroke-dashoffset: -240; } }
+
+.spatial-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(2,5,8,.68), transparent 32%, transparent 76%, rgba(2,5,8,.32)),
+    linear-gradient(180deg, rgba(2,5,8,.28), transparent 30%, rgba(2,5,8,.46));
+}
+
+.app-shell:not(.canvas-mode) {
+  position: relative;
+  isolation: isolate;
+  color: #dbe8e4;
+  background: #05080d;
+  --navy: #f2faf7;
+  --muted: #78938b;
+  --line: rgba(145, 255, 215, .11);
+  --primary: #8dffbd;
+  --primary-soft: rgba(88, 240, 184, .09);
+  --shadow: 0 24px 70px rgba(0, 0, 0, .28);
+  --el-color-primary: #69edb4;
+  --el-bg-color: #091218;
+  --el-bg-color-overlay: #0c171d;
+  --el-fill-color-blank: rgba(8, 18, 24, .9);
+  --el-fill-color-light: rgba(111, 255, 202, .07);
+  --el-border-color: rgba(145, 255, 215, .13);
+  --el-border-color-light: rgba(145, 255, 215, .09);
+  --el-text-color-primary: #dceae5;
+  --el-text-color-regular: #a7bbb5;
+  --el-text-color-secondary: #718c84;
+}
+
+.app-shell:not(.canvas-mode) > .sidebar,
+.app-shell:not(.canvas-mode) > .workspace { position: relative; z-index: 2; }
+
+.app-shell:not(.canvas-mode) .sidebar {
+  border-right: 1px solid rgba(145, 255, 215, .09);
+  background: linear-gradient(180deg, rgba(6, 15, 20, .88), rgba(3, 9, 13, .76));
+  box-shadow: 18px 0 70px rgba(0,0,0,.2);
+  backdrop-filter: blur(22px);
+}
+.app-shell:not(.canvas-mode) .brand-mark {
+  color: #07130e;
+  border: 1px solid rgba(255,255,255,.5);
+  background: linear-gradient(145deg, #b5ffd5, #62eab5);
+  box-shadow: 0 0 32px rgba(91,255,190,.18);
+}
+.app-shell:not(.canvas-mode) .brand-copy span { color: #54736a; }
+.app-shell:not(.canvas-mode) .nav-item { color: #6f8c84; border: 1px solid transparent; border-radius: 5px; }
+.app-shell:not(.canvas-mode) .nav-item:hover { color: #c7fce5; border-color: rgba(145,255,215,.1); background: rgba(95,255,196,.045); }
+.app-shell:not(.canvas-mode) .nav-item.active {
+  color: #caffdf;
+  border-color: rgba(141,255,189,.2);
+  background: linear-gradient(90deg, rgba(93,255,193,.14), rgba(93,255,193,.025));
+  box-shadow: inset 2px 0 #8dffbd, 0 0 28px rgba(86,255,191,.04);
+}
+
+.app-shell:not(.canvas-mode) .workspace { min-height: 100vh; background: transparent; }
+.app-shell:not(.canvas-mode) .topbar {
+  border-bottom-color: rgba(145,255,215,.09);
+  background: rgba(4, 10, 14, .68);
+  box-shadow: 0 14px 50px rgba(0,0,0,.16);
+  backdrop-filter: blur(24px) saturate(1.25);
+}
+.app-shell:not(.canvas-mode) .topbar .eyebrow,
+.app-shell:not(.canvas-mode) .section-kicker { color: #5c8d7f; }
+.app-shell:not(.canvas-mode) .topbar h1 { color: #edf8f4; font-weight: 560; letter-spacing: -.7px; }
+.app-shell:not(.canvas-mode) .live-pill {
+  color: #92e9c7;
+  border-color: rgba(112,255,201,.14);
+  background: rgba(73,215,165,.055);
+}
+.app-shell:not(.canvas-mode) .icon-button {
+  color: #b7cec7;
+  border-color: rgba(145,255,215,.12);
+  background: rgba(9,21,27,.68);
+}
+.app-shell:not(.canvas-mode) .user-chip:hover { background: rgba(105,237,180,.055); }
+.app-shell:not(.canvas-mode) .avatar { color: #06110d; background: linear-gradient(145deg, #b8ffd7, #65e8b6); }
+
+.app-shell:not(.canvas-mode) .page-content { position: relative; z-index: 1; }
+.app-shell:not(.canvas-mode) .panel,
+.app-shell:not(.canvas-mode) .warehouse-stats > div,
+.app-shell:not(.canvas-mode) .device-grid article,
+.app-shell:not(.canvas-mode) .conversation,
+.app-shell:not(.canvas-mode) .notification-list article {
+  color: #c6d7d1;
+  border-color: rgba(145,255,215,.1);
+  background:
+    linear-gradient(145deg, rgba(15,30,36,.76), rgba(5,14,19,.66)),
+    rgba(7,17,22,.72);
+  box-shadow: 0 24px 65px rgba(0,0,0,.2), inset 0 1px rgba(255,255,255,.025);
+  backdrop-filter: blur(18px);
+}
+.app-shell:not(.canvas-mode) .panel { border-radius: 7px; }
+.app-shell:not(.canvas-mode) .panel::selection { background: rgba(111,255,202,.28); }
+.app-shell:not(.canvas-mode) .panel h2,
+.app-shell:not(.canvas-mode) .panel h3,
+.app-shell:not(.canvas-mode) .panel h4,
+.app-shell:not(.canvas-mode) .table-primary strong { color: #e4efeb; }
+.app-shell:not(.canvas-mode) .muted,
+.app-shell:not(.canvas-mode) .panel p,
+.app-shell:not(.canvas-mode) .panel small { color: #718c84; }
+.app-shell:not(.canvas-mode) .table-row,
+.app-shell:not(.canvas-mode) .management-tabs,
+.app-shell:not(.canvas-mode) .chat-head,
+.app-shell:not(.canvas-mode) .notification-list article { border-color: rgba(145,255,215,.08); }
+.app-shell:not(.canvas-mode) .management-tabs button,
+.app-shell:not(.canvas-mode) .chat-messages,
+.app-shell:not(.canvas-mode) .current-shipment,
+.app-shell:not(.canvas-mode) .vehicle-image-field {
+  color: #a8bbb5;
+  border-color: rgba(145,255,215,.09);
+  background: rgba(4,12,17,.48);
+}
+.app-shell:not(.canvas-mode) .management-tabs button.active { color: #9dffd0; }
+.app-shell:not(.canvas-mode) .management-tabs button.active::after { background: #8dffbd; box-shadow: 0 0 12px rgba(141,255,189,.45); }
+.app-shell:not(.canvas-mode) .text-button { color: #87e8c2; }
+.app-shell:not(.canvas-mode) .hero-banner,
+.app-shell:not(.canvas-mode) .driver-hero {
+  border: 1px solid rgba(145,255,215,.13);
+  border-radius: 7px;
+  filter: saturate(.75) brightness(.76);
+  box-shadow: 0 28px 70px rgba(0,0,0,.26);
+}
+.app-shell:not(.canvas-mode) .el-input__wrapper,
+.app-shell:not(.canvas-mode) .el-select__wrapper,
+.app-shell:not(.canvas-mode) .el-textarea__inner {
+  border-color: rgba(145,255,215,.1);
+  background: rgba(3,11,15,.64);
+  box-shadow: 0 0 0 1px rgba(145,255,215,.1) inset;
+}
+.app-shell:not(.canvas-mode) .el-button:not(.el-button--primary) {
+  color: #9bb5ad;
+  border-color: rgba(145,255,215,.13);
+  background: rgba(7,18,23,.66);
+}
+.app-shell:not(.canvas-mode) .el-button--primary {
+  color: #062016;
+  border-color: #83f6c4;
+  background: linear-gradient(90deg, #5ce2ae, #9affc7);
+  box-shadow: 0 10px 28px rgba(75,240,178,.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spatial-aurora, .spatial-routes path { animation: none !important; }
+}

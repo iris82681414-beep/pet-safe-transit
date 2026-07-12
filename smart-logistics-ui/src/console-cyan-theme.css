@@ -1,0 +1,4047 @@
+/*
+  Console Cyan Theme
+  这份文件是为了替换功能页“满屏荧光绿 / 白色卡片”的感觉。
+  只覆盖视觉样式，不改接口、不改业务逻辑。
+*/
+
+:root {
+  --console-bg-0: #040914;
+  --console-bg-1: #07111a;
+  --console-bg-2: #0b1722;
+  --console-panel: rgba(9, 22, 34, 0.78);
+  --console-panel-2: rgba(12, 28, 42, 0.88);
+  --console-panel-3: rgba(16, 35, 50, 0.92);
+  --console-line: rgba(105, 217, 255, 0.18);
+  --console-line-soft: rgba(105, 217, 255, 0.10);
+  --console-cyan: #57d6ff;
+  --console-aqua: #6ef3d6;
+  --console-blue: #4f8cff;
+  --console-text: rgba(236, 247, 255, 0.94);
+  --console-text-2: rgba(188, 211, 226, 0.76);
+  --console-text-3: rgba(130, 160, 180, 0.58);
+  --console-warning: #f6b94c;
+  --console-danger: #ff6b6b;
+  --console-success: #41d39e;
+  --console-muted: #738aa0;
+  --console-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+  --console-glow: 0 0 28px rgba(87, 214, 255, 0.14);
+}
+
+html,
+body {
+  background: var(--console-bg-0) !important;
+}
+
+body::-webkit-scrollbar,
+.app-shell.content-mode *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+body::-webkit-scrollbar-track,
+.app-shell.content-mode *::-webkit-scrollbar-track {
+  background: rgba(4, 9, 20, 0.92);
+}
+body::-webkit-scrollbar-thumb,
+.app-shell.content-mode *::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(4, 9, 20, 0.92);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(87, 214, 255, 0.72), rgba(110, 243, 214, 0.42));
+}
+
+/* 整体功能页：从“绿后台”改成“深蓝黑指挥舱” */
+.app-shell.content-mode {
+  --navy: var(--console-text);
+  --muted: var(--console-text-2);
+  --line: var(--console-line-soft);
+  --primary: var(--console-cyan);
+  --primary-soft: rgba(87, 214, 255, 0.12);
+  --success: var(--console-success);
+  --warning: var(--console-warning);
+  --danger: var(--console-danger);
+  --shadow: var(--console-shadow);
+  --el-color-primary: var(--console-cyan);
+  --el-color-success: var(--console-success);
+  --el-color-warning: var(--console-warning);
+  --el-color-danger: var(--console-danger);
+  --el-bg-color: #08131f;
+  --el-bg-color-overlay: #0c1b2a;
+  --el-fill-color-blank: rgba(10, 23, 35, 0.96);
+  --el-fill-color-light: rgba(87, 214, 255, 0.08);
+  --el-border-color: rgba(105, 217, 255, 0.18);
+  --el-border-color-light: rgba(105, 217, 255, 0.10);
+  --el-text-color-primary: var(--console-text);
+  --el-text-color-regular: var(--console-text-2);
+  --el-text-color-secondary: var(--console-text-3);
+  color: var(--console-text) !important;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(87, 214, 255, 0.13), transparent 34%),
+    radial-gradient(circle at 92% 16%, rgba(92, 105, 255, 0.10), transparent 28%),
+    radial-gradient(circle at 50% 110%, rgba(110, 243, 214, 0.08), transparent 42%),
+    linear-gradient(rgba(105, 217, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(105, 217, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(135deg, var(--console-bg-0) 0%, var(--console-bg-1) 45%, #030711 100%) !important;
+  background-size: auto, auto, auto, 36px 36px, 36px 36px, auto !important;
+}
+
+.app-shell.content-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.025), transparent 16%, transparent 78%, rgba(0,0,0,0.34)),
+    radial-gradient(ellipse at center, transparent 38%, rgba(0,0,0,0.36) 100%);
+}
+
+.app-shell.content-mode .workspace,
+.app-shell.content-mode .page-content {
+  position: relative !important;
+  z-index: 1 !important;
+  color: var(--console-text) !important;
+  background: transparent !important;
+}
+
+.app-shell.content-mode .page-content {
+  min-height: calc(100vh - 90px);
+  padding: 26px 34px 48px !important;
+}
+
+/* 顶栏：更像系统控制台，不再绿色塑料感 */
+.app-shell.content-mode .topbar {
+  color: var(--console-text) !important;
+  border-bottom: 1px solid var(--console-line-soft) !important;
+  background:
+    linear-gradient(90deg, rgba(4, 10, 20, 0.90), rgba(8, 21, 33, 0.82)),
+    radial-gradient(circle at 86% 0%, rgba(87, 214, 255, 0.13), transparent 34%) !important;
+  box-shadow: 0 18px 54px rgba(0,0,0,.30), inset 0 -1px 0 rgba(87,214,255,.06) !important;
+  backdrop-filter: blur(22px) saturate(1.2) !important;
+}
+
+.app-shell.content-mode .topbar h1 {
+  color: var(--console-text) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.04em !important;
+  text-shadow: 0 0 22px rgba(87, 214, 255, 0.10) !important;
+}
+
+.app-shell.content-mode .eyebrow,
+.app-shell.content-mode .section-kicker,
+.app-shell.content-mode .topbar .eyebrow {
+  color: var(--console-aqua) !important;
+  letter-spacing: 0.18em !important;
+  text-shadow: 0 0 16px rgba(110,243,214,.18) !important;
+}
+
+/* 基础文字层级 */
+.app-shell.content-mode h1,
+.app-shell.content-mode h2,
+.app-shell.content-mode h3,
+.app-shell.content-mode h4,
+.app-shell.content-mode strong,
+.app-shell.content-mode dt,
+.app-shell.content-mode .table-primary strong,
+.app-shell.content-mode .panel-head h3 {
+  color: var(--console-text) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode p,
+.app-shell.content-mode dd,
+.app-shell.content-mode small,
+.app-shell.content-mode .muted,
+.app-shell.content-mode .panel p,
+.app-shell.content-mode .panel small,
+.app-shell.content-mode .vehicle-main small,
+.app-shell.content-mode .fleet-rows small {
+  color: var(--console-text-2) !important;
+}
+
+/* 不能把所有 span 都压成浅绿，重新纠正旧样式 */
+.app-shell.content-mode span:not(.el-tag):not(.el-checkbox__inner):not(.el-radio__inner):not(.source-dot):not(.danger-dot):not(.warning-dot):not(.blue-dot):not(.gray-dot):not(.green-dot):not(.orange-dot) {
+  color: inherit;
+}
+
+/* 卡片：深色玻璃拟态 + 青蓝描边 */
+.app-shell.content-mode .panel,
+.app-shell.content-mode .metric-card,
+.app-shell.content-mode .shipment-card,
+.app-shell.content-mode .status-report-card,
+.app-shell.content-mode .command-tasks,
+.app-shell.content-mode .safety-tip,
+.app-shell.content-mode .cargo-stage-panel,
+.app-shell.content-mode .warehouse-hero,
+.app-shell.content-mode .warehouse-stats > div,
+.app-shell.content-mode .load-workbench,
+.app-shell.content-mode .personnel-table-card,
+.app-shell.content-mode .conversation,
+.app-shell.content-mode .context-card,
+.app-shell.content-mode .source-card,
+.app-shell.content-mode .eta-card,
+.app-shell.content-mode .receipt-card,
+.app-shell.content-mode .driver-card,
+.app-shell.content-mode .order-insight-card,
+.app-shell.content-mode .state-panel,
+.app-shell.content-mode .vehicle-photo-card,
+.app-shell.content-mode .vehicle-image-field,
+.app-shell.content-mode .current-shipment,
+.app-shell.content-mode .detail-stats > div,
+.app-shell.content-mode .eta-grid > div,
+.app-shell.content-mode .device-summary,
+.app-shell.content-mode .knowledge-status {
+  color: var(--console-text) !important;
+  border: 1px solid var(--console-line) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(145deg, rgba(13, 29, 43, 0.86), rgba(5, 14, 24, 0.78)),
+    radial-gradient(circle at 100% 0%, rgba(87,214,255,0.12), transparent 35%) !important;
+  box-shadow:
+    var(--console-shadow),
+    inset 0 1px 0 rgba(255,255,255,0.045),
+    inset 0 -1px 0 rgba(87,214,255,0.045) !important;
+  backdrop-filter: blur(18px) saturate(1.15) !important;
+}
+
+.app-shell.content-mode .panel:hover,
+.app-shell.content-mode .metric-card:hover,
+.app-shell.content-mode .shipment-card:hover,
+.app-shell.content-mode .cargo-stage-panel:hover,
+.app-shell.content-mode .personnel-table-card:hover,
+.app-shell.content-mode .vehicle-photo-card:hover {
+  border-color: rgba(87, 214, 255, 0.34) !important;
+  box-shadow: var(--console-shadow), 0 0 32px rgba(87, 214, 255, 0.08), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+}
+
+.app-shell.content-mode .panel-head,
+.app-shell.content-mode .chat-head,
+.app-shell.content-mode .notification-list article,
+.app-shell.content-mode .management-tabs,
+.app-shell.content-mode .table-row,
+.app-shell.content-mode .command-list > article {
+  border-color: var(--console-line-soft) !important;
+}
+
+/* 顶部 Banner：冷感光纤，不要绿光铺满 */
+.app-shell.content-mode .hero-banner,
+.app-shell.content-mode .driver-hero,
+.app-shell.content-mode .overview-hero,
+.app-shell.content-mode .filter-strip,
+.app-shell.content-mode .warehouse-hero {
+  color: var(--console-text) !important;
+  border: 1px solid rgba(87,214,255,0.22) !important;
+  border-radius: 16px !important;
+  background-image:
+    linear-gradient(95deg, rgba(4, 12, 22, 0.96) 0%, rgba(9, 32, 48, 0.82) 55%, rgba(17, 64, 88, 0.38) 100%),
+    radial-gradient(circle at 72% 45%, rgba(87,214,255,0.20), transparent 28%) !important;
+  box-shadow: 0 28px 70px rgba(0,0,0,.34), 0 0 42px rgba(87,214,255,.10) !important;
+  filter: none !important;
+}
+
+.app-shell.content-mode .hero-banner::before,
+.app-shell.content-mode .driver-hero::before,
+.app-shell.content-mode .overview-hero::before {
+  border-color: rgba(87,214,255,.20) !important;
+  background:
+    linear-gradient(120deg, rgba(87,214,255,.15), transparent 22% 70%, rgba(110,243,214,.10)),
+    repeating-linear-gradient(90deg, rgba(87,214,255,.06) 0 1px, transparent 1px 14px) !important;
+}
+
+.app-shell.content-mode .hero-banner h2,
+.app-shell.content-mode .driver-hero h2,
+.app-shell.content-mode .overview-hero h2 {
+  color: var(--console-text) !important;
+  text-shadow: 0 0 26px rgba(87,214,255,.18) !important;
+}
+
+/* 按钮：去掉大面积薄荷绿/白色，统一青蓝控制台风 */
+.app-shell.content-mode .el-button:not(.is-link):not(.is-circle),
+.app-shell.content-mode button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.alert-row-delete),
+.app-shell.content-mode .portal-return-button,
+.app-shell.content-mode .text-button {
+  border: 1px solid rgba(87,214,255,0.22) !important;
+  color: var(--console-text) !important;
+  background: rgba(11, 27, 41, 0.76) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 10px 26px rgba(0,0,0,.22) !important;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease !important;
+}
+
+.app-shell.content-mode .el-button:not(.is-link):not(.is-circle):hover,
+.app-shell.content-mode button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.alert-row-delete):hover,
+.app-shell.content-mode .portal-return-button:hover,
+.app-shell.content-mode .text-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(87,214,255,0.48) !important;
+  background: linear-gradient(135deg, rgba(87,214,255,0.20), rgba(110,243,214,0.10)) !important;
+  box-shadow: 0 0 26px rgba(87,214,255,.14), 0 14px 34px rgba(0,0,0,.26) !important;
+}
+
+.app-shell.content-mode .el-button--primary,
+.app-shell.content-mode .dispatch-push-button.primary,
+.app-shell.content-mode .login-button,
+.app-shell.content-mode .vehicle-photo-action,
+.app-shell.content-mode .chat-input .el-button,
+.app-shell.content-mode .filter-actions .el-button {
+  color: #03101b !important;
+  border-color: rgba(129, 236, 255, 0.72) !important;
+  background: linear-gradient(135deg, #7de8ff 0%, #57d6ff 48%, #6ef3d6 100%) !important;
+  box-shadow: 0 0 26px rgba(87,214,255,.20), 0 14px 32px rgba(0,0,0,.30) !important;
+}
+
+.app-shell.content-mode .portal-return-button {
+  height: 42px !important;
+  padding: 0 18px !important;
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+}
+
+/* 输入框 / 下拉框 */
+.app-shell.content-mode .el-input__wrapper,
+.app-shell.content-mode .el-select__wrapper,
+.app-shell.content-mode .el-textarea__inner,
+.app-shell.content-mode .el-input-number,
+.app-shell.content-mode .el-input-number .el-input__wrapper,
+.app-shell.content-mode .chat-input,
+.app-shell.content-mode .ai-soft-input {
+  color: var(--console-text) !important;
+  border: 1px solid rgba(105,217,255,.16) !important;
+  background: rgba(5, 14, 24, 0.78) !important;
+  box-shadow: inset 0 0 0 1px rgba(87,214,255,.04) !important;
+}
+
+.app-shell.content-mode .el-input__wrapper.is-focus,
+.app-shell.content-mode .el-select__wrapper.is-focused,
+.app-shell.content-mode .el-textarea__inner:focus {
+  border-color: rgba(87,214,255,.46) !important;
+  box-shadow: 0 0 0 1px rgba(87,214,255,.24), 0 0 24px rgba(87,214,255,.10) !important;
+}
+
+.app-shell.content-mode .el-input__inner,
+.app-shell.content-mode .el-textarea__inner,
+.app-shell.content-mode .el-select__placeholder,
+.app-shell.content-mode .el-select__selected-item {
+  color: var(--console-text) !important;
+}
+
+.app-shell.content-mode .el-input__inner::placeholder,
+.app-shell.content-mode .el-textarea__inner::placeholder {
+  color: var(--console-text-3) !important;
+}
+
+/* 表格与列表：统一深色，不要白底 */
+.app-shell.content-mode .table-row,
+.app-shell.content-mode .alert-list button,
+.app-shell.content-mode .fleet-rows button,
+.app-shell.content-mode .dispatch-list button,
+.app-shell.content-mode .command-list > article,
+.app-shell.content-mode .manifest-row,
+.app-shell.content-mode .cargo-drag-card,
+.app-shell.content-mode .vehicle-rail button,
+.app-shell.content-mode .device-grid article,
+.app-shell.content-mode .cargo-stage-panel > button,
+.app-shell.content-mode .conversation-list .conversation,
+.app-shell.content-mode .alert-row,
+.app-shell.content-mode .receipt-preview,
+.app-shell.content-mode .info-list li,
+.app-shell.content-mode .timeline > div {
+  color: var(--console-text) !important;
+  border-color: rgba(105,217,255,.12) !important;
+  background: rgba(7, 20, 32, 0.70) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+.app-shell.content-mode .table-row:hover,
+.app-shell.content-mode .alert-list button:hover,
+.app-shell.content-mode .fleet-rows button:hover,
+.app-shell.content-mode .dispatch-list button:hover,
+.app-shell.content-mode .cargo-stage-panel > button:hover,
+.app-shell.content-mode .conversation-list .conversation:hover {
+  border-color: rgba(87,214,255,.34) !important;
+  background: rgba(12, 33, 50, 0.88) !important;
+  box-shadow: inset 3px 0 0 rgba(87,214,255,.65), 0 0 20px rgba(87,214,255,.08) !important;
+}
+
+.app-shell.content-mode .table-row.table-head,
+.app-shell.content-mode .alert-color-key,
+.app-shell.content-mode .status-tabs,
+.app-shell.content-mode .management-tabs,
+.app-shell.content-mode .suggestions button {
+  color: var(--console-text-2) !important;
+  border-color: rgba(105,217,255,.14) !important;
+  background: rgba(87,214,255,.07) !important;
+}
+
+/* 状态标签：不再所有状态都绿色 */
+.app-shell.content-mode .status-chip,
+.app-shell.content-mode .vehicle-state,
+.app-shell.content-mode .severity-label,
+.app-shell.content-mode .live-pill,
+.app-shell.content-mode .driver-online,
+.app-shell.content-mode .deviation-badge,
+.app-shell.content-mode .pill-indicator {
+  border: 1px solid rgba(87,214,255,.22) !important;
+  color: #bdeeff !important;
+  background: rgba(87,214,255,.10) !important;
+  box-shadow: inset 0 0 14px rgba(87,214,255,.08) !important;
+}
+
+.app-shell.content-mode .status-chip.success,
+.app-shell.content-mode .vehicle-state.in_transit,
+.app-shell.content-mode .in_transit,
+.app-shell.content-mode .live-text i,
+.app-shell.content-mode .system-status i {
+  color: #b7ffe8 !important;
+  background: var(--console-success) !important;
+  box-shadow: 0 0 14px rgba(65,211,158,.42) !important;
+}
+
+.app-shell.content-mode .warning,
+.app-shell.content-mode .medium,
+.app-shell.content-mode .severity-label.warning,
+.app-shell.content-mode .alert-status.pending,
+.app-shell.content-mode .orange,
+.app-shell.content-mode .orange-bg {
+  color: #ffe1a1 !important;
+  border-color: rgba(246,185,76,.34) !important;
+  background: rgba(246,185,76,.12) !important;
+}
+
+.app-shell.content-mode .danger,
+.app-shell.content-mode .critical,
+.app-shell.content-mode .high,
+.app-shell.content-mode .severity-label.critical,
+.app-shell.content-mode .severity-label.high,
+.app-shell.content-mode .error-panel,
+.app-shell.content-mode .danger-text {
+  color: #ffd0d0 !important;
+  border-color: rgba(255,107,107,.36) !important;
+  background: rgba(255,107,107,.12) !important;
+}
+
+.app-shell.content-mode .offline,
+.app-shell.content-mode .idle,
+.app-shell.content-mode .gray-bg {
+  color: #b9c8d6 !important;
+  border-color: rgba(150,170,190,.22) !important;
+  background: rgba(118,136,158,.12) !important;
+}
+
+/* 图标徽章 */
+.app-shell.content-mode .vehicle-badge,
+.app-shell.content-mode .severity-icon,
+.app-shell.content-mode .command-icon,
+.app-shell.content-mode .device-icon,
+.app-shell.content-mode .assistant-avatar,
+.app-shell.content-mode .metric-icon,
+.app-shell.content-mode .receipt-icon,
+.app-shell.content-mode .personnel-avatar,
+.app-shell.content-mode .vehicle-table-image {
+  color: var(--console-cyan) !important;
+  border: 1px solid rgba(87,214,255,.16) !important;
+  background: rgba(87,214,255,.10) !important;
+  box-shadow: inset 0 0 18px rgba(87,214,255,.11), 0 8px 22px rgba(0,0,0,.20) !important;
+}
+
+.app-shell.content-mode .vehicle-badge.green-bg,
+.app-shell.content-mode .green-bg {
+  color: var(--console-success) !important;
+  background: rgba(65,211,158,.12) !important;
+}
+
+.app-shell.content-mode .vehicle-badge.purple-bg,
+.app-shell.content-mode .purple-bg {
+  color: #b49dff !important;
+  background: rgba(143,123,255,.14) !important;
+}
+
+/* 地图：默认地图太亮，压暗融入控制台 */
+.app-shell.content-mode .mock-map,
+.app-shell.content-mode .leaflet-fleet-map,
+.app-shell.content-mode .smart-map,
+.app-shell.content-mode .map-panel,
+.app-shell.content-mode .tracking-map,
+.app-shell.content-mode .dispatch-map {
+  border-color: rgba(105,217,255,.18) !important;
+  background:
+    linear-gradient(rgba(87,214,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.035) 1px, transparent 1px),
+    linear-gradient(145deg, rgba(7, 21, 34, 0.96), rgba(3, 10, 18, 0.96)) !important;
+  background-size: 32px 32px, 32px 32px, auto !important;
+  box-shadow: inset 0 0 42px rgba(87,214,255,.08), 0 20px 52px rgba(0,0,0,.30) !important;
+}
+
+.app-shell.content-mode .leaflet-tile,
+.app-shell.content-mode .amap-layer,
+.app-shell.content-mode .amap-container img {
+  filter: saturate(.55) brightness(.72) contrast(1.04) hue-rotate(170deg) !important;
+}
+
+.app-shell.content-mode .map-legend,
+.app-shell.content-mode .route-origin,
+.app-shell.content-mode .route-destination {
+  color: var(--console-text) !important;
+  border: 1px solid rgba(87,214,255,.18) !important;
+  background: rgba(7, 20, 32, .84) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.30) !important;
+}
+
+.app-shell.content-mode .vehicle-pin,
+.app-shell.content-mode .fleet-map-marker span {
+  border-color: rgba(208,246,255,.92) !important;
+  background: linear-gradient(135deg, var(--console-cyan), var(--console-blue)) !important;
+  box-shadow: 0 0 0 7px rgba(87,214,255,.16), 0 0 26px rgba(87,214,255,.35) !important;
+}
+
+.app-shell.content-mode .vehicle-pin.idle,
+.app-shell.content-mode .vehicle-pin.offline {
+  background: linear-gradient(135deg, #738aa0, #3a4a5e) !important;
+  box-shadow: 0 0 0 7px rgba(140,160,180,.14), 0 0 20px rgba(140,160,180,.22) !important;
+}
+
+/* 运营总览：去掉“玩具轨道/糖果绿”气质，变 KPI 控制台 */
+.app-shell.page-overview .overview-tech,
+.app-shell.page-overview .overview-tech::before {
+  --overview-bg: var(--console-bg-1) !important;
+  --overview-panel: var(--console-panel) !important;
+  --overview-line: var(--console-line) !important;
+  --overview-text: var(--console-text) !important;
+  --overview-muted: var(--console-text-2) !important;
+  --overview-green: var(--console-cyan) !important;
+  --overview-green-soft: var(--console-aqua) !important;
+}
+
+.app-shell.page-overview .overview-tech::before {
+  background:
+    radial-gradient(circle at 18% 6%, rgba(87,214,255,.13), transparent 34%),
+    radial-gradient(circle at 88% 18%, rgba(110,243,214,.08), transparent 30%),
+    linear-gradient(rgba(105,217,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(105,217,255,.035) 1px, transparent 1px),
+    linear-gradient(135deg, #040914 0%, #07111a 48%, #030711 100%) !important;
+  background-size: auto, auto, 36px 36px, 36px 36px, auto !important;
+}
+
+.app-shell.page-overview .metric-grid.logistics-train,
+.app-shell.page-overview .storybook-train,
+.app-shell.page-overview .metric-grid.alert-metrics {
+  aspect-ratio: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  padding: 0 !important;
+  background: none !important;
+}
+
+.app-shell.page-overview .train-card,
+.app-shell.page-overview .metric-card,
+.app-shell.page-alerts .metric-card {
+  min-height: 128px !important;
+  height: auto !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 22px !important;
+  border: 1px solid rgba(87,214,255,.20) !important;
+  border-radius: 16px !important;
+  background:
+    linear-gradient(145deg, rgba(13, 29, 43, 0.88), rgba(5, 14, 24, 0.78)),
+    radial-gradient(circle at 100% 0%, rgba(87,214,255,0.13), transparent 35%) !important;
+  box-shadow: var(--console-shadow), inset 0 1px 0 rgba(255,255,255,.045) !important;
+  transform: none !important;
+}
+
+.app-shell.page-overview .train-smoke,
+.app-shell.page-overview .engine-nose,
+.app-shell.page-overview .wagon-roof,
+.app-shell.page-overview .wagon-cargo,
+.app-shell.page-overview .train-wheels,
+.app-shell.page-overview .wagon-coupler,
+.app-shell.page-alerts .alert-scene-machine,
+.app-shell.page-alerts .alert-scene-worker,
+.app-shell.page-alerts .alert-conveyor-track,
+.app-shell.page-alerts .alert-conveyor-set {
+  display: none !important;
+}
+
+.app-shell.page-overview .metric-card > div:last-child,
+.app-shell.page-alerts .metric-card > div:last-child {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  transform: none !important;
+}
+
+.app-shell.page-overview .metric-card span,
+.app-shell.page-alerts .metric-card span {
+  color: var(--console-text-2) !important;
+  text-shadow: none !important;
+  font-size: 13px !important;
+}
+
+.app-shell.page-overview .metric-card strong,
+.app-shell.page-alerts .metric-card strong {
+  color: var(--console-text) !important;
+  text-shadow: 0 0 22px rgba(87,214,255,.18) !important;
+  font-size: 34px !important;
+  line-height: 1 !important;
+}
+
+.app-shell.page-overview .metric-card small,
+.app-shell.page-alerts .metric-card small {
+  color: var(--console-aqua) !important;
+  text-shadow: none !important;
+  font-size: 12px !important;
+}
+
+/* 人员管理：顶部白色统计卡彻底改掉 */
+.app-shell.page-personnel .personnel-stats,
+.app-shell.page-personnel .warehouse-stats {
+  gap: 18px !important;
+}
+
+.app-shell.page-personnel .personnel-stats > div,
+.app-shell.page-personnel .warehouse-stats > div {
+  color: var(--console-text) !important;
+  border: 1px solid rgba(87,214,255,.18) !important;
+  border-radius: 16px !important;
+  background:
+    linear-gradient(145deg, rgba(13,29,43,.84), rgba(5,14,24,.78)),
+    radial-gradient(circle at 100% 0%, rgba(87,214,255,.12), transparent 36%) !important;
+  box-shadow: var(--console-shadow), inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+
+.app-shell.page-personnel .personnel-table-scroll,
+.app-shell.page-personnel .data-table {
+  background: rgba(4, 12, 22, .40) !important;
+}
+
+/* 车辆调度：去掉右侧白图片区 */
+.app-shell.page-dispatch .vehicle-photo-empty,
+.app-shell.page-dispatch .vehicle-photo-card,
+.app-shell.content-mode .vehicle-photo-empty {
+  color: var(--console-text-2) !important;
+  border: 1px dashed rgba(87,214,255,.28) !important;
+  background:
+    linear-gradient(rgba(87,214,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.04) 1px, transparent 1px),
+    radial-gradient(circle at 50% 15%, rgba(87,214,255,.14), transparent 36%),
+    linear-gradient(145deg, rgba(8, 20, 33, .92), rgba(4, 11, 20, .92)) !important;
+  background-size: 26px 26px, 26px 26px, auto, auto !important;
+}
+
+.app-shell.page-dispatch .vehicle-photo-action {
+  color: #03101b !important;
+}
+
+/* 告警中心：高优先级信息用红橙，不再蓝绿混杂 */
+.app-shell.page-alerts .alert-list button.critical,
+.app-shell.page-alerts .alert-detail.critical,
+.app-shell.page-alerts .severity-icon.critical,
+.app-shell.page-alerts .recommendation {
+  border-color: rgba(255,107,107,.38) !important;
+  background:
+    linear-gradient(145deg, rgba(70, 18, 28, .80), rgba(18, 9, 16, .78)),
+    radial-gradient(circle at 100% 0%, rgba(255,107,107,.18), transparent 38%) !important;
+}
+
+.app-shell.page-alerts .alert-list button.warning,
+.app-shell.page-alerts .severity-icon.warning {
+  border-color: rgba(246,185,76,.36) !important;
+  background: rgba(246,185,76,.12) !important;
+}
+
+.app-shell.page-alerts .alert-row-delete,
+.app-shell.page-alerts .notification-close,
+.app-shell.content-mode .alert-row-delete,
+.app-shell.content-mode .notification-close {
+  color: var(--console-text-2) !important;
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+
+/* 司机任务：车载终端感 */
+.app-shell.page-driver .pill-radio-container,
+.app-shell.page-driver .driver-status-pills {
+  border: 1px solid rgba(87,214,255,.18) !important;
+  background: rgba(7, 20, 32, .74) !important;
+  box-shadow: inset 0 0 22px rgba(87,214,255,.05) !important;
+}
+
+.app-shell.page-driver .pill-radio-container button.active,
+.app-shell.page-driver .driver-status-pills button.active {
+  color: #03101b !important;
+  background: linear-gradient(135deg, #7de8ff, #6ef3d6) !important;
+}
+
+/* 智能问答：AI 决策助手感 */
+.app-shell.page-assistant .assistant-layout {
+  gap: 20px !important;
+}
+
+.app-shell.page-assistant .chat-panel {
+  min-height: calc(100vh - 170px) !important;
+}
+
+.app-shell.page-assistant .chat-messages,
+.app-shell.page-assistant .conversation-side,
+.app-shell.page-assistant .assistant-context .panel {
+  background:
+    linear-gradient(180deg, rgba(7, 20, 32, .74), rgba(4, 12, 22, .80)) !important;
+}
+
+.app-shell.page-assistant .bubble {
+  color: var(--console-text) !important;
+  border: 1px solid rgba(87,214,255,.14) !important;
+  background: rgba(9, 24, 38, .86) !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.025) !important;
+}
+
+.app-shell.page-assistant .message.user .bubble {
+  color: #04101a !important;
+  background: linear-gradient(135deg, #85eaff, #6ef3d6) !important;
+}
+
+.app-shell.page-assistant .chat-input {
+  border-radius: 999px !important;
+}
+
+.app-shell.page-assistant .chat-input .el-button,
+.app-shell.page-assistant .chat-input button {
+  border-radius: 999px !important;
+}
+
+/* 仓库、货物追踪细节 */
+.app-shell.page-tracking .route-summary,
+.app-shell.page-tracking .eta-card,
+.app-shell.page-tracking .order-insight-card,
+.app-shell.page-warehouse .truck-cross-section,
+.app-shell.page-warehouse .truck-body,
+.app-shell.page-warehouse .cargo-slot {
+  border-color: rgba(87,214,255,.18) !important;
+  background: rgba(7,20,32,.76) !important;
+}
+
+.app-shell.page-tracking .route-line {
+  border-color: rgba(87,214,255,.45) !important;
+  background: linear-gradient(90deg, var(--console-cyan), rgba(110,243,214,.7)) !important;
+  box-shadow: 0 0 18px rgba(87,214,255,.25) !important;
+}
+
+.app-shell.page-tracking .route-dot {
+  background: var(--console-cyan) !important;
+  box-shadow: 0 0 0 5px rgba(87,214,255,.16), 0 0 18px rgba(87,214,255,.36) !important;
+}
+
+.app-shell.page-tracking .route-dot.end {
+  background: var(--console-success) !important;
+  box-shadow: 0 0 0 5px rgba(65,211,158,.16), 0 0 18px rgba(65,211,158,.32) !important;
+}
+
+/* Element Plus 弹层也跟随深色 */
+.el-popper,
+.el-select__popper,
+.el-dropdown__popper,
+.el-picker__popper {
+  border-color: rgba(87,214,255,.18) !important;
+  background: rgba(8, 20, 33, .98) !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,.42) !important;
+}
+
+.el-select-dropdown__item,
+.el-dropdown-menu,
+.el-dropdown-menu__item {
+  color: var(--console-text-2) !important;
+  background: transparent !important;
+}
+
+.el-select-dropdown__item.is-hovering,
+.el-select-dropdown__item:hover,
+.el-dropdown-menu__item:hover {
+  color: var(--console-text) !important;
+  background: rgba(87,214,255,.12) !important;
+}
+
+.app-shell.content-mode .el-dialog,
+.app-shell.content-mode .el-drawer {
+  color: var(--console-text) !important;
+  border: 1px solid rgba(87,214,255,.20) !important;
+  background: linear-gradient(145deg, rgba(10, 24, 38, .98), rgba(4, 12, 22, .98)) !important;
+  box-shadow: 0 32px 90px rgba(0,0,0,.55) !important;
+}
+
+.app-shell.content-mode .el-dialog__title,
+.app-shell.content-mode .el-drawer__title {
+  color: var(--console-text) !important;
+}
+
+/* 去除旧样式留下的大白块 */
+.app-shell.content-mode [style*="background: white"],
+.app-shell.content-mode [style*="background:white"],
+.app-shell.content-mode [style*="background-color: white"],
+.app-shell.content-mode [style*="background-color:white"] {
+  background: rgba(9, 22, 34, 0.82) !important;
+}
+
+.app-shell.content-mode .avatar.has-image,
+.app-shell.content-mode .avatar img {
+  background: rgba(9, 22, 34, 0.82) !important;
+}
+
+@media (max-width: 900px) {
+  .app-shell.content-mode .page-content { padding: 18px 14px 32px !important; }
+  .app-shell.page-overview .metric-grid.logistics-train,
+  .app-shell.page-alerts .metric-grid.alert-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+/* ========================================================================== 
+   Portal module console unification - final override
+   Eight business pages opened from ActiveTheory live inside .portal-floating-body.
+   This keeps them in one restrained logistics control-console system.
+   ========================================================================== */
+
+.portal-floating-page {
+  --navy: var(--console-text) !important;
+  --muted: var(--console-text-2) !important;
+  --line: var(--console-line-soft) !important;
+  --primary: var(--console-cyan) !important;
+  --primary-soft: rgba(87, 214, 255, 0.12) !important;
+  --success: var(--console-success) !important;
+  --warning: var(--console-warning) !important;
+  --danger: var(--console-danger) !important;
+  --shadow: var(--console-shadow) !important;
+  --el-color-primary: var(--console-cyan) !important;
+  --el-color-success: var(--console-success) !important;
+  --el-color-warning: var(--console-warning) !important;
+  --el-color-danger: var(--console-danger) !important;
+  --el-bg-color: #08131f !important;
+  --el-bg-color-overlay: #0c1b2a !important;
+  --el-fill-color-blank: rgba(10, 23, 35, 0.96) !important;
+  --el-fill-color-light: rgba(87, 214, 255, 0.08) !important;
+  --el-border-color: rgba(105, 217, 255, 0.18) !important;
+  --el-border-color-light: rgba(105, 217, 255, 0.10) !important;
+  --el-text-color-primary: var(--console-text) !important;
+  --el-text-color-regular: var(--console-text-2) !important;
+  --el-text-color-secondary: var(--console-text-3) !important;
+  color: var(--console-text) !important;
+  border: 1px solid rgba(87, 214, 255, .16) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(87, 214, 255, .15), transparent 34%),
+    radial-gradient(circle at 92% 15%, rgba(92, 105, 255, .10), transparent 30%),
+    radial-gradient(circle at 50% 112%, rgba(110, 243, 214, .07), transparent 42%),
+    linear-gradient(rgba(105, 217, 255, .032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(105, 217, 255, .032) 1px, transparent 1px),
+    linear-gradient(135deg, var(--console-bg-0) 0%, var(--console-bg-1) 48%, #030711 100%) !important;
+  background-size: auto, auto, auto, 36px 36px, 36px 36px, auto !important;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .46), inset 0 1px 0 rgba(255,255,255,.045) !important;
+}
+
+.portal-floating-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.025), transparent 17%, transparent 78%, rgba(0,0,0,.34)),
+    radial-gradient(ellipse at center, transparent 42%, rgba(0,0,0,.34) 100%);
+}
+
+.portal-floating-header,
+.portal-floating-body { position: relative !important; z-index: 1 !important; }
+
+.portal-floating-header {
+  color: var(--console-text) !important;
+  border-bottom: 1px solid rgba(87,214,255,.14) !important;
+  background:
+    linear-gradient(90deg, rgba(4, 10, 20, .88), rgba(8, 21, 33, .76)),
+    radial-gradient(circle at 86% 0%, rgba(87, 214, 255, .13), transparent 34%) !important;
+  box-shadow: 0 18px 54px rgba(0,0,0,.26), inset 0 -1px 0 rgba(87,214,255,.06) !important;
+  backdrop-filter: blur(22px) saturate(1.2) !important;
+}
+
+.portal-floating-title span,
+.portal-floating-body .eyebrow,
+.portal-floating-body .section-kicker,
+.portal-floating-body .panel-head .section-kicker {
+  color: var(--console-aqua) !important;
+  letter-spacing: .18em !important;
+  text-shadow: 0 0 16px rgba(110,243,214,.18) !important;
+}
+
+.portal-floating-title strong,
+.portal-floating-body h1,
+.portal-floating-body h2,
+.portal-floating-body h3,
+.portal-floating-body h4,
+.portal-floating-body strong,
+.portal-floating-body dt,
+.portal-floating-body .table-primary strong,
+.portal-floating-body .panel-head h3 {
+  color: var(--console-text) !important;
+  text-shadow: none !important;
+}
+
+.portal-floating-body { color: var(--console-text) !important; background: transparent !important; }
+
+.portal-floating-body p,
+.portal-floating-body dd,
+.portal-floating-body small,
+.portal-floating-body .muted,
+.portal-floating-body .panel p,
+.portal-floating-body .panel small,
+.portal-floating-body .vehicle-main small,
+.portal-floating-body .fleet-rows small { color: var(--console-text-2) !important; }
+
+.portal-floating-body span:not(.el-tag):not(.el-checkbox__inner):not(.el-radio__inner):not(.source-dot):not(.danger-dot):not(.warning-dot):not(.blue-dot):not(.gray-dot):not(.green-dot):not(.orange-dot) { color: inherit; }
+
+.portal-floating-body .panel,
+.portal-floating-body .metric-card,
+.portal-floating-body .shipment-card,
+.portal-floating-body .status-report-card,
+.portal-floating-body .command-tasks,
+.portal-floating-body .safety-tip,
+.portal-floating-body .cargo-stage-panel,
+.portal-floating-body .warehouse-hero,
+.portal-floating-body .warehouse-stats,
+.portal-floating-body .warehouse-stats > div,
+.portal-floating-body .load-workbench,
+.portal-floating-body .personnel-table-card,
+.portal-floating-body .conversation,
+.portal-floating-body .context-card,
+.portal-floating-body .source-card,
+.portal-floating-body .eta-card,
+.portal-floating-body .receipt-card,
+.portal-floating-body .driver-card,
+.portal-floating-body .order-insight-card,
+.portal-floating-body .state-panel,
+.portal-floating-body .vehicle-photo-card,
+.portal-floating-body .vehicle-image-field,
+.portal-floating-body .current-shipment,
+.portal-floating-body .detail-stats > div,
+.portal-floating-body .eta-grid > div,
+.portal-floating-body .device-summary,
+.portal-floating-body .knowledge-status,
+.portal-floating-body .filter-strip {
+  color: var(--console-text) !important;
+  border: 1px solid var(--console-line) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(145deg, rgba(13, 29, 43, .86), rgba(5, 14, 24, .78)),
+    radial-gradient(circle at 100% 0%, rgba(87,214,255,.12), transparent 35%) !important;
+  box-shadow: var(--console-shadow), inset 0 1px 0 rgba(255,255,255,.045), inset 0 -1px 0 rgba(87,214,255,.045) !important;
+  backdrop-filter: blur(18px) saturate(1.15) !important;
+}
+
+.portal-floating-body .panel:hover,
+.portal-floating-body .metric-card:hover,
+.portal-floating-body .shipment-card:hover,
+.portal-floating-body .cargo-stage-panel:hover,
+.portal-floating-body .personnel-table-card:hover,
+.portal-floating-body .vehicle-photo-card:hover {
+  border-color: rgba(87,214,255,.34) !important;
+  box-shadow: var(--console-shadow), 0 0 32px rgba(87,214,255,.08), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+.portal-floating-body .hero-banner,
+.portal-floating-body .driver-hero,
+.portal-floating-body .overview-hero,
+.portal-floating-body .warehouse-hero {
+  color: var(--console-text) !important;
+  border: 1px solid rgba(87,214,255,.22) !important;
+  border-radius: 16px !important;
+  background-image:
+    linear-gradient(95deg, rgba(4, 12, 22, .96) 0%, rgba(9, 32, 48, .82) 55%, rgba(17, 64, 88, .38) 100%),
+    radial-gradient(circle at 72% 45%, rgba(87,214,255,.20), transparent 28%) !important;
+  box-shadow: 0 28px 70px rgba(0,0,0,.34), 0 0 42px rgba(87,214,255,.10) !important;
+  filter: none !important;
+}
+
+.portal-floating-body .hero-banner::before,
+.portal-floating-body .driver-hero::before,
+.portal-floating-body .overview-hero::before {
+  border-color: rgba(87,214,255,.20) !important;
+  background: linear-gradient(120deg, rgba(87,214,255,.15), transparent 22% 70%, rgba(110,243,214,.10)), repeating-linear-gradient(90deg, rgba(87,214,255,.06) 0 1px, transparent 1px 14px) !important;
+}
+
+.portal-floating-body .metric-grid { gap: 16px !important; }
+.portal-floating-body .train-card,
+.portal-floating-body .metric-card { min-height: 128px !important; height: auto !important; justify-content: flex-start !important; align-items: center !important; gap: 16px !important; padding: 22px !important; transform: none !important; }
+
+.portal-floating-body .train-smoke,
+.portal-floating-body .engine-nose,
+.portal-floating-body .wagon-roof,
+.portal-floating-body .wagon-cargo,
+.portal-floating-body .train-wheels,
+.portal-floating-body .wagon-coupler,
+.portal-floating-body .alert-scene-machine,
+.portal-floating-body .alert-scene-worker,
+.portal-floating-body .alert-conveyor-track,
+.portal-floating-body .alert-conveyor-set { display: none !important; }
+
+.portal-floating-body .metric-card > div:last-child { display: flex !important; flex-direction: column !important; align-items: flex-start !important; transform: none !important; }
+.portal-floating-body .metric-card span { color: var(--console-text-2) !important; text-shadow: none !important; font-size: 13px !important; }
+.portal-floating-body .metric-card strong { color: var(--console-text) !important; text-shadow: 0 0 22px rgba(87,214,255,.18) !important; font-size: 34px !important; line-height: 1 !important; }
+.portal-floating-body .metric-card small { color: var(--console-aqua) !important; text-shadow: none !important; font-size: 12px !important; }
+
+.portal-floating-body .metric-icon,
+.portal-floating-body .vehicle-badge,
+.portal-floating-body .severity-icon,
+.portal-floating-body .command-icon,
+.portal-floating-body .device-icon,
+.portal-floating-body .assistant-avatar,
+.portal-floating-body .personnel-avatar {
+  color: var(--console-cyan) !important;
+  border: 1px solid rgba(87,214,255,.20) !important;
+  background: linear-gradient(145deg, rgba(87,214,255,.16), rgba(110,243,214,.07)) !important;
+  box-shadow: inset 0 0 18px rgba(87,214,255,.10), 0 0 18px rgba(87,214,255,.07) !important;
+}
+
+.portal-floating-body .table-row,
+.portal-floating-body .alert-list button,
+.portal-floating-body .fleet-rows button,
+.portal-floating-body .dispatch-list button,
+.portal-floating-body .command-list > article,
+.portal-floating-body .manifest-row,
+.portal-floating-body .cargo-drag-card,
+.portal-floating-body .vehicle-rail button,
+.portal-floating-body .device-grid article,
+.portal-floating-body .cargo-stage-panel > button,
+.portal-floating-body .notification-list article,
+.portal-floating-body .management-tabs,
+.portal-floating-body .personnel-stats > div { color: var(--console-text) !important; border-color: var(--console-line-soft) !important; background: rgba(7, 20, 32, .68) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.035) !important; }
+
+.portal-floating-body .table-row:hover,
+.portal-floating-body .alert-list button:hover,
+.portal-floating-body .fleet-rows button:hover,
+.portal-floating-body .dispatch-list button:hover,
+.portal-floating-body .command-list > article:hover,
+.portal-floating-body .manifest-row:hover,
+.portal-floating-body .cargo-stage-panel > button:hover { border-color: rgba(87,214,255,.28) !important; background: rgba(10, 34, 52, .78) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 0 22px rgba(87,214,255,.06) !important; }
+
+.portal-floating-body .table-row.table-head,
+.portal-floating-body .alert-color-key,
+.portal-floating-body .status-tabs,
+.portal-floating-body .management-tabs button,
+.portal-floating-body .suggestions button,
+.portal-floating-body .chat-input { color: rgba(213, 235, 248, .86) !important; border-color: rgba(105,217,255,.14) !important; background: rgba(87,214,255,.075) !important; }
+
+.portal-floating-body .management-tabs button.active { color: var(--console-cyan) !important; }
+.portal-floating-body .management-tabs button.active::after { background: linear-gradient(90deg, var(--console-cyan), var(--console-aqua)) !important; }
+
+.portal-floating-body .el-input__wrapper,
+.portal-floating-body .el-select__wrapper,
+.portal-floating-body .el-textarea__inner,
+.portal-floating-body .el-input-number,
+.portal-floating-body .el-input-number .el-input__wrapper { color: var(--console-text) !important; border: 1px solid rgba(105,217,255,.16) !important; background: rgba(4, 15, 26, .72) !important; box-shadow: inset 0 0 0 1px rgba(87,214,255,.035), 0 0 0 transparent !important; }
+
+.portal-floating-body .el-input__wrapper:hover,
+.portal-floating-body .el-select__wrapper:hover,
+.portal-floating-body .el-textarea__inner:hover,
+.portal-floating-body .el-input__wrapper.is-focus,
+.portal-floating-body .el-select__wrapper.is-focused { border-color: rgba(87,214,255,.36) !important; box-shadow: 0 0 0 3px rgba(87,214,255,.08), inset 0 0 0 1px rgba(87,214,255,.08) !important; }
+
+.portal-floating-body .el-input__inner,
+.portal-floating-body .el-textarea__inner,
+.portal-floating-body .el-select__placeholder,
+.portal-floating-body .el-select__selected-item { color: var(--console-text) !important; }
+.portal-floating-body .el-input__inner::placeholder,
+.portal-floating-body .el-textarea__inner::placeholder { color: rgba(135, 170, 190, .52) !important; }
+
+.portal-floating-body .el-button:not(.is-link):not(.is-circle),
+.portal-floating-body button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete) { border: 1px solid rgba(87,214,255,.22) !important; color: var(--console-text) !important; background: linear-gradient(135deg, rgba(87,214,255,.16), rgba(110,243,214,.07)), rgba(6, 19, 31, .78) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 12px 28px rgba(0,0,0,.20) !important; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease !important; }
+
+.portal-floating-body .el-button--primary:not(.is-link):not(.is-circle),
+.portal-floating-body .dispatch-push-button { color: #03101b !important; border-color: rgba(87,214,255,.56) !important; background: linear-gradient(135deg, #57d6ff, #6ef3d6) !important; box-shadow: 0 14px 34px rgba(87,214,255,.20), inset 0 1px 0 rgba(255,255,255,.34) !important; }
+
+.portal-floating-body .el-button:not(.is-link):not(.is-circle):hover,
+.portal-floating-body button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete):hover { transform: translateY(-1px) !important; border-color: rgba(87,214,255,.42) !important; box-shadow: 0 16px 34px rgba(0,0,0,.26), 0 0 28px rgba(87,214,255,.09) !important; }
+
+.portal-floating-body .status-chip,
+.portal-floating-body .vehicle-state,
+.portal-floating-body .severity-label,
+.portal-floating-body .live-pill,
+.portal-floating-body .alert-status,
+.portal-floating-body .el-tag { color: #bdefff !important; border: 1px solid rgba(87,214,255,.22) !important; background: rgba(87,214,255,.10) !important; border-radius: 999px !important; }
+
+.portal-floating-body .vehicle-state.idle,
+.portal-floating-body .vehicle-state.offline,
+.portal-floating-body .status-chip.offline,
+.portal-floating-body .status-chip.muted { color: rgba(190,210,225,.72) !important; border-color: rgba(145,170,190,.18) !important; background: rgba(145,170,190,.10) !important; }
+
+.portal-floating-body .severity-label.warning,
+.portal-floating-body .severity-icon.warning,
+.portal-floating-body .warning-dot,
+.portal-floating-body .recommendation,
+.portal-floating-body .el-tag--warning { color: #ffd58b !important; border-color: rgba(246,185,76,.30) !important; background: rgba(246,185,76,.11) !important; }
+
+.portal-floating-body .severity-label.critical,
+.portal-floating-body .severity-label.red,
+.portal-floating-body .severity-icon.critical,
+.portal-floating-body .severity-icon.red,
+.portal-floating-body .danger-text,
+.portal-floating-body .danger-dot,
+.portal-floating-body .alert-description,
+.portal-floating-body .el-tag--danger { color: #ff9b9b !important; border-color: rgba(255,107,107,.30) !important; background: rgba(255,107,107,.10) !important; }
+
+.portal-floating-body .status-chip.success,
+.portal-floating-body .el-tag--success { color: #9ff2d0 !important; border-color: rgba(65,211,158,.26) !important; background: rgba(65,211,158,.10) !important; }
+
+.portal-floating-body .mock-map,
+.portal-floating-body .leaflet-fleet-map,
+.portal-floating-body .smart-map,
+.portal-floating-body .truck-cross-section,
+.portal-floating-body .truck-body,
+.portal-floating-body .mini-location,
+.portal-floating-body .vehicle-photo-empty,
+.portal-floating-body .vehicle-table-image,
+.portal-floating-body .vehicle-image-preview,
+.portal-floating-body .cargo-slot { color: var(--console-text-2) !important; border-color: rgba(105,217,255,.18) !important; background: linear-gradient(rgba(105,217,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(105,217,255,.035) 1px, transparent 1px), linear-gradient(145deg, rgba(6, 19, 31, .95), rgba(3, 10, 18, .96)) !important; background-size: 30px 30px, 30px 30px, auto !important; box-shadow: inset 0 0 34px rgba(87,214,255,.07), 0 18px 46px rgba(0,0,0,.28) !important; }
+
+.portal-floating-body .vehicle-photo-card > img,
+.portal-floating-body .vehicle-table-image img,
+.portal-floating-body .vehicle-image-preview img { background: rgba(4,15,26,.96) !important; filter: brightness(.78) saturate(.86) contrast(.98) !important; }
+.portal-floating-body .leaflet-tile-pane,
+.portal-floating-body .leaflet-tile { filter: brightness(.58) saturate(.72) contrast(1.15) hue-rotate(168deg) !important; }
+.portal-floating-body .leaflet-control,
+.portal-floating-body .leaflet-popup-content-wrapper,
+.portal-floating-body .leaflet-popup-tip { color: var(--console-text) !important; background: rgba(7,22,35,.90) !important; border: 1px solid rgba(105,217,255,.16) !important; }
+
+.portal-floating-body .chat-messages,
+.portal-floating-body .conversation-side,
+.portal-floating-body .assistant-context .panel,
+.portal-floating-body .truck-planner,
+.portal-floating-body .cargo-pool,
+.portal-floating-body .load-manifest { background: linear-gradient(180deg, rgba(7,20,32,.74), rgba(4,12,22,.80)) !important; }
+
+.portal-floating-body .bubble { color: var(--console-text) !important; border: 1px solid rgba(87,214,255,.14) !important; background: rgba(9,24,38,.86) !important; box-shadow: 0 14px 34px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.025) !important; }
+.portal-floating-body .message.user .bubble { color: #04101a !important; background: linear-gradient(135deg, #85eaff, #6ef3d6) !important; }
+.portal-floating-body .chat-input,
+.portal-floating-body .chat-input .el-button,
+.portal-floating-body .chat-input button { border-radius: 999px !important; }
+
+.portal-floating-body .route-line { border-color: rgba(87,214,255,.45) !important; background: linear-gradient(90deg, var(--console-cyan), rgba(110,243,214,.7)) !important; box-shadow: 0 0 18px rgba(87,214,255,.25) !important; }
+.portal-floating-body .route-dot { background: var(--console-cyan) !important; box-shadow: 0 0 0 5px rgba(87,214,255,.16), 0 0 18px rgba(87,214,255,.36) !important; }
+.portal-floating-body .route-dot.end { background: var(--console-success) !important; box-shadow: 0 0 0 5px rgba(65,211,158,.16), 0 0 18px rgba(65,211,158,.32) !important; }
+
+.portal-floating-body [style*="background: white"],
+.portal-floating-body [style*="background:white"],
+.portal-floating-body [style*="background-color: white"],
+.portal-floating-body [style*="background-color:white"] { background: rgba(9, 22, 34, .82) !important; }
+
+.portal-floating-body::-webkit-scrollbar,
+.portal-floating-body *::-webkit-scrollbar { width: 10px; height: 10px; }
+.portal-floating-body::-webkit-scrollbar-track,
+.portal-floating-body *::-webkit-scrollbar-track { background: rgba(4, 9, 20, .92); }
+.portal-floating-body::-webkit-scrollbar-thumb,
+.portal-floating-body *::-webkit-scrollbar-thumb { border: 2px solid rgba(4, 9, 20, .92); border-radius: 999px; background: linear-gradient(180deg, rgba(87,214,255,.72), rgba(110,243,214,.42)); }
+
+@media (max-width: 900px) {
+  .portal-floating-body { padding: 18px 14px 32px !important; }
+  .portal-floating-body .metric-grid.logistics-train,
+  .portal-floating-body .metric-grid.alert-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+/* ========================================================================== 
+   Contrast safety pass - dark surfaces must use light text
+   ========================================================================== */
+
+.app-shell.content-mode :is(.panel, .metric-card, .shipment-card, .status-report-card, .command-tasks, .cargo-stage-panel, .warehouse-hero, .warehouse-stats, .load-workbench, .personnel-table-card, .conversation, .context-card, .source-card, .eta-card, .receipt-card, .driver-card, .order-insight-card, .state-panel, .vehicle-photo-card, .vehicle-image-field, .current-shipment, .device-summary, .knowledge-status, .filter-strip, .chat-panel, .chat-messages, .truck-planner, .cargo-pool, .load-manifest, .mock-map, .smart-map, .leaflet-fleet-map),
+.portal-floating-body :is(.panel, .metric-card, .shipment-card, .status-report-card, .command-tasks, .cargo-stage-panel, .warehouse-hero, .warehouse-stats, .load-workbench, .personnel-table-card, .conversation, .context-card, .source-card, .eta-card, .receipt-card, .driver-card, .order-insight-card, .state-panel, .vehicle-photo-card, .vehicle-image-field, .current-shipment, .device-summary, .knowledge-status, .filter-strip, .chat-panel, .chat-messages, .truck-planner, .cargo-pool, .load-manifest, .mock-map, .smart-map, .leaflet-fleet-map) {
+  color: var(--console-text) !important;
+}
+
+.app-shell.content-mode :is(.panel, .metric-card, .shipment-card, .status-report-card, .command-tasks, .cargo-stage-panel, .warehouse-hero, .warehouse-stats, .load-workbench, .personnel-table-card, .conversation, .context-card, .source-card, .eta-card, .receipt-card, .driver-card, .order-insight-card, .state-panel, .vehicle-photo-card, .vehicle-image-field, .current-shipment, .device-summary, .knowledge-status, .filter-strip, .chat-panel, .chat-messages, .truck-planner, .cargo-pool, .load-manifest) :is(h1, h2, h3, h4, h5, strong, b, dt, th, label, .el-form-item__label, .el-descriptions__label, .el-statistic__number, .el-input__count),
+.portal-floating-body :is(.panel, .metric-card, .shipment-card, .status-report-card, .command-tasks, .cargo-stage-panel, .warehouse-hero, .warehouse-stats, .load-workbench, .personnel-table-card, .conversation, .context-card, .source-card, .eta-card, .receipt-card, .driver-card, .order-insight-card, .state-panel, .vehicle-photo-card, .vehicle-image-field, .current-shipment, .device-summary, .knowledge-status, .filter-strip, .chat-panel, .chat-messages, .truck-planner, .cargo-pool, .load-manifest) :is(h1, h2, h3, h4, h5, strong, b, dt, th, label, .el-form-item__label, .el-descriptions__label, .el-statistic__number, .el-input__count) {
+  color: rgba(238, 248, 255, .96) !important;
+}
+
+.app-shell.content-mode :is(.panel, .metric-card, .shipment-card, .status-report-card, .command-tasks, .cargo-stage-panel, .warehouse-hero, .warehouse-stats, .load-workbench, .personnel-table-card, .conversation, .context-card, .source-card, .eta-card, .receipt-card, .driver-card, .order-insight-card, .state-panel, .vehicle-photo-card, .vehicle-image-field, .current-shipment, .device-summary, .knowledge-status, .filter-strip, .chat-panel, .chat-messages, .truck-planner, .cargo-pool, .load-manifest) :is(p, span, small, dd, td, li, em, .muted, .el-form-item__content, .el-empty__description, .el-descriptions__content),
+.portal-floating-body :is(.panel, .metric-card, .shipment-card, .status-report-card, .command-tasks, .cargo-stage-panel, .warehouse-hero, .warehouse-stats, .load-workbench, .personnel-table-card, .conversation, .context-card, .source-card, .eta-card, .receipt-card, .driver-card, .order-insight-card, .state-panel, .vehicle-photo-card, .vehicle-image-field, .current-shipment, .device-summary, .knowledge-status, .filter-strip, .chat-panel, .chat-messages, .truck-planner, .cargo-pool, .load-manifest) :is(p, span, small, dd, td, li, em, .muted, .el-form-item__content, .el-empty__description, .el-descriptions__content) {
+  color: rgba(196, 218, 232, .80) !important;
+}
+
+.app-shell.content-mode :is(.table-row, .fleet-rows button, .dispatch-list button, .alert-list button, .command-list > article, .manifest-row, .cargo-drag-card, .vehicle-rail button, .device-grid article) :is(strong, b, h3, span, small, p),
+.portal-floating-body :is(.table-row, .fleet-rows button, .dispatch-list button, .alert-list button, .command-list > article, .manifest-row, .cargo-drag-card, .vehicle-rail button, .device-grid article) :is(strong, b, h3, span, small, p) {
+  color: inherit !important;
+}
+
+.app-shell.content-mode :is(.table-row, .fleet-rows button, .dispatch-list button, .alert-list button, .command-list > article, .manifest-row, .cargo-drag-card, .vehicle-rail button, .device-grid article) :is(strong, b, h3),
+.portal-floating-body :is(.table-row, .fleet-rows button, .dispatch-list button, .alert-list button, .command-list > article, .manifest-row, .cargo-drag-card, .vehicle-rail button, .device-grid article) :is(strong, b, h3) {
+  color: rgba(238, 248, 255, .96) !important;
+}
+
+.app-shell.content-mode :is(.table-row, .fleet-rows button, .dispatch-list button, .alert-list button, .command-list > article, .manifest-row, .cargo-drag-card, .vehicle-rail button, .device-grid article) :is(span, small, p),
+.portal-floating-body :is(.table-row, .fleet-rows button, .dispatch-list button, .alert-list button, .command-list > article, .manifest-row, .cargo-drag-card, .vehicle-rail button, .device-grid article) :is(span, small, p) {
+  color: rgba(190, 213, 228, .78) !important;
+}
+
+.app-shell.content-mode :is(.el-table, .el-table__inner-wrapper, .el-table tr, .el-table th.el-table__cell, .el-table td.el-table__cell),
+.portal-floating-body :is(.el-table, .el-table__inner-wrapper, .el-table tr, .el-table th.el-table__cell, .el-table td.el-table__cell) {
+  color: var(--console-text) !important;
+  background: transparent !important;
+}
+
+.app-shell.content-mode :is(.el-table th.el-table__cell, .el-table .cell),
+.portal-floating-body :is(.el-table th.el-table__cell, .el-table .cell) {
+  color: rgba(222, 240, 250, .88) !important;
+}
+
+.app-shell.content-mode :is(.el-table__row:hover > td.el-table__cell, .el-table__row.current-row > td.el-table__cell),
+.portal-floating-body :is(.el-table__row:hover > td.el-table__cell, .el-table__row.current-row > td.el-table__cell) {
+  background: rgba(87, 214, 255, .08) !important;
+}
+
+.app-shell.content-mode :is(.el-tabs__item, .el-radio__label, .el-checkbox__label, .el-select-dropdown__item, .el-dropdown-menu__item),
+.portal-floating-body :is(.el-tabs__item, .el-radio__label, .el-checkbox__label, .el-select-dropdown__item, .el-dropdown-menu__item) {
+  color: rgba(205, 226, 238, .84) !important;
+}
+
+.app-shell.content-mode :is(.el-tabs__item.is-active, .el-radio__input.is-checked + .el-radio__label, .el-checkbox__input.is-checked + .el-checkbox__label),
+.portal-floating-body :is(.el-tabs__item.is-active, .el-radio__input.is-checked + .el-radio__label, .el-checkbox__input.is-checked + .el-checkbox__label) {
+  color: var(--console-cyan) !important;
+}
+
+.app-shell.content-mode :is(.el-dialog, .el-drawer, .el-message-box),
+.portal-floating-page :is(.el-dialog, .el-drawer, .el-message-box) {
+  color: var(--console-text) !important;
+}
+
+.app-shell.content-mode :is(.el-dialog, .el-drawer, .el-message-box) :is(.el-dialog__title, .el-drawer__title, .el-message-box__title, .el-form-item__label, label, strong, b),
+.portal-floating-page :is(.el-dialog, .el-drawer, .el-message-box) :is(.el-dialog__title, .el-drawer__title, .el-message-box__title, .el-form-item__label, label, strong, b) {
+  color: rgba(238, 248, 255, .96) !important;
+}
+
+.app-shell.content-mode :is(.el-dialog, .el-drawer, .el-message-box) :is(p, span, small, .el-message-box__message),
+.portal-floating-page :is(.el-dialog, .el-drawer, .el-message-box) :is(p, span, small, .el-message-box__message) {
+  color: rgba(196, 218, 232, .80) !important;
+}
+
+.app-shell.content-mode :is(.el-button--primary, .message.user .bubble, .dispatch-push-button) :is(span, strong, b, small, .el-icon),
+.portal-floating-body :is(.el-button--primary, .message.user .bubble, .dispatch-push-button) :is(span, strong, b, small, .el-icon) {
+  color: #03101b !important;
+}
+
+.app-shell.content-mode :is(.status-chip, .vehicle-state, .severity-label, .el-tag) :is(span, strong, b, small),
+.portal-floating-body :is(.status-chip, .vehicle-state, .severity-label, .el-tag) :is(span, strong, b, small) {
+  color: inherit !important;
+}
+
+.app-shell.content-mode :is(.white-card, .light-card, .el-card),
+.portal-floating-body :is(.white-card, .light-card, .el-card) {
+  color: var(--console-text) !important;
+  background: rgba(9, 22, 34, .82) !important;
+  border-color: rgba(105,217,255,.16) !important;
+}
+
+/* ========================================================================== 
+   Targeted visual QA pass from screenshot review
+   ========================================================================== */
+
+/* 1/3/4: KPI and ETA colors should be cold-console, not candy green/yellow. */
+.app-shell.content-mode .logistics-train,
+.portal-floating-body .logistics-train {
+  min-height: 186px !important;
+  padding: 12px 18px 18px !important;
+  border: 1px solid rgba(87,214,255,.16) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(rgba(87,214,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.028) 1px, transparent 1px),
+    radial-gradient(circle at 18% 0%, rgba(87,214,255,.12), transparent 34%),
+    linear-gradient(180deg, rgba(5,15,25,.96), rgba(4,12,20,.92)) !important;
+  background-size: 34px 34px, 34px 34px, auto, auto !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.045) !important;
+}
+
+.app-shell.content-mode .train-card,
+.portal-floating-body .train-card,
+.app-shell.content-mode .metric-card,
+.portal-floating-body .metric-card {
+  min-height: 126px !important;
+  padding: 18px 20px !important;
+  border: 1px solid rgba(87,214,255,.18) !important;
+  border-radius: 16px !important;
+  background:
+    linear-gradient(145deg, rgba(12,30,46,.88), rgba(5,14,24,.86)),
+    radial-gradient(circle at 96% 0%, rgba(87,214,255,.12), transparent 36%) !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.05) !important;
+  transform: none !important;
+}
+
+.app-shell.content-mode .train-card::before,
+.portal-floating-body .train-card::before,
+.app-shell.content-mode .metric-card::before,
+.portal-floating-body .metric-card::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  left: 18px !important;
+  right: 18px !important;
+  top: 0 !important;
+  height: 3px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, transparent, rgba(87,214,255,.72), rgba(110,243,214,.48), transparent) !important;
+  box-shadow: 0 0 18px rgba(87,214,255,.20) !important;
+}
+
+.app-shell.content-mode .metric-card.orange::before,
+.portal-floating-body .metric-card.orange::before,
+.app-shell.content-mode .metric-card.red::before,
+.portal-floating-body .metric-card.red::before {
+  background: linear-gradient(90deg, transparent, rgba(246,185,76,.72), rgba(255,107,107,.48), transparent) !important;
+  box-shadow: 0 0 18px rgba(246,185,76,.18) !important;
+}
+
+.app-shell.content-mode .metric-icon,
+.portal-floating-body .metric-icon {
+  width: 42px !important;
+  height: 42px !important;
+  flex-basis: 42px !important;
+  border-radius: 12px !important;
+  color: #7ee7ff !important;
+  background: linear-gradient(145deg, rgba(87,214,255,.20), rgba(110,243,214,.08)) !important;
+  border-color: rgba(125,231,255,.24) !important;
+  box-shadow: inset 0 0 18px rgba(87,214,255,.10), 0 0 18px rgba(87,214,255,.08) !important;
+  filter: none !important;
+  transform: none !important;
+  font-size: 22px !important;
+}
+
+.app-shell.content-mode .metric-card > div:last-child,
+.portal-floating-body .metric-card > div:last-child {
+  transform: none !important;
+}
+
+.app-shell.content-mode .metric-card span,
+.portal-floating-body .metric-card span {
+  color: rgba(190,215,230,.78) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode .metric-card strong,
+.portal-floating-body .metric-card strong {
+  color: rgba(242,250,255,.98) !important;
+  text-shadow: 0 0 18px rgba(87,214,255,.16) !important;
+}
+
+.app-shell.content-mode .route-line,
+.portal-floating-body .route-line {
+  color: rgba(230,246,255,.92) !important;
+  border: 1px solid rgba(87,214,255,.18) !important;
+  background: linear-gradient(90deg, rgba(87,214,255,.18), rgba(110,243,214,.12)) !important;
+  box-shadow: inset 0 0 18px rgba(87,214,255,.08), 0 0 18px rgba(87,214,255,.08) !important;
+}
+
+.app-shell.content-mode .route-line span,
+.portal-floating-body .route-line span {
+  color: rgba(235,248,255,.94) !important;
+  text-shadow: 0 0 12px rgba(87,214,255,.22) !important;
+}
+
+/* 2/7: Buttons use the requested layered gradient feeling, with readable text. */
+.app-shell.content-mode :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button),
+.portal-floating-body :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button) {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  min-height: 42px !important;
+  border: 1px solid rgba(184,242,255,.58) !important;
+  border-radius: 999px !important;
+  color: rgba(238,250,255,.96) !important;
+  background: rgba(5,18,30,.86) !important;
+  box-shadow: inset 0 0 12px rgba(87,214,255,.18), 0 14px 32px rgba(0,0,0,.28) !important;
+  text-shadow: 0 0 10px rgba(87,214,255,.28) !important;
+}
+
+.app-shell.content-mode :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button)::before,
+.portal-floating-body :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button)::before {
+  content: '' !important;
+  position: absolute !important;
+  pointer-events: none !important;
+  z-index: -2 !important;
+  left: -160px !important;
+  top: 50% !important;
+  width: 500% !important;
+  aspect-ratio: 1 !important;
+  background: radial-gradient(ellipse at 65% 180%, #ffffff, #57d6ff, #6ef3d6, #ffffff, #4f8cff, #ffffff) !important;
+  mix-blend-mode: screen !important;
+  opacity: .28 !important;
+  animation: console-button-rotate 8s linear infinite !important;
+}
+
+.app-shell.content-mode :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button)::after,
+.portal-floating-body :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button)::after {
+  content: '' !important;
+  position: absolute !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+  inset: 1px !important;
+  border-radius: inherit !important;
+  background: linear-gradient(135deg, rgba(87,214,255,.30), rgba(5,18,30,.72) 52%, rgba(110,243,214,.20)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.20), inset 0 -5px 10px rgba(0,0,0,.24) !important;
+}
+
+@keyframes console-button-rotate { to { transform: translateY(-50%) rotate(360deg); } }
+
+.app-shell.content-mode :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button) span,
+.app-shell.content-mode :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button) .el-icon,
+.portal-floating-body :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button) span,
+.portal-floating-body :is(.receipt-actions .el-button, .route-actions .el-button, .driver-status-pills + .el-button, .status-report-card .el-button) .el-icon {
+  position: relative !important;
+  z-index: 1 !important;
+  color: rgba(238,250,255,.96) !important;
+}
+
+.app-shell.content-mode :is(.receipt-actions .el-button.is-disabled, .driver-status-pills + .el-button.is-disabled),
+.portal-floating-body :is(.receipt-actions .el-button.is-disabled, .driver-status-pills + .el-button.is-disabled) {
+  opacity: .48 !important;
+  filter: grayscale(.25) !important;
+}
+
+/* 5/6: The duplicated personnel title becomes a visual command banner. */
+.app-shell.content-mode .personnel-page .personnel-head,
+.portal-floating-body .personnel-page .personnel-head {
+  min-height: 220px !important;
+  align-items: flex-end !important;
+  overflow: hidden !important;
+  border-radius: 18px !important;
+  background-image:
+    linear-gradient(90deg, rgba(4,12,22,.86), rgba(6,20,32,.44) 52%, rgba(4,12,22,.82)),
+    url('../图2.png') !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
+
+.app-shell.content-mode .personnel-page .personnel-head > div,
+.portal-floating-body .personnel-page .personnel-head > div {
+  max-width: 560px !important;
+  padding: 18px 20px !important;
+  border: 1px solid rgba(87,214,255,.16) !important;
+  border-radius: 16px !important;
+  background: rgba(5,16,27,.58) !important;
+  backdrop-filter: blur(12px) saturate(1.1) !important;
+}
+
+.app-shell.content-mode .personnel-page .personnel-head h2,
+.portal-floating-body .personnel-page .personnel-head h2 {
+  font-size: 28px !important;
+}
+
+/* 8: Empty warehouse/truck space should look intentional and premium. */
+.app-shell.content-mode .truck-cross-section,
+.portal-floating-body .truck-cross-section {
+  min-height: 245px !important;
+  border-style: solid !important;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(87,214,255,.10), transparent 26%),
+    radial-gradient(circle at 82% 18%, rgba(110,243,214,.08), transparent 30%),
+    linear-gradient(rgba(87,214,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.026) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(7,21,34,.92), rgba(3,10,18,.96)) !important;
+  background-size: auto, auto, 34px 34px, 34px 34px, auto !important;
+}
+
+.app-shell.content-mode .truck-cross-section::before,
+.portal-floating-body .truck-cross-section::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 13% !important;
+  right: 8% !important;
+  bottom: 68px !important;
+  height: 58px !important;
+  pointer-events: none !important;
+  border: 1px solid rgba(160,190,215,.20) !important;
+  border-radius: 10px !important;
+  background:
+    repeating-linear-gradient(90deg, rgba(190,210,228,.24) 0 7px, transparent 7px 58px),
+    linear-gradient(180deg, rgba(220,235,255,.22), rgba(80,105,135,.18)) !important;
+  box-shadow: inset 0 0 22px rgba(87,214,255,.07), 0 14px 34px rgba(0,0,0,.28) !important;
+}
+
+.app-shell.content-mode .truck-body,
+.portal-floating-body .truck-body {
+  min-height: 172px !important;
+  max-height: 218px !important;
+  border-color: rgba(120,220,255,.18) !important;
+  background: rgba(6,18,30,.74) !important;
+}
+
+.app-shell.content-mode .cargo-slot,
+.portal-floating-body .cargo-slot {
+  color: rgba(190,214,228,.76) !important;
+  background: rgba(8,28,44,.68) !important;
+}
+
+.app-shell.content-mode .cargo-slot.occupied,
+.portal-floating-body .cargo-slot.occupied {
+  color: rgba(240,250,255,.96) !important;
+  background: linear-gradient(135deg, rgba(87,214,255,.24), rgba(110,243,214,.12)) !important;
+}
+
+/* 9: AI assistant contrast and density refinements. */
+.app-shell.content-mode .assistant-layout,
+.portal-floating-body .assistant-layout {
+  grid-template-columns: 320px minmax(560px, 1fr) 360px !important;
+  gap: 22px !important;
+}
+
+.app-shell.content-mode .assistant-layout :is(.conversation-side, .chat-panel, .assistant-context .panel),
+.portal-floating-body .assistant-layout :is(.conversation-side, .chat-panel, .assistant-context .panel) {
+  background:
+    linear-gradient(180deg, rgba(8,24,38,.92), rgba(3,10,18,.94)) !important;
+  border-color: rgba(87,214,255,.18) !important;
+}
+
+.app-shell.content-mode .conversation-list .conversation,
+.portal-floating-body .conversation-list .conversation {
+  color: rgba(225,242,252,.92) !important;
+  border: 1px solid rgba(87,214,255,.14) !important;
+  background: rgba(7,23,36,.82) !important;
+}
+
+.app-shell.content-mode .conversation-list .conversation.active,
+.portal-floating-body .conversation-list .conversation.active {
+  border-color: rgba(110,243,214,.32) !important;
+  background: linear-gradient(135deg, rgba(87,214,255,.18), rgba(65,211,158,.10)) !important;
+}
+
+.app-shell.content-mode .conversation-list .conversation :is(strong, small, span),
+.portal-floating-body .conversation-list .conversation :is(strong, small, span) {
+  color: inherit !important;
+}
+
+.app-shell.content-mode .chat-head,
+.portal-floating-body .chat-head {
+  background: rgba(4,14,24,.76) !important;
+}
+
+.app-shell.content-mode .chat-messages,
+.portal-floating-body .chat-messages {
+  background:
+    linear-gradient(rgba(87,214,255,.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.022) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(3,12,21,.96), rgba(2,8,15,.96)) !important;
+  background-size: 34px 34px, 34px 34px, auto !important;
+}
+
+.app-shell.content-mode .bubble,
+.portal-floating-body .bubble {
+  color: rgba(232,246,255,.94) !important;
+  border-color: rgba(87,214,255,.18) !important;
+  background: rgba(8,26,42,.94) !important;
+}
+
+.app-shell.content-mode .bubble .markdown-body,
+.app-shell.content-mode .bubble .markdown-body *,
+.portal-floating-body .bubble .markdown-body,
+.portal-floating-body .bubble .markdown-body * {
+  color: rgba(232,246,255,.94) !important;
+}
+
+.app-shell.content-mode .message.user .bubble,
+.portal-floating-body .message.user .bubble {
+  color: #03101b !important;
+  background: linear-gradient(135deg, #7ee7ff, #6ef3d6) !important;
+}
+
+.app-shell.content-mode .message.user .bubble .markdown-body,
+.app-shell.content-mode .message.user .bubble .markdown-body *,
+.portal-floating-body .message.user .bubble .markdown-body,
+.portal-floating-body .message.user .bubble .markdown-body * {
+  color: #03101b !important;
+}
+
+.app-shell.content-mode .bubble > span,
+.portal-floating-body .bubble > span {
+  color: rgba(150,180,198,.78) !important;
+}
+
+.app-shell.content-mode .suggestions button,
+.portal-floating-body .suggestions button {
+  color: rgba(222,242,252,.92) !important;
+  border-color: rgba(87,214,255,.20) !important;
+  background: rgba(9,31,48,.88) !important;
+}
+
+.app-shell.content-mode .chat-input,
+.portal-floating-body .chat-input {
+  background: rgba(5,18,30,.94) !important;
+  border-color: rgba(87,214,255,.26) !important;
+  box-shadow: inset 0 0 24px rgba(87,214,255,.07), 0 18px 46px rgba(0,0,0,.30) !important;
+}
+
+.app-shell.content-mode .chat-input .el-textarea__inner,
+.portal-floating-body .chat-input .el-textarea__inner {
+  color: rgba(235,248,255,.96) !important;
+}
+
+.app-shell.content-mode .chat-input .el-textarea__inner::placeholder,
+.portal-floating-body .chat-input .el-textarea__inner::placeholder {
+  color: rgba(160,190,208,.64) !important;
+}
+
+.app-shell.content-mode .assistant-context .info-list :is(dt, dd, strong, span),
+.portal-floating-body .assistant-context .info-list :is(dt, dd, strong, span),
+.app-shell.content-mode .source-card :is(h3, strong, small, p, span),
+.portal-floating-body .source-card :is(h3, strong, small, p, span) {
+  color: rgba(225,242,252,.92) !important;
+}
+
+.app-shell.content-mode .source-card > div,
+.portal-floating-body .source-card > div {
+  border-color: rgba(87,214,255,.14) !important;
+  background: rgba(12,31,48,.72) !important;
+}
+
+@media (max-width: 1180px) {
+  .app-shell.content-mode .assistant-layout,
+  .portal-floating-body .assistant-layout { grid-template-columns: 1fr !important; }
+}
+
+/* ========================================================================== 
+   Final contrast audit layer
+   Keep this at the very end. It fixes low-contrast text left by component
+   library styles, disabled states, chat bubbles, pills and nested spans.
+   ========================================================================== */
+
+.app-shell.content-mode,
+.portal-floating-page,
+.portal-floating-body {
+  --contrast-title: rgba(244, 250, 255, .98);
+  --contrast-body: rgba(215, 235, 247, .90);
+  --contrast-muted: rgba(176, 203, 220, .76);
+  --contrast-faint: rgba(145, 176, 196, .66);
+  --contrast-dark-on-light: #03101b;
+}
+
+.app-shell.content-mode :is(h1,h2,h3,h4,h5,h6,strong,b,dt,th,legend,.panel-title,.el-dialog__title,.el-drawer__title,.el-message-box__title),
+.portal-floating-body :is(h1,h2,h3,h4,h5,h6,strong,b,dt,th,legend,.panel-title,.el-dialog__title,.el-drawer__title,.el-message-box__title),
+.portal-floating-page :is(.portal-floating-title strong,.portal-floating-return) {
+  color: var(--contrast-title) !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 14px rgba(87,214,255,.10) !important;
+}
+
+.app-shell.content-mode :is(p,dd,td,li,label,em,.cell,.el-form-item__label,.el-form-item__content,.el-descriptions__label,.el-descriptions__content,.el-empty__description,.el-statistic__content),
+.portal-floating-body :is(p,dd,td,li,label,em,.cell,.el-form-item__label,.el-form-item__content,.el-descriptions__label,.el-descriptions__content,.el-empty__description,.el-statistic__content) {
+  color: var(--contrast-body) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(small,.muted,.section-note,.ai-note,.vehicle-main small,.fleet-rows small,.panel small,.table-row small,.conversation small,.source-card small,.bubble > span),
+.portal-floating-body :is(small,.muted,.section-note,.ai-note,.vehicle-main small,.fleet-rows small,.panel small,.table-row small,.conversation small,.source-card small,.bubble > span) {
+  color: var(--contrast-muted) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.section-kicker,.eyebrow,.portal-floating-title span),
+.portal-floating-body :is(.section-kicker,.eyebrow,.portal-floating-title span) {
+  color: #82f3e0 !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 16px rgba(110,243,214,.24) !important;
+}
+
+.app-shell.content-mode :is(.panel,.metric-card,.shipment-card,.status-report-card,.command-tasks,.cargo-stage-panel,.warehouse-hero,.warehouse-stats,.load-workbench,.personnel-table-card,.conversation,.context-card,.source-card,.eta-card,.receipt-card,.driver-card,.order-insight-card,.state-panel,.vehicle-photo-card,.vehicle-image-field,.current-shipment,.device-summary,.knowledge-status,.filter-strip,.chat-panel,.chat-messages,.truck-planner,.cargo-pool,.load-manifest,.table-row,.fleet-rows button,.dispatch-list button,.alert-list button,.command-list > article,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article) :is(span,strong,b,small,p,em,dt,dd,label,.cell),
+.portal-floating-body :is(.panel,.metric-card,.shipment-card,.status-report-card,.command-tasks,.cargo-stage-panel,.warehouse-hero,.warehouse-stats,.load-workbench,.personnel-table-card,.conversation,.context-card,.source-card,.eta-card,.receipt-card,.driver-card,.order-insight-card,.state-panel,.vehicle-photo-card,.vehicle-image-field,.current-shipment,.device-summary,.knowledge-status,.filter-strip,.chat-panel,.chat-messages,.truck-planner,.cargo-pool,.load-manifest,.table-row,.fleet-rows button,.dispatch-list button,.alert-list button,.command-list > article,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article) :is(span,strong,b,small,p,em,dt,dd,label,.cell) {
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.table-row,.fleet-rows button,.dispatch-list button,.alert-list button,.command-list > article,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article) :is(strong,b,h3),
+.portal-floating-body :is(.table-row,.fleet-rows button,.dispatch-list button,.alert-list button,.command-list > article,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article) :is(strong,b,h3) {
+  color: var(--contrast-title) !important;
+}
+
+.app-shell.content-mode :is(.table-row,.fleet-rows button,.dispatch-list button,.alert-list button,.command-list > article,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article) :is(span,p,em),
+.portal-floating-body :is(.table-row,.fleet-rows button,.dispatch-list button,.alert-list button,.command-list > article,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article) :is(span,p,em) {
+  color: var(--contrast-body) !important;
+}
+
+.app-shell.content-mode :is(.table-row,.fleet-rows button,.dispatch-list button,.alert-list button,.command-list > article,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article) small,
+.portal-floating-body :is(.table-row,.fleet-rows button,.dispatch-list button,.alert-list button,.command-list > article,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article) small {
+  color: var(--contrast-muted) !important;
+}
+
+.app-shell.content-mode :is(.el-input__inner,.el-textarea__inner,.el-select__selected-item,.el-select__placeholder,.el-input-number__decrease,.el-input-number__increase),
+.portal-floating-body :is(.el-input__inner,.el-textarea__inner,.el-select__selected-item,.el-select__placeholder,.el-input-number__decrease,.el-input-number__increase) {
+  color: var(--contrast-title) !important;
+  -webkit-text-fill-color: var(--contrast-title) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.el-input__inner::placeholder,.el-textarea__inner::placeholder),
+.portal-floating-body :is(.el-input__inner::placeholder,.el-textarea__inner::placeholder) {
+  color: rgba(170,200,218,.72) !important;
+  -webkit-text-fill-color: rgba(170,200,218,.72) !important;
+}
+
+.app-shell.content-mode :is(.el-button:not(.el-button--primary):not(.is-link):not(.is-circle),button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete)) :is(span,strong,b,small,.el-icon),
+.portal-floating-body :is(.el-button:not(.el-button--primary):not(.is-link):not(.is-circle),button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete)) :is(span,strong,b,small,.el-icon) {
+  color: var(--contrast-title) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.el-button--primary:not(.is-link),.message.user .bubble,.dispatch-push-button) :is(span,strong,b,small,p,.markdown-body,.markdown-body *,.el-icon),
+.portal-floating-body :is(.el-button--primary:not(.is-link),.message.user .bubble,.dispatch-push-button) :is(span,strong,b,small,p,.markdown-body,.markdown-body *,.el-icon) {
+  color: var(--contrast-dark-on-light) !important;
+  -webkit-text-fill-color: var(--contrast-dark-on-light) !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode :is(.el-button.is-disabled,.el-button.is-disabled:hover,.el-button.is-disabled:focus),
+.portal-floating-body :is(.el-button.is-disabled,.el-button.is-disabled:hover,.el-button.is-disabled:focus) {
+  opacity: .72 !important;
+  filter: saturate(.86) !important;
+}
+
+.app-shell.content-mode :is(.el-button.is-disabled,.el-button.is-disabled:hover,.el-button.is-disabled:focus) :is(span,strong,b,small,.el-icon),
+.portal-floating-body :is(.el-button.is-disabled,.el-button.is-disabled:hover,.el-button.is-disabled:focus) :is(span,strong,b,small,.el-icon) {
+  color: rgba(224,240,250,.88) !important;
+  -webkit-text-fill-color: rgba(224,240,250,.88) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.driver-status-pills,.pill-radio-container),
+.portal-floating-body :is(.driver-status-pills,.pill-radio-container) {
+  background: rgba(5,18,30,.90) !important;
+  border-color: rgba(87,214,255,.22) !important;
+}
+
+.app-shell.content-mode :is(.driver-status-pills,.pill-radio-container) label,
+.portal-floating-body :is(.driver-status-pills,.pill-radio-container) label {
+  color: rgba(218,238,248,.88) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.driver-status-pills,.pill-radio-container) input:checked + label,
+.portal-floating-body :is(.driver-status-pills,.pill-radio-container) input:checked + label {
+  color: var(--contrast-dark-on-light) !important;
+  -webkit-text-fill-color: var(--contrast-dark-on-light) !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.content-mode :is(.status-chip,.vehicle-state,.severity-label,.el-tag,.live-pill,.alert-status) :is(span,strong,b,small),
+.portal-floating-body :is(.status-chip,.vehicle-state,.severity-label,.el-tag,.live-pill,.alert-status) :is(span,strong,b,small) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode .message.user .bubble,
+.portal-floating-body .message.user .bubble {
+  color: var(--contrast-dark-on-light) !important;
+  background: linear-gradient(135deg, #8beeff, #72f1d4) !important;
+  box-shadow: 0 16px 36px rgba(87,214,255,.20), inset 0 1px 0 rgba(255,255,255,.46) !important;
+}
+
+.app-shell.content-mode .message.assistant .bubble,
+.portal-floating-body .message.assistant .bubble,
+.app-shell.content-mode .bubble:not(.typing),
+.portal-floating-body .bubble:not(.typing) {
+  color: var(--contrast-body) !important;
+  background: rgba(7,24,39,.96) !important;
+}
+
+.app-shell.content-mode .message.assistant .bubble :is(.markdown-body,.markdown-body *,p,span,strong,b,li,code),
+.portal-floating-body .message.assistant .bubble :is(.markdown-body,.markdown-body *,p,span,strong,b,li,code) {
+  color: var(--contrast-body) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode .assistant-context :is(dt,dd,strong,b,span,small,p),
+.portal-floating-body .assistant-context :is(dt,dd,strong,b,span,small,p),
+.app-shell.content-mode .source-card :is(dt,dd,strong,b,span,small,p),
+.portal-floating-body .source-card :is(dt,dd,strong,b,span,small,p) {
+  color: var(--contrast-body) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode .assistant-context :is(h3,.section-kicker),
+.portal-floating-body .assistant-context :is(h3,.section-kicker),
+.app-shell.content-mode .source-card :is(h3,.section-kicker),
+.portal-floating-body .source-card :is(h3,.section-kicker) {
+  color: var(--contrast-title) !important;
+}
+
+.app-shell.content-mode .source-card .section-kicker,
+.portal-floating-body .source-card .section-kicker,
+.app-shell.content-mode .assistant-context .section-kicker,
+.portal-floating-body .assistant-context .section-kicker {
+  color: #82f3e0 !important;
+}
+
+.app-shell.content-mode :is(.personnel-stat-note,.hero-time,.load-meter,.device-summary,.knowledge-status) :is(span,strong,b,small,p),
+.portal-floating-body :is(.personnel-stat-note,.hero-time,.load-meter,.device-summary,.knowledge-status) :is(span,strong,b,small,p) {
+  color: var(--contrast-body) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode .personnel-stat-note,
+.portal-floating-body .personnel-stat-note {
+  color: var(--contrast-body) !important;
+  background: rgba(10,31,48,.84) !important;
+  border: 1px solid rgba(87,214,255,.18) !important;
+}
+
+.app-shell.content-mode .el-empty,
+.portal-floating-body .el-empty {
+  --el-text-color-secondary: rgba(188,214,230,.82) !important;
+  color: rgba(188,214,230,.82) !important;
+}
+
+.app-shell.content-mode .el-empty :is(.el-empty__description,.el-empty__description p),
+.portal-floating-body .el-empty :is(.el-empty__description,.el-empty__description p) {
+  color: rgba(188,214,230,.82) !important;
+}
+
+.app-shell.content-mode svg,
+.portal-floating-body svg,
+.app-shell.content-mode svg *,
+.portal-floating-body svg * {
+  opacity: 1 !important;
+}
+
+/* ========================================================================== 
+   Screenshot correction layer - fix visible wrong colors and irrelevant media
+   ========================================================================== */
+
+/* KPI cards: remove dirty nested green panels and restore clean readable cards. */
+.app-shell.content-mode .logistics-train,
+.portal-floating-body .logistics-train {
+  min-height: auto !important;
+  padding: 16px !important;
+  gap: 16px !important;
+  background:
+    linear-gradient(rgba(87,214,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.024) 1px, transparent 1px),
+    radial-gradient(circle at 12% 10%, rgba(87,214,255,.11), transparent 30%),
+    linear-gradient(180deg, rgba(4,14,24,.96), rgba(3,10,18,.98)) !important;
+  background-size: 34px 34px, 34px 34px, auto, auto !important;
+}
+
+.app-shell.content-mode .metric-grid.logistics-train,
+.portal-floating-body .metric-grid.logistics-train {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.app-shell.content-mode .metric-card,
+.portal-floating-body .metric-card,
+.app-shell.content-mode .train-card,
+.portal-floating-body .train-card {
+  min-height: 150px !important;
+  padding: 22px 26px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 18px !important;
+  border-radius: 18px !important;
+  background:
+    radial-gradient(circle at 96% 8%, rgba(87,214,255,.10), transparent 34%),
+    linear-gradient(145deg, rgba(12,29,44,.92), rgba(5,14,24,.94)) !important;
+}
+
+.app-shell.content-mode .metric-card > div:last-child,
+.portal-floating-body .metric-card > div:last-child {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.app-shell.content-mode .metric-card span,
+.portal-floating-body .metric-card span {
+  color: rgba(214,235,248,.88) !important;
+  -webkit-text-fill-color: rgba(214,235,248,.88) !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode .metric-card strong,
+.portal-floating-body .metric-card strong {
+  color: rgba(248,252,255,.98) !important;
+  -webkit-text-fill-color: rgba(248,252,255,.98) !important;
+  font-size: 42px !important;
+  line-height: 1 !important;
+  text-shadow: 0 0 20px rgba(87,214,255,.18) !important;
+}
+
+.app-shell.content-mode .metric-card small,
+.portal-floating-body .metric-card small {
+  color: rgba(180,210,228,.84) !important;
+  -webkit-text-fill-color: rgba(180,210,228,.84) !important;
+  font-size: 13px !important;
+}
+
+.app-shell.content-mode .metric-card .status-chip,
+.portal-floating-body .metric-card .status-chip,
+.app-shell.content-mode .metric-card small:last-child,
+.portal-floating-body .metric-card small:last-child {
+  display: inline-flex !important;
+  width: fit-content !important;
+  margin-top: 6px !important;
+  padding: 6px 12px !important;
+  border: 1px solid rgba(87,214,255,.22) !important;
+  border-radius: 999px !important;
+  color: rgba(232,248,255,.96) !important;
+  -webkit-text-fill-color: rgba(232,248,255,.96) !important;
+  background: rgba(87,214,255,.14) !important;
+}
+
+/* Buttons: darken the surface and make labels unambiguously light. */
+.app-shell.content-mode :is(.el-button,.receipt-actions .el-button,.route-actions .el-button,.status-report-card .el-button,.driver-status-pills + .el-button),
+.portal-floating-body :is(.el-button,.receipt-actions .el-button,.route-actions .el-button,.status-report-card .el-button,.driver-status-pills + .el-button) {
+  color: rgba(246,252,255,.98) !important;
+  -webkit-text-fill-color: rgba(246,252,255,.98) !important;
+  background:
+    linear-gradient(135deg, rgba(48,132,164,.72), rgba(19,63,82,.92)) !important;
+  border-color: rgba(126,231,255,.38) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -8px 16px rgba(0,0,0,.22), 0 12px 30px rgba(0,0,0,.26) !important;
+  text-shadow: 0 1px 8px rgba(0,0,0,.34) !important;
+}
+
+.app-shell.content-mode :is(.el-button,.receipt-actions .el-button,.route-actions .el-button,.status-report-card .el-button,.driver-status-pills + .el-button) :is(span,strong,b,small,.el-icon),
+.portal-floating-body :is(.el-button,.receipt-actions .el-button,.route-actions .el-button,.status-report-card .el-button,.driver-status-pills + .el-button) :is(span,strong,b,small,.el-icon) {
+  color: rgba(246,252,255,.98) !important;
+  -webkit-text-fill-color: rgba(246,252,255,.98) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.el-button--primary,.el-button--success,.dispatch-push-button),
+.portal-floating-body :is(.el-button--primary,.el-button--success,.dispatch-push-button) {
+  color: rgba(246,252,255,.98) !important;
+  -webkit-text-fill-color: rgba(246,252,255,.98) !important;
+  background:
+    linear-gradient(135deg, rgba(21,150,179,.92), rgba(25,91,118,.96)) !important;
+}
+
+.app-shell.content-mode :is(.el-button.is-disabled,.el-button.is-disabled:hover),
+.portal-floating-body :is(.el-button.is-disabled,.el-button.is-disabled:hover) {
+  color: rgba(220,238,248,.82) !important;
+  -webkit-text-fill-color: rgba(220,238,248,.82) !important;
+  background: rgba(65,91,110,.62) !important;
+  border-color: rgba(160,190,210,.20) !important;
+  opacity: .82 !important;
+}
+
+/* User chat bubbles are light, so only they keep dark text. */
+.app-shell.content-mode .message.user .bubble,
+.portal-floating-body .message.user .bubble {
+  color: #03101b !important;
+  -webkit-text-fill-color: #03101b !important;
+  background: linear-gradient(135deg, #8beeff, #72f1d4) !important;
+}
+.app-shell.content-mode .message.user .bubble :is(span,strong,b,small,p,.markdown-body,.markdown-body *),
+.portal-floating-body .message.user .bubble :is(span,strong,b,small,p,.markdown-body,.markdown-body *) {
+  color: #03101b !important;
+  -webkit-text-fill-color: #03101b !important;
+}
+
+/* Personnel banner: remove irrelevant airplane/wing image. */
+.app-shell.content-mode .personnel-page .personnel-head,
+.portal-floating-body .personnel-page .personnel-head {
+  min-height: 210px !important;
+  background-image:
+    radial-gradient(circle at 78% 22%, rgba(87,214,255,.18), transparent 30%),
+    linear-gradient(110deg, rgba(4,12,22,.96) 0%, rgba(8,31,49,.88) 52%, rgba(7,43,58,.70) 100%),
+    linear-gradient(rgba(87,214,255,.036) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.026) 1px, transparent 1px) !important;
+  background-size: auto, auto, 34px 34px, 34px 34px !important;
+  background-position: center !important;
+}
+
+.app-shell.content-mode .personnel-page .personnel-head::after,
+.portal-floating-body .personnel-page .personnel-head::after {
+  content: '' !important;
+  position: absolute !important;
+  right: 7% !important;
+  bottom: 32px !important;
+  width: 42% !important;
+  height: 70px !important;
+  pointer-events: none !important;
+  border: 1px solid rgba(120,220,255,.16) !important;
+  border-radius: 999px !important;
+  background:
+    repeating-linear-gradient(90deg, rgba(190,220,238,.24) 0 4px, transparent 4px 44px),
+    linear-gradient(90deg, transparent, rgba(87,214,255,.18), transparent) !important;
+  filter: blur(.1px) !important;
+  opacity: .72 !important;
+}
+
+/* Empty truck bay: add centered operating hint and reduce empty slab feeling. */
+.app-shell.content-mode .truck-cross-section,
+.portal-floating-body .truck-cross-section {
+  min-height: 260px !important;
+  align-items: center !important;
+}
+
+.app-shell.content-mode .truck-cross-section::after,
+.portal-floating-body .truck-cross-section::after {
+  content: '拖拽货物到车厢槽位完成绑定' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 34px !important;
+  transform: translateX(-50%) !important;
+  padding: 7px 14px !important;
+  border: 1px solid rgba(87,214,255,.16) !important;
+  border-radius: 999px !important;
+  color: rgba(205,230,244,.78) !important;
+  background: rgba(5,18,30,.66) !important;
+  font-size: 12px !important;
+  letter-spacing: .08em !important;
+}
+
+/* Small white dot/icon leftovers. */
+.app-shell.content-mode :is(.el-button.is-circle,.chat-head .el-button.is-circle),
+.portal-floating-body :is(.el-button.is-circle,.chat-head .el-button.is-circle) {
+  color: rgba(226,246,255,.95) !important;
+  -webkit-text-fill-color: rgba(226,246,255,.95) !important;
+  background: rgba(12,42,60,.88) !important;
+  border-color: rgba(87,214,255,.24) !important;
+}
+
+@media (max-width: 1180px) {
+  .app-shell.content-mode .metric-grid.logistics-train,
+  .portal-floating-body .metric-grid.logistics-train { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+/* ========================================================================== 
+   Global logistics console polish layer
+   Applies to every functional module opened either in app content mode or the
+   ActiveTheory floating portal. No business logic or route/data changes.
+   ========================================================================== */
+
+.app-shell.content-mode,
+.portal-floating-body {
+  --ui-bg-a: #040b14;
+  --ui-bg-b: #071522;
+  --ui-surface: rgba(8, 22, 35, .88);
+  --ui-surface-strong: rgba(10, 27, 42, .94);
+  --ui-line: rgba(118, 219, 255, .16);
+  --ui-line-strong: rgba(118, 219, 255, .28);
+  --ui-cyan: #57d6ff;
+  --ui-aqua: #6ef3d6;
+  --ui-violet: #7d8cff;
+  --ui-warning: #f6b94c;
+  --ui-danger: #ff6b6b;
+  --ui-success: #41d39e;
+  --ui-title: rgba(244, 250, 255, .98);
+  --ui-body: rgba(216, 235, 247, .90);
+  --ui-muted: rgba(170, 199, 218, .74);
+  color: var(--ui-body) !important;
+}
+
+/* Remove cartoon/train/conveyor/roadwork visual language everywhere. */
+.app-shell.content-mode :is(.train-smoke,.engine-nose,.wagon-roof,.wagon-cargo,.train-wheels,.wagon-coupler,.alert-conveyor-track,.alert-conveyor-set,.alert-scene-machine,.alert-scene-worker,.box-barcode,.box-label),
+.portal-floating-body :is(.train-smoke,.engine-nose,.wagon-roof,.wagon-cargo,.train-wheels,.wagon-coupler,.alert-conveyor-track,.alert-conveyor-set,.alert-scene-machine,.alert-scene-worker,.box-barcode,.box-label) {
+  display: none !important;
+}
+
+.app-shell.content-mode :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics),
+.portal-floating-body :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics) {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  min-height: unset !important;
+  padding: 18px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(87,214,255,.16) !important;
+  border-radius: 18px !important;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(87,214,255,.11), transparent 30%),
+    radial-gradient(circle at 88% 0%, rgba(125,140,255,.10), transparent 28%),
+    linear-gradient(rgba(87,214,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.026) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(5,15,25,.96), rgba(3,10,18,.98)) !important;
+  background-size: auto, auto, 34px 34px, 34px 34px, auto !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.045) !important;
+  container-type: normal !important;
+}
+
+.app-shell.content-mode :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics)::before,
+.portal-floating-body :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics)::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 16px 18px auto 18px !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(87,214,255,.38), rgba(110,243,214,.22), transparent) !important;
+  box-shadow: 0 0 18px rgba(87,214,255,.18) !important;
+}
+
+.app-shell.content-mode :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics)::after,
+.portal-floating-body :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics)::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(circle at 22% 38%, rgba(87,214,255,.20) 0 2px, transparent 3px),
+    radial-gradient(circle at 48% 54%, rgba(110,243,214,.16) 0 2px, transparent 3px),
+    radial-gradient(circle at 74% 34%, rgba(246,185,76,.12) 0 2px, transparent 3px),
+    linear-gradient(100deg, transparent 12%, rgba(87,214,255,.09) 36%, transparent 62%) !important;
+  opacity: .55 !important;
+}
+
+/* Cards and KPI panels: professional surfaces, no nested toy panels. */
+.app-shell.content-mode :is(.panel,.metric-card,.train-card,.shipment-card,.status-report-card,.command-tasks,.cargo-stage-panel,.warehouse-hero,.warehouse-stats,.warehouse-stats > div,.load-workbench,.personnel-table-card,.conversation,.context-card,.source-card,.eta-card,.receipt-card,.driver-card,.order-insight-card,.state-panel,.vehicle-detail,.vehicle-photo-card,.vehicle-image-field,.current-shipment,.device-summary,.knowledge-status,.filter-strip,.receipt-preview),
+.portal-floating-body :is(.panel,.metric-card,.train-card,.shipment-card,.status-report-card,.command-tasks,.cargo-stage-panel,.warehouse-hero,.warehouse-stats,.warehouse-stats > div,.load-workbench,.personnel-table-card,.conversation,.context-card,.source-card,.eta-card,.receipt-card,.driver-card,.order-insight-card,.state-panel,.vehicle-detail,.vehicle-photo-card,.vehicle-image-field,.current-shipment,.device-summary,.knowledge-status,.filter-strip,.receipt-preview) {
+  color: var(--ui-body) !important;
+  border: 1px solid var(--ui-line) !important;
+  border-radius: 16px !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(87,214,255,.10), transparent 34%),
+    linear-gradient(145deg, rgba(10,25,39,.90), rgba(4,13,23,.92)) !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.05) !important;
+  backdrop-filter: blur(18px) saturate(1.12) !important;
+}
+
+.app-shell.content-mode :is(.metric-card,.train-card),
+.portal-floating-body :is(.metric-card,.train-card) {
+  min-height: 136px !important;
+  height: auto !important;
+  padding: 22px 24px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 16px !important;
+  transform: none !important;
+}
+
+.app-shell.content-mode :is(.metric-card,.train-card) > div:last-child,
+.portal-floating-body :is(.metric-card,.train-card) > div:last-child {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.app-shell.content-mode :is(.metric-card,.train-card)::before,
+.portal-floating-body :is(.metric-card,.train-card)::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  left: 18px !important;
+  right: 18px !important;
+  top: 0 !important;
+  height: 2px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, transparent, rgba(87,214,255,.72), rgba(110,243,214,.38), transparent) !important;
+  box-shadow: 0 0 16px rgba(87,214,255,.20) !important;
+}
+
+.app-shell.content-mode :is(.metric-card.red,.metric-card.orange)::before,
+.portal-floating-body :is(.metric-card.red,.metric-card.orange)::before {
+  background: linear-gradient(90deg, transparent, rgba(246,185,76,.70), rgba(255,107,107,.44), transparent) !important;
+}
+
+.app-shell.content-mode .metric-icon,
+.portal-floating-body .metric-icon {
+  width: 42px !important;
+  height: 42px !important;
+  flex: 0 0 42px !important;
+  border-radius: 12px !important;
+  color: #8ee8ff !important;
+  background: linear-gradient(145deg, rgba(87,214,255,.18), rgba(110,243,214,.08)) !important;
+  border: 1px solid rgba(126,231,255,.25) !important;
+  box-shadow: inset 0 0 18px rgba(87,214,255,.10), 0 0 18px rgba(87,214,255,.08) !important;
+  transform: none !important;
+  filter: none !important;
+  font-size: 22px !important;
+}
+
+/* Typography hierarchy across all module pages. */
+.app-shell.content-mode :is(h1,h2,h3,h4,h5,h6,strong,b,dt,th,.panel-title),
+.portal-floating-body :is(h1,h2,h3,h4,h5,h6,strong,b,dt,th,.panel-title) {
+  color: var(--ui-title) !important;
+  -webkit-text-fill-color: var(--ui-title) !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode :is(p,span,dd,td,li,label,em,.cell,.el-form-item__label,.el-descriptions__label,.el-descriptions__content),
+.portal-floating-body :is(p,span,dd,td,li,label,em,.cell,.el-form-item__label,.el-descriptions__label,.el-descriptions__content) {
+  color: var(--ui-body) !important;
+  -webkit-text-fill-color: var(--ui-body) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(small,.muted,.section-note,.ai-note,.vehicle-main small,.fleet-rows small,.table-row small,.panel small,.bubble > span),
+.portal-floating-body :is(small,.muted,.section-note,.ai-note,.vehicle-main small,.fleet-rows small,.table-row small,.panel small,.bubble > span) {
+  color: var(--ui-muted) !important;
+  -webkit-text-fill-color: var(--ui-muted) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.section-kicker,.eyebrow),
+.portal-floating-body :is(.section-kicker,.eyebrow) {
+  color: #86f2df !important;
+  -webkit-text-fill-color: #86f2df !important;
+  letter-spacing: .16em !important;
+  text-shadow: 0 0 14px rgba(110,243,214,.20) !important;
+}
+
+/* Unified button system: no white/black default buttons. */
+.app-shell.content-mode :is(.el-button,button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete)),
+.portal-floating-body :is(.el-button,button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete)) {
+  min-height: 34px !important;
+  border: 1px solid rgba(126,231,255,.30) !important;
+  border-radius: 999px !important;
+  color: rgba(242,250,255,.96) !important;
+  -webkit-text-fill-color: rgba(242,250,255,.96) !important;
+  background: linear-gradient(135deg, rgba(36,105,135,.72), rgba(10,38,58,.92)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -8px 16px rgba(0,0,0,.22), 0 10px 26px rgba(0,0,0,.24) !important;
+  text-shadow: 0 1px 8px rgba(0,0,0,.35) !important;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease !important;
+}
+
+.app-shell.content-mode :is(.el-button,button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete)) :is(span,strong,b,small,.el-icon),
+.portal-floating-body :is(.el-button,button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete)) :is(span,strong,b,small,.el-icon) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  opacity: 1 !important;
+}
+
+.app-shell.content-mode :is(.el-button:hover,button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete):hover),
+.portal-floating-body :is(.el-button:hover,button:not(.nav-item):not(.notification-close):not(.conversation-delete):not(.message-delete):not(.alert-row-delete):hover) {
+  transform: translateY(-1px) !important;
+  border-color: rgba(126,231,255,.48) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -8px 16px rgba(0,0,0,.24), 0 16px 34px rgba(0,0,0,.30), 0 0 24px rgba(87,214,255,.10) !important;
+}
+
+.app-shell.content-mode :is(.el-button--primary,.el-button--success,.dispatch-push-button,.chat-input .el-button),
+.portal-floating-body :is(.el-button--primary,.el-button--success,.dispatch-push-button,.chat-input .el-button) {
+  color: rgba(246,252,255,.98) !important;
+  -webkit-text-fill-color: rgba(246,252,255,.98) !important;
+  border-color: rgba(126,231,255,.42) !important;
+  background: linear-gradient(135deg, rgba(22,155,188,.94), rgba(54,83,172,.82)) !important;
+}
+
+.app-shell.content-mode :is(.el-button--warning),
+.portal-floating-body :is(.el-button--warning) {
+  border-color: rgba(246,185,76,.38) !important;
+  background: linear-gradient(135deg, rgba(171,111,29,.88), rgba(70,42,18,.92)) !important;
+}
+
+.app-shell.content-mode :is(.el-button--danger),
+.portal-floating-body :is(.el-button--danger) {
+  border-color: rgba(255,107,107,.38) !important;
+  background: linear-gradient(135deg, rgba(184,65,65,.88), rgba(78,24,31,.94)) !important;
+}
+
+.app-shell.content-mode :is(.el-button.is-disabled,.el-button.is-disabled:hover),
+.portal-floating-body :is(.el-button.is-disabled,.el-button.is-disabled:hover) {
+  color: rgba(218,236,246,.82) !important;
+  -webkit-text-fill-color: rgba(218,236,246,.82) !important;
+  background: rgba(55,78,96,.62) !important;
+  border-color: rgba(160,190,210,.20) !important;
+  opacity: .82 !important;
+  transform: none !important;
+}
+
+/* Status pills and tags. */
+.app-shell.content-mode :is(.status-chip,.vehicle-state,.severity-label,.el-tag,.live-pill,.alert-status),
+.portal-floating-body :is(.status-chip,.vehicle-state,.severity-label,.el-tag,.live-pill,.alert-status) {
+  border: 1px solid rgba(87,214,255,.24) !important;
+  border-radius: 999px !important;
+  color: #c9f3ff !important;
+  -webkit-text-fill-color: #c9f3ff !important;
+  background: rgba(87,214,255,.12) !important;
+  box-shadow: inset 0 0 12px rgba(87,214,255,.05) !important;
+}
+
+.app-shell.content-mode :is(.status-chip.success,.el-tag--success),
+.portal-floating-body :is(.status-chip.success,.el-tag--success) {
+  color: #a8f2d4 !important;
+  -webkit-text-fill-color: #a8f2d4 !important;
+  border-color: rgba(65,211,158,.28) !important;
+  background: rgba(65,211,158,.10) !important;
+}
+
+.app-shell.content-mode :is(.severity-label.warning,.el-tag--warning,.warning-dot + span),
+.portal-floating-body :is(.severity-label.warning,.el-tag--warning,.warning-dot + span) {
+  color: #ffd990 !important;
+  -webkit-text-fill-color: #ffd990 !important;
+  border-color: rgba(246,185,76,.32) !important;
+  background: rgba(246,185,76,.12) !important;
+}
+
+.app-shell.content-mode :is(.severity-label.critical,.severity-label.red,.el-tag--danger,.danger-text),
+.portal-floating-body :is(.severity-label.critical,.severity-label.red,.el-tag--danger,.danger-text) {
+  color: #ffaaa5 !important;
+  -webkit-text-fill-color: #ffaaa5 !important;
+  border-color: rgba(255,107,107,.34) !important;
+  background: rgba(255,107,107,.11) !important;
+}
+
+/* Inputs, selects, tables and lists. */
+.app-shell.content-mode :is(.el-input__wrapper,.el-select__wrapper,.el-textarea__inner,.el-input-number,.el-input-number .el-input__wrapper),
+.portal-floating-body :is(.el-input__wrapper,.el-select__wrapper,.el-textarea__inner,.el-input-number,.el-input-number .el-input__wrapper) {
+  color: var(--ui-title) !important;
+  border: 1px solid rgba(87,214,255,.18) !important;
+  background: rgba(4,15,26,.78) !important;
+  box-shadow: inset 0 0 0 1px rgba(87,214,255,.04) !important;
+}
+
+.app-shell.content-mode :is(.el-input__inner,.el-textarea__inner,.el-select__selected-item,.el-select__placeholder),
+.portal-floating-body :is(.el-input__inner,.el-textarea__inner,.el-select__selected-item,.el-select__placeholder) {
+  color: var(--ui-title) !important;
+  -webkit-text-fill-color: var(--ui-title) !important;
+}
+
+.app-shell.content-mode :is(.el-input__inner::placeholder,.el-textarea__inner::placeholder),
+.portal-floating-body :is(.el-input__inner::placeholder,.el-textarea__inner::placeholder) {
+  color: rgba(164,194,214,.70) !important;
+  -webkit-text-fill-color: rgba(164,194,214,.70) !important;
+}
+
+.app-shell.content-mode :is(.table-row,.el-table,.el-table tr,.el-table th.el-table__cell,.el-table td.el-table__cell,.fleet-rows button,.dispatch-list button,.alert-list button,.cargo-stage-panel > button,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article,.timeline > div),
+.portal-floating-body :is(.table-row,.el-table,.el-table tr,.el-table th.el-table__cell,.el-table td.el-table__cell,.fleet-rows button,.dispatch-list button,.alert-list button,.cargo-stage-panel > button,.manifest-row,.cargo-drag-card,.vehicle-rail button,.device-grid article,.timeline > div) {
+  color: var(--ui-body) !important;
+  border-color: rgba(87,214,255,.12) !important;
+  background: rgba(7,22,35,.70) !important;
+}
+
+.app-shell.content-mode :is(.table-row:hover,.el-table__row:hover > td.el-table__cell,.fleet-rows button:hover,.dispatch-list button:hover,.alert-list button:hover,.cargo-stage-panel > button:hover,.manifest-row:hover,.cargo-drag-card:hover,.vehicle-rail button:hover,.device-grid article:hover),
+.portal-floating-body :is(.table-row:hover,.el-table__row:hover > td.el-table__cell,.fleet-rows button:hover,.dispatch-list button:hover,.alert-list button:hover,.cargo-stage-panel > button:hover,.manifest-row:hover,.cargo-drag-card:hover,.vehicle-rail button:hover,.device-grid article:hover) {
+  border-color: rgba(87,214,255,.28) !important;
+  background: rgba(10,34,52,.82) !important;
+  box-shadow: 0 0 24px rgba(87,214,255,.07), inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+
+/* White placeholders and image frames become dark visual modules. */
+.app-shell.content-mode :is(.vehicle-photo-empty,.vehicle-table-image,.vehicle-image-preview,.el-empty,.receipt-icon,.small-avatar,.avatar.has-image),
+.portal-floating-body :is(.vehicle-photo-empty,.vehicle-table-image,.vehicle-image-preview,.el-empty,.receipt-icon,.small-avatar,.avatar.has-image) {
+  color: var(--ui-muted) !important;
+  background:
+    linear-gradient(rgba(87,214,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.026) 1px, transparent 1px),
+    linear-gradient(145deg, rgba(6,19,31,.94), rgba(3,10,18,.96)) !important;
+  background-size: 28px 28px, 28px 28px, auto !important;
+  border-color: rgba(87,214,255,.18) !important;
+}
+
+.app-shell.content-mode :is(.vehicle-photo-card img,.vehicle-table-image img,.vehicle-image-preview img,.avatar.has-image img),
+.portal-floating-body :is(.vehicle-photo-card img,.vehicle-table-image img,.vehicle-image-preview img,.avatar.has-image img) {
+  background: rgba(4,15,26,.96) !important;
+  filter: brightness(.84) saturate(.85) contrast(1.02) !important;
+}
+
+/* Maps and visual areas use dark network treatment. */
+.app-shell.content-mode :is(.mock-map,.leaflet-fleet-map,.smart-map,.map-panel,.tracking-map,.dispatch-map,.truck-cross-section,.truck-body,.mini-location),
+.portal-floating-body :is(.mock-map,.leaflet-fleet-map,.smart-map,.map-panel,.tracking-map,.dispatch-map,.truck-cross-section,.truck-body,.mini-location) {
+  border-color: rgba(87,214,255,.18) !important;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(87,214,255,.10), transparent 28%),
+    linear-gradient(rgba(87,214,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.026) 1px, transparent 1px),
+    linear-gradient(145deg, rgba(6,19,31,.96), rgba(3,10,18,.96)) !important;
+  background-size: auto, 30px 30px, 30px 30px, auto !important;
+}
+
+.app-shell.content-mode :is(.leaflet-tile-pane,.leaflet-tile),
+.portal-floating-body :is(.leaflet-tile-pane,.leaflet-tile) {
+  filter: brightness(.58) saturate(.72) contrast(1.16) hue-rotate(168deg) !important;
+}
+
+/* Warehouse empty truck bay: no toy-road look; show professional load-planning space. */
+.app-shell.content-mode .truck-cross-section::before,
+.portal-floating-body .truck-cross-section::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 9% !important;
+  right: 6% !important;
+  bottom: 58px !important;
+  height: 60px !important;
+  pointer-events: none !important;
+  border: 1px solid rgba(150,190,215,.18) !important;
+  border-radius: 14px !important;
+  background:
+    repeating-linear-gradient(90deg, rgba(190,218,238,.18) 0 5px, transparent 5px 52px),
+    linear-gradient(90deg, rgba(87,214,255,.05), rgba(110,243,214,.10), rgba(87,214,255,.05)) !important;
+  box-shadow: inset 0 0 24px rgba(87,214,255,.06), 0 16px 34px rgba(0,0,0,.28) !important;
+}
+
+.app-shell.content-mode .truck-cross-section::after,
+.portal-floating-body .truck-cross-section::after {
+  content: 'LOAD PLANNING GRID' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 28px !important;
+  transform: translateX(-50%) !important;
+  padding: 7px 14px !important;
+  border: 1px solid rgba(87,214,255,.16) !important;
+  border-radius: 999px !important;
+  color: rgba(205,230,244,.78) !important;
+  -webkit-text-fill-color: rgba(205,230,244,.78) !important;
+  background: rgba(5,18,30,.66) !important;
+  font-size: 12px !important;
+  letter-spacing: .12em !important;
+}
+
+/* AI assistant and chat remain high contrast. */
+.app-shell.content-mode :is(.assistant-layout .conversation-side,.assistant-layout .chat-panel,.assistant-context .panel),
+.portal-floating-body :is(.assistant-layout .conversation-side,.assistant-layout .chat-panel,.assistant-context .panel) {
+  background: linear-gradient(180deg, rgba(8,24,38,.94), rgba(3,10,18,.96)) !important;
+}
+
+.app-shell.content-mode .message.user .bubble,
+.portal-floating-body .message.user .bubble {
+  color: #03101b !important;
+  -webkit-text-fill-color: #03101b !important;
+  background: linear-gradient(135deg, #8beeff, #72f1d4) !important;
+}
+
+.app-shell.content-mode .message.user .bubble *,
+.portal-floating-body .message.user .bubble * {
+  color: #03101b !important;
+  -webkit-text-fill-color: #03101b !important;
+}
+
+.app-shell.content-mode :is(.message.assistant .bubble,.bubble:not(.typing)),
+.portal-floating-body :is(.message.assistant .bubble,.bubble:not(.typing)) {
+  color: var(--ui-body) !important;
+  background: rgba(7,24,39,.96) !important;
+}
+
+.app-shell.content-mode :is(.message.assistant .bubble,.bubble:not(.typing)) *,
+.portal-floating-body :is(.message.assistant .bubble,.bubble:not(.typing)) * {
+  color: var(--ui-body) !important;
+  -webkit-text-fill-color: var(--ui-body) !important;
+}
+
+/* Page banners: abstract logistics network, not photo mismatches. */
+.app-shell.content-mode :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner),
+.portal-floating-body :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner) {
+  background-image:
+    radial-gradient(circle at 78% 22%, rgba(87,214,255,.18), transparent 30%),
+    radial-gradient(circle at 22% 100%, rgba(110,243,214,.08), transparent 34%),
+    linear-gradient(110deg, rgba(4,12,22,.96) 0%, rgba(8,31,49,.88) 54%, rgba(7,43,58,.70) 100%),
+    linear-gradient(rgba(87,214,255,.036) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.026) 1px, transparent 1px) !important;
+  background-size: auto, auto, auto, 34px 34px, 34px 34px !important;
+}
+
+/* Responsive KPI grids. */
+@media (max-width: 1180px) {
+  .app-shell.content-mode :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics),
+  .portal-floating-body :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell.content-mode :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics),
+  .portal-floating-body :is(.logistics-train,.storybook-train,.alert-conveyor-scene,.alert-metrics) {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Final visible QA repair - remove pale controls, map credits and empty toy panels */
+.app-shell.content-mode :is(.amap-logo,.amap-copyright,.amap-controlbar,.amap-toolbar,.amap-geolocation-con,.amap-scalecontrol,.leaflet-control-attribution,.map-provider,.map-credit,.smart-map-provider,.map-control-label,.map-widget-label),
+.portal-floating-body :is(.amap-logo,.amap-copyright,.amap-controlbar,.amap-toolbar,.amap-geolocation-con,.amap-scalecontrol,.leaflet-control-attribution,.map-provider,.map-credit,.smart-map-provider,.map-control-label,.map-widget-label) {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.app-shell.content-mode :is(.el-button.is-plain,.el-button.is-text:not(.is-link),.el-button.is-disabled,.el-button.is-disabled:hover,.status-chip,.vehicle-state,.severity-label,.el-tag,.live-pill,.personnel-stat-note,.pill,.chip,.command-badge,.task-badge,.receipt-status),
+.portal-floating-body :is(.el-button.is-plain,.el-button.is-text:not(.is-link),.el-button.is-disabled,.el-button.is-disabled:hover,.status-chip,.vehicle-state,.severity-label,.el-tag,.live-pill,.personnel-stat-note,.pill,.chip,.command-badge,.task-badge,.receipt-status) {
+  color: rgba(238, 248, 255, .96) !important;
+  -webkit-text-fill-color: rgba(238, 248, 255, .96) !important;
+  background: linear-gradient(135deg, rgba(12, 40, 58, .96), rgba(20, 85, 105, .72)) !important;
+  border: 1px solid rgba(87, 214, 255, .34) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 12px 28px rgba(0,0,0,.26) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode :is(.el-button.is-plain,.el-button.is-text:not(.is-link),.el-button.is-disabled,.status-chip,.vehicle-state,.severity-label,.el-tag,.live-pill,.personnel-stat-note,.pill,.chip,.command-badge,.task-badge,.receipt-status) :is(span,strong,b,small,i,.el-icon),
+.portal-floating-body :is(.el-button.is-plain,.el-button.is-text:not(.is-link),.el-button.is-disabled,.status-chip,.vehicle-state,.severity-label,.el-tag,.live-pill,.personnel-stat-note,.pill,.chip,.command-badge,.task-badge,.receipt-status) :is(span,strong,b,small,i,.el-icon) {
+  color: rgba(238, 248, 255, .96) !important;
+  -webkit-text-fill-color: rgba(238, 248, 255, .96) !important;
+}
+
+.app-shell.content-mode :is(.el-button.is-circle,.el-button--primary.is-circle,.chat-head .el-button.is-circle,.conversation-card .el-button.is-circle,.source-card .el-button.is-circle,.message-action,.close-btn),
+.portal-floating-body :is(.el-button.is-circle,.el-button--primary.is-circle,.chat-head .el-button.is-circle,.conversation-card .el-button.is-circle,.source-card .el-button.is-circle,.message-action,.close-btn) {
+  color: rgba(236, 249, 255, .96) !important;
+  -webkit-text-fill-color: rgba(236, 249, 255, .96) !important;
+  background: radial-gradient(circle at 28% 22%, rgba(87,214,255,.26), rgba(9,28,43,.94) 58%, rgba(4,13,24,.98)) !important;
+  border: 1px solid rgba(87, 214, 255, .32) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 14px 30px rgba(0,0,0,.32) !important;
+}
+
+.app-shell.content-mode :is(.message.user .bubble,.message.assistant .bubble,.bubble:not(.typing)),
+.portal-floating-body :is(.message.user .bubble,.message.assistant .bubble,.bubble:not(.typing)) {
+  color: rgba(235, 245, 255, .94) !important;
+  -webkit-text-fill-color: rgba(235, 245, 255, .94) !important;
+  background: linear-gradient(135deg, rgba(10, 31, 49, .96), rgba(8, 52, 69, .92)) !important;
+  border: 1px solid rgba(87, 214, 255, .24) !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode :is(.message.user .bubble,.message.assistant .bubble,.bubble:not(.typing)) :is(span,strong,b,small,p,li,code,.markdown-body,.markdown-body *),
+.portal-floating-body :is(.message.user .bubble,.message.assistant .bubble,.bubble:not(.typing)) :is(span,strong,b,small,p,li,code,.markdown-body,.markdown-body *) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.filter-strip,.state-panel,.vehicle-photo-empty,.el-empty,.truck-cross-section,.mock-map,.smart-map,.leaflet-fleet-map),
+.portal-floating-body :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.filter-strip,.state-panel,.vehicle-photo-empty,.el-empty,.truck-cross-section,.mock-map,.smart-map,.leaflet-fleet-map) {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(115deg, rgba(5, 17, 30, .95), rgba(8, 37, 54, .88) 46%, rgba(14, 64, 82, .72)),
+    radial-gradient(circle at 78% 24%, rgba(87,214,255,.16), transparent 34%),
+    linear-gradient(rgba(87,214,255,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.035) 1px, transparent 1px) !important;
+  background-size: auto, auto, 34px 34px, 34px 34px !important;
+  border: 1px solid rgba(87, 214, 255, .20) !important;
+}
+
+.app-shell.content-mode :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.filter-strip,.state-panel,.vehicle-photo-empty,.el-empty,.truck-cross-section,.mock-map,.smart-map,.leaflet-fleet-map)::before,
+.portal-floating-body :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.filter-strip,.state-panel,.vehicle-photo-empty,.el-empty,.truck-cross-section,.mock-map,.smart-map,.leaflet-fleet-map)::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -2 !important;
+  pointer-events: none !important;
+  background-image:
+    linear-gradient(90deg, rgba(4, 13, 24, .74), rgba(4, 13, 24, .18) 46%, rgba(4, 13, 24, .76)),
+    url('./assets/login-map-hd.png') !important;
+  background-size: cover, cover !important;
+  background-position: center, center !important;
+  opacity: .30 !important;
+  filter: saturate(.75) brightness(.58) contrast(1.12) !important;
+  animation: consoleMediaPan 18s ease-in-out infinite alternate !important;
+}
+
+.app-shell.content-mode :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.filter-strip,.state-panel,.vehicle-photo-empty,.el-empty,.truck-cross-section,.mock-map,.smart-map,.leaflet-fleet-map)::after,
+.portal-floating-body :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.filter-strip,.state-panel,.vehicle-photo-empty,.el-empty,.truck-cross-section,.mock-map,.smart-map,.leaflet-fleet-map)::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background-image:
+    linear-gradient(100deg, rgba(4,13,24,.72), rgba(4,13,24,.18) 42%, rgba(4,13,24,.78)),
+    url('./assets/console-map.jpg') !important;
+  background-repeat: no-repeat !important;
+  background-size: cover, 58% auto !important;
+  background-position: center, right 52% !important;
+  opacity: .42 !important;
+  filter: saturate(.82) brightness(.70) contrast(1.05) !important;
+  animation: consoleMediaFade 18s ease-in-out infinite alternate !important;
+}
+
+.app-shell.content-mode :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.filter-strip,.state-panel,.vehicle-photo-empty,.el-empty,.truck-cross-section,.mock-map,.smart-map,.leaflet-fleet-map) > *,
+.portal-floating-body :is(.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.filter-strip,.state-panel,.vehicle-photo-empty,.el-empty,.truck-cross-section,.mock-map,.smart-map,.leaflet-fleet-map) > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.app-shell.content-mode .truck-cross-section::after,
+.portal-floating-body .truck-cross-section::after {
+  content: '' !important;
+}
+
+.app-shell.content-mode :is(.rail-track,.track-strip,.conveyor-belt,.toy-rail,.road-guard,.train-wheel,.train-track),
+.portal-floating-body :is(.rail-track,.track-strip,.conveyor-belt,.toy-rail,.road-guard,.train-wheel,.train-track) {
+  display: none !important;
+}
+
+.app-shell.content-mode :is(.metric-card,.train-card,.warehouse-stats > div)::before,
+.portal-floating-body :is(.metric-card,.train-card,.warehouse-stats > div)::before {
+  background: linear-gradient(90deg, rgba(87,214,255,.72), rgba(110,243,214,.32), transparent) !important;
+  opacity: .72 !important;
+}
+
+@keyframes consoleMediaPan {
+  0% { transform: scale(1.02) translate3d(-1.5%, 0, 0); opacity: .22; }
+  45% { opacity: .34; }
+  100% { transform: scale(1.09) translate3d(1.5%, -1%, 0); opacity: .28; }
+}
+
+@keyframes consoleMediaFade {
+  0%, 28% { opacity: .14; transform: translate3d(2%, 0, 0) scale(1.03); }
+  48%, 100% { opacity: .44; transform: translate3d(-1%, 0, 0) scale(1.06); }
+}
+
+/* Final anti-train and visible contrast correction pass */
+.app-shell.content-mode :is(.filter-strip,.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.state-panel,.vehicle-photo-empty,.el-empty,.mock-map,.smart-map,.leaflet-fleet-map),
+.portal-floating-body :is(.filter-strip,.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.state-panel,.vehicle-photo-empty,.el-empty,.mock-map,.smart-map,.leaflet-fleet-map) {
+  background-image:
+    linear-gradient(115deg, rgba(4, 13, 24, .94), rgba(7, 30, 48, .84) 46%, rgba(10, 64, 82, .66)),
+    radial-gradient(circle at 78% 22%, rgba(87,214,255,.18), transparent 34%),
+    linear-gradient(rgba(87,214,255,.052) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.042) 1px, transparent 1px) !important;
+  background-size: auto, auto, 32px 32px, 32px 32px !important;
+  background-position: center !important;
+}
+
+.app-shell.content-mode :is(.filter-strip,.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.state-panel,.vehicle-photo-empty,.el-empty,.mock-map,.smart-map,.leaflet-fleet-map)::before,
+.portal-floating-body :is(.filter-strip,.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.state-panel,.vehicle-photo-empty,.el-empty,.mock-map,.smart-map,.leaflet-fleet-map)::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -2 !important;
+  pointer-events: none !important;
+  background-image:
+    linear-gradient(90deg, rgba(4,13,24,.86), rgba(4,13,24,.24) 44%, rgba(4,13,24,.84)),
+    url('./assets/login-map-hd.png') !important;
+  background-size: cover, cover !important;
+  background-position: center, center !important;
+  opacity: .52 !important;
+  filter: saturate(.78) brightness(.68) contrast(1.2) !important;
+  animation: logisticsMapCarousel 18s ease-in-out infinite alternate !important;
+}
+
+.app-shell.content-mode :is(.filter-strip,.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.state-panel,.vehicle-photo-empty,.el-empty,.mock-map,.smart-map,.leaflet-fleet-map)::after,
+.portal-floating-body :is(.filter-strip,.personnel-page .personnel-head,.warehouse-hero,.driver-hero,.overview-hero,.hero-banner,.state-panel,.vehicle-photo-empty,.el-empty,.mock-map,.smart-map,.leaflet-fleet-map)::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background-image:
+    radial-gradient(circle at 24% 34%, rgba(87,214,255,.18), transparent 15%),
+    radial-gradient(circle at 66% 42%, rgba(110,243,214,.13), transparent 13%),
+    linear-gradient(120deg, transparent 0 18%, rgba(87,214,255,.12) 18.5%, transparent 19.2% 46%, rgba(110,243,214,.10) 46.6%, transparent 47.3% 100%),
+    url('../地图.jpg') !important;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat !important;
+  background-size: auto, auto, cover, 480px auto !important;
+  background-position: center, center, center, center !important;
+  opacity: .46 !important;
+  filter: saturate(.8) brightness(.72) contrast(1.2) !important;
+  animation: logisticsNodeCarousel 18s ease-in-out infinite alternate !important;
+}
+
+.app-shell.content-mode .personnel-page .personnel-head :is(.section-kicker,h1,h2,p,.muted),
+.portal-floating-body .personnel-page .personnel-head :is(.section-kicker,h1,h2,p,.muted) {
+  display: none !important;
+}
+
+.app-shell.content-mode .personnel-page .personnel-head,
+.portal-floating-body .personnel-page .personnel-head {
+  min-height: 190px !important;
+}
+
+.app-shell.content-mode :is(.filter-strip,.warehouse-hero,.driver-hero),
+.portal-floating-body :is(.filter-strip,.warehouse-hero,.driver-hero) {
+  min-height: 148px !important;
+  padding-block: 30px !important;
+}
+
+.app-shell.content-mode .filter-strip :is(h1,h2),
+.portal-floating-body .filter-strip :is(h1,h2) {
+  max-width: min(720px, calc(100% - 260px)) !important;
+  line-height: 1.12 !important;
+  text-shadow: 0 16px 34px rgba(0,0,0,.42) !important;
+}
+
+.app-shell.content-mode .filter-strip > .el-button:last-child,
+.portal-floating-body .filter-strip > .el-button:last-child {
+  align-self: center !important;
+  margin-left: auto !important;
+  flex: 0 0 auto !important;
+}
+
+.app-shell.content-mode :is(.command-status,.command-status.executed,.command-tasks b.executed,.receipt-card b.executed,.command-list b.executed,.panel-title b,.cargo-pool .panel-title b,.load-manifest .panel-title b),
+.portal-floating-body :is(.command-status,.command-status.executed,.command-tasks b.executed,.receipt-card b.executed,.command-list b.executed,.panel-title b,.cargo-pool .panel-title b,.load-manifest .panel-title b) {
+  min-width: 38px !important;
+  color: rgba(235, 245, 255, .96) !important;
+  -webkit-text-fill-color: rgba(235, 245, 255, .96) !important;
+  background: linear-gradient(135deg, rgba(12, 54, 76, .96), rgba(18, 99, 125, .78)) !important;
+  border: 1px solid rgba(87,214,255,.38) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 14px 28px rgba(0,0,0,.26) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.content-mode :is(.command-status,.command-status.executed,.command-tasks b.executed,.receipt-card b.executed,.command-list b.executed,.panel-title b,.cargo-pool .panel-title b,.load-manifest .panel-title b) *,
+.portal-floating-body :is(.command-status,.command-status.executed,.command-tasks b.executed,.receipt-card b.executed,.command-list b.executed,.panel-title b,.cargo-pool .panel-title b,.load-manifest .panel-title b) * {
+  color: rgba(235, 245, 255, .96) !important;
+  -webkit-text-fill-color: rgba(235, 245, 255, .96) !important;
+}
+
+.app-shell.content-mode .app-header .top-user-card,
+.portal-floating-body .app-header .top-user-card,
+.app-shell.content-mode :is(.nav-user-card,.user-capsule,.header-user,.top-user),
+.portal-floating-body :is(.nav-user-card,.user-capsule,.header-user,.top-user) {
+  transform: scale(.86) !important;
+  transform-origin: top right !important;
+  max-width: 230px !important;
+}
+
+.app-shell.content-mode .message.user .bubble,
+.portal-floating-body .message.user .bubble {
+  color: rgba(245, 252, 255, .98) !important;
+  -webkit-text-fill-color: rgba(245, 252, 255, .98) !important;
+  background: linear-gradient(135deg, rgba(16, 84, 112, .98), rgba(22, 125, 134, .92)) !important;
+  border-color: rgba(117, 231, 255, .42) !important;
+  box-shadow: 0 18px 42px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.app-shell.content-mode .message.assistant .bubble,
+.portal-floating-body .message.assistant .bubble {
+  color: rgba(226, 241, 252, .94) !important;
+  -webkit-text-fill-color: rgba(226, 241, 252, .94) !important;
+  background: linear-gradient(135deg, rgba(7, 25, 40, .98), rgba(8, 48, 68, .92)) !important;
+  border-color: rgba(87, 214, 255, .22) !important;
+}
+
+.app-shell.content-mode :is(.message.user .bubble,.message.assistant .bubble) :is(span,strong,b,small,p,li,.markdown-body,.markdown-body *),
+.portal-floating-body :is(.message.user .bubble,.message.assistant .bubble) :is(span,strong,b,small,p,li,.markdown-body,.markdown-body *) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+}
+
+@keyframes logisticsMapCarousel {
+  0% { opacity: .38; transform: scale(1.02) translate3d(-1.2%, 0, 0); }
+  45% { opacity: .58; }
+  100% { opacity: .44; transform: scale(1.08) translate3d(1.3%, -1%, 0); }
+}
+
+@keyframes logisticsNodeCarousel {
+  0% { opacity: .26; transform: scale(1) translate3d(1%, 0, 0); }
+  52% { opacity: .54; }
+  100% { opacity: .36; transform: scale(1.05) translate3d(-1%, 0, 0); }
+}
+
+/* Hard QA lock: no train imagery, no pale pills, clearer hero/media panels */
+.app-shell.content-mode :is(.warehouse-stats,.warehouse-stats > div,.personnel-stats,.personnel-stats > div,.metric-card,.train-card,.shipment-card.image-card),
+.portal-floating-body :is(.warehouse-stats,.warehouse-stats > div,.personnel-stats,.personnel-stats > div,.metric-card,.train-card,.shipment-card.image-card) {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(135deg, rgba(6, 19, 31, .97), rgba(13, 34, 50, .94) 52%, rgba(8, 22, 35, .98)),
+    radial-gradient(circle at 82% 20%, rgba(87,214,255,.11), transparent 36%) !important;
+  border-color: rgba(87, 214, 255, .18) !important;
+}
+
+.app-shell.content-mode :is(.warehouse-stats,.warehouse-stats > div,.personnel-stats,.personnel-stats > div,.metric-card,.train-card,.shipment-card.image-card)::before,
+.portal-floating-body :is(.warehouse-stats,.warehouse-stats > div,.personnel-stats,.personnel-stats > div,.metric-card,.train-card,.shipment-card.image-card)::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -2 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, rgba(4,13,24,.86), rgba(4,13,24,.34) 48%, rgba(4,13,24,.86)),
+    url('./assets/console-map.jpg') center / cover no-repeat !important;
+  opacity: .26 !important;
+  filter: saturate(.82) brightness(.68) contrast(1.18) !important;
+}
+
+.app-shell.content-mode :is(.warehouse-stats,.warehouse-stats > div,.personnel-stats,.personnel-stats > div,.metric-card,.train-card,.shipment-card.image-card)::after,
+.portal-floating-body :is(.warehouse-stats,.warehouse-stats > div,.personnel-stats,.personnel-stats > div,.metric-card,.train-card,.shipment-card.image-card)::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(87,214,255,.18), transparent),
+    repeating-linear-gradient(90deg, transparent 0 72px, rgba(87,214,255,.08) 72px 73px, transparent 73px 144px) !important;
+  opacity: .34 !important;
+}
+
+.app-shell.content-mode :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.vehicle-photo-empty,.el-empty,.alert-metrics),
+.portal-floating-body :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.vehicle-photo-empty,.el-empty,.alert-metrics) {
+  background:
+    linear-gradient(110deg, rgba(4,13,24,.95), rgba(7,32,49,.88) 42%, rgba(10,55,72,.76)),
+    radial-gradient(circle at 72% 28%, rgba(87,214,255,.16), transparent 34%) !important;
+}
+
+.app-shell.content-mode :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.vehicle-photo-empty,.el-empty,.alert-metrics)::before,
+.portal-floating-body :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.vehicle-photo-empty,.el-empty,.alert-metrics)::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -2 !important;
+  pointer-events: none !important;
+  background-image:
+    linear-gradient(90deg, rgba(4,13,24,.86), rgba(4,13,24,.22) 48%, rgba(4,13,24,.84)),
+    url('./assets/console-slide-1.png'),
+    url('./assets/console-slide-2.png'),
+    url('./assets/console-slide-3.png') !important;
+  background-size: cover, cover, cover, cover !important;
+  background-position: center, center, center, center !important;
+  background-repeat: no-repeat !important;
+  opacity: .42 !important;
+  filter: saturate(.72) brightness(.58) contrast(1.16) !important;
+  animation: consoleSlideMix 18s ease-in-out infinite alternate !important;
+}
+
+.app-shell.content-mode :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.vehicle-photo-empty,.el-empty,.alert-metrics)::after,
+.portal-floating-body :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.vehicle-photo-empty,.el-empty,.alert-metrics)::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, rgba(4,13,24,.86) 0 28%, transparent 50%, rgba(4,13,24,.72)),
+    radial-gradient(circle at 26% 48%, rgba(87,214,255,.18), transparent 16%),
+    radial-gradient(circle at 68% 40%, rgba(110,243,214,.12), transparent 15%),
+    linear-gradient(rgba(87,214,255,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(87,214,255,.04) 1px, transparent 1px) !important;
+  background-size: auto, auto, auto, 34px 34px, 34px 34px !important;
+  opacity: .82 !important;
+}
+
+.app-shell.content-mode .page-tracking .filter-strip,
+.portal-floating-body .page-tracking .filter-strip,
+.app-shell.page-tracking .filter-strip {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  column-gap: 24px !important;
+  padding: 28px 30px !important;
+  min-height: 164px !important;
+}
+
+.app-shell.content-mode .page-tracking .filter-strip > div:first-child,
+.portal-floating-body .page-tracking .filter-strip > div:first-child,
+.app-shell.page-tracking .filter-strip > div:first-child {
+  min-width: 0 !important;
+  max-width: 760px !important;
+  padding-right: 24px !important;
+}
+
+.app-shell.content-mode .page-tracking .filter-strip :is(.section-kicker,h1,h2,p),
+.portal-floating-body .page-tracking .filter-strip :is(.section-kicker,h1,h2,p),
+.app-shell.page-tracking .filter-strip :is(.section-kicker,h1,h2,p) {
+  display: block !important;
+  writing-mode: horizontal-tb !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  max-width: 100% !important;
+}
+
+.app-shell.content-mode .page-tracking .filter-strip h2,
+.portal-floating-body .page-tracking .filter-strip h2,
+.app-shell.page-tracking .filter-strip h2 {
+  font-size: clamp(28px, 2.6vw, 44px) !important;
+  line-height: 1.12 !important;
+  letter-spacing: 0 !important;
+}
+
+.app-shell.content-mode .page-tracking .filter-strip > .el-button:last-child,
+.portal-floating-body .page-tracking .filter-strip > .el-button:last-child,
+.app-shell.page-tracking .filter-strip > .el-button:last-child {
+  justify-self: end !important;
+  min-width: 148px !important;
+}
+
+.app-shell.content-mode .trend-summary,
+.portal-floating-body .trend-summary {
+  color: rgba(235,245,255,.96) !important;
+  -webkit-text-fill-color: rgba(235,245,255,.96) !important;
+  background: linear-gradient(135deg, rgba(8,35,52,.95), rgba(17,80,104,.78)) !important;
+  border: 1px solid rgba(87,214,255,.36) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 14px 30px rgba(0,0,0,.26) !important;
+}
+
+.app-shell.content-mode .trend-summary :is(strong,span),
+.portal-floating-body .trend-summary :is(strong,span) {
+  color: rgba(235,245,255,.96) !important;
+  -webkit-text-fill-color: rgba(235,245,255,.96) !important;
+}
+
+.app-shell.content-mode :is(.receipt-preview b,.receipt-preview b.executed,.command-status,.command-status.executed,.command-list .command-status,.command-list b,.receipt-card b),
+.portal-floating-body :is(.receipt-preview b,.receipt-preview b.executed,.command-status,.command-status.executed,.command-list .command-status,.command-list b,.receipt-card b) {
+  color: rgba(240,250,255,.98) !important;
+  -webkit-text-fill-color: rgba(240,250,255,.98) !important;
+  background: linear-gradient(135deg, rgba(9,42,62,.98), rgba(20,100,125,.82)) !important;
+  border: 1px solid rgba(87,214,255,.38) !important;
+  box-shadow: 0 12px 24px rgba(0,0,0,.25) !important;
+}
+
+.app-shell.content-mode :is(.alert-row-delete,.notification-close,.conversation-delete,.message-delete,.el-button.is-circle),
+.portal-floating-body :is(.alert-row-delete,.notification-close,.conversation-delete,.message-delete,.el-button.is-circle) {
+  color: rgba(238,248,255,.98) !important;
+  -webkit-text-fill-color: rgba(238,248,255,.98) !important;
+  background: radial-gradient(circle at 30% 24%, rgba(87,214,255,.28), rgba(7,29,44,.96) 62%, rgba(3,12,22,.98)) !important;
+  border: 1px solid rgba(87,214,255,.34) !important;
+  box-shadow: 0 14px 28px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.app-shell.content-mode .vehicle-photo-empty,
+.portal-floating-body .vehicle-photo-empty {
+  min-height: 210px !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background:
+    linear-gradient(110deg, rgba(4,13,24,.92), rgba(8,40,58,.84)),
+    url('./assets/console-slide-2.png') center / cover no-repeat !important;
+}
+
+.app-shell.content-mode .vehicle-photo-empty :is(.el-icon,span),
+.portal-floating-body .vehicle-photo-empty :is(.el-icon,span) {
+  display: none !important;
+}
+
+.app-shell.content-mode .vehicle-photo-empty::after,
+.portal-floating-body .vehicle-photo-empty::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    linear-gradient(90deg, rgba(4,13,24,.84), transparent 52%, rgba(4,13,24,.72)),
+    radial-gradient(circle at 70% 42%, rgba(87,214,255,.18), transparent 22%) !important;
+  opacity: .92 !important;
+}
+
+.app-shell.content-mode .alert-metrics,
+.portal-floating-body .alert-metrics {
+  min-height: 270px !important;
+  padding: 28px !important;
+}
+
+.app-shell.content-mode .alert-metrics::after,
+.portal-floating-body .alert-metrics::after {
+  opacity: .95 !important;
+}
+
+@keyframes consoleSlideMix {
+  0% { opacity: .28; transform: scale(1.02) translate3d(-1%, 0, 0); }
+  33% { opacity: .44; transform: scale(1.05) translate3d(1%, -.5%, 0); }
+  66% { opacity: .36; transform: scale(1.04) translate3d(-.5%, .5%, 0); }
+  100% { opacity: .48; transform: scale(1.08) translate3d(1.2%, -1%, 0); }
+}
+
+/* Structural fixes for screenshots: real carousel panels, visible alert metrics, dark vehicle media */
+.app-shell.content-mode :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.alert-metrics)::before,
+.portal-floating-body :is(.filter-strip,.warehouse-hero,.driver-hero,.personnel-page .personnel-head,.state-panel,.alert-metrics)::before {
+  background-image: linear-gradient(90deg, rgba(4,13,24,.86), rgba(4,13,24,.18) 48%, rgba(4,13,24,.84)), url('./assets/console-slide-1.png') !important;
+  background-size: cover, cover !important;
+  background-position: center, center !important;
+  background-repeat: no-repeat !important;
+  animation: logisticsPhotoCarousel 24s steps(1, end) infinite !important;
+  opacity: .50 !important;
+}
+
+.app-shell.content-mode .warehouse-hero::before,
+.portal-floating-body .warehouse-hero::before {
+  animation-delay: -6s !important;
+}
+
+.app-shell.content-mode .driver-hero::before,
+.portal-floating-body .driver-hero::before {
+  animation-delay: -12s !important;
+}
+
+.app-shell.content-mode .alert-metrics::before,
+.portal-floating-body .alert-metrics::before {
+  animation-delay: -18s !important;
+}
+
+@keyframes logisticsPhotoCarousel {
+  0%, 24.9% { background-image: linear-gradient(90deg, rgba(4,13,24,.88), rgba(4,13,24,.20) 48%, rgba(4,13,24,.86)), url('./assets/console-slide-1.png'); }
+  25%, 49.9% { background-image: linear-gradient(90deg, rgba(4,13,24,.88), rgba(4,13,24,.20) 48%, rgba(4,13,24,.86)), url('./assets/console-slide-2.png'); }
+  50%, 74.9% { background-image: linear-gradient(90deg, rgba(4,13,24,.88), rgba(4,13,24,.20) 48%, rgba(4,13,24,.86)), url('./assets/console-slide-3.png'); }
+  75%, 100% { background-image: linear-gradient(90deg, rgba(4,13,24,.88), rgba(4,13,24,.20) 48%, rgba(4,13,24,.86)), url('./assets/console-map.jpg'); }
+}
+
+.app-shell.page-alerts .alert-metrics,
+.app-shell.content-mode .alert-metrics,
+.portal-floating-body .alert-metrics {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(160px, 1fr)) !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+  min-height: 0 !important;
+  padding: 24px !important;
+}
+
+.app-shell.page-alerts :is(.alert-conveyor-track,.alert-conveyor-set),
+.app-shell.content-mode :is(.alert-conveyor-track,.alert-conveyor-set),
+.portal-floating-body :is(.alert-conveyor-track,.alert-conveyor-set) {
+  display: contents !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  transform: none !important;
+  animation: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.app-shell.page-alerts .alert-metrics .metric-card,
+.app-shell.content-mode .alert-metrics .metric-card,
+.portal-floating-body .alert-metrics .metric-card {
+  display: flex !important;
+  position: relative !important;
+  min-height: 148px !important;
+  opacity: 1 !important;
+  transform: none !important;
+  z-index: 1 !important;
+}
+
+.app-shell.content-mode .route-action-strip,
+.portal-floating-body .route-action-strip,
+.app-shell.page-tracking .route-action-strip {
+  color: rgba(228, 242, 252, .94) !important;
+  -webkit-text-fill-color: rgba(228, 242, 252, .94) !important;
+  background: linear-gradient(135deg, rgba(7, 24, 39, .96), rgba(12, 52, 70, .88)) !important;
+  border: 1px solid rgba(87, 214, 255, .22) !important;
+  box-shadow: 0 18px 40px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+
+.app-shell.content-mode .route-action-strip :is(span,strong,div),
+.portal-floating-body .route-action-strip :is(span,strong,div),
+.app-shell.page-tracking .route-action-strip :is(span,strong,div) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+}
+
+.app-shell.content-mode :is(.vehicle-photo-card,.vehicle-image-field,.vehicle-table-image,.vehicle-image-preview),
+.portal-floating-body :is(.vehicle-photo-card,.vehicle-image-field,.vehicle-table-image,.vehicle-image-preview) {
+  background: linear-gradient(135deg, rgba(5,16,28,.96), rgba(10,45,63,.88)) !important;
+  border-color: rgba(87,214,255,.22) !important;
+  overflow: hidden !important;
+}
+
+.app-shell.content-mode :is(.vehicle-photo-card,.vehicle-image-field,.vehicle-table-image,.vehicle-image-preview)::after,
+.portal-floating-body :is(.vehicle-photo-card,.vehicle-image-field,.vehicle-table-image,.vehicle-image-preview)::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  background: linear-gradient(90deg, rgba(4,13,24,.70), rgba(4,13,24,.16) 48%, rgba(4,13,24,.72)) !important;
+  mix-blend-mode: multiply !important;
+}
+
+.app-shell.content-mode :is(.vehicle-photo-card,.vehicle-image-field,.vehicle-table-image,.vehicle-image-preview) img,
+.portal-floating-body :is(.vehicle-photo-card,.vehicle-image-field,.vehicle-table-image,.vehicle-image-preview) img {
+  filter: brightness(.58) saturate(.72) contrast(1.06) !important;
+  background: transparent !important;
+}
+
+.app-shell.content-mode .alert-row-delete,
+.portal-floating-body .alert-row-delete {
+  color: rgba(235,248,255,.96) !important;
+  -webkit-text-fill-color: rgba(235,248,255,.96) !important;
+  background: radial-gradient(circle at 30% 24%, rgba(87,214,255,.30), rgba(7,29,44,.98) 62%, rgba(3,12,22,.98)) !important;
+  border-color: rgba(87,214,255,.34) !important;
+  opacity: .92 !important;
+}
+
+.app-shell.content-mode .alert-row-delete :is(svg,path),
+.portal-floating-body .alert-row-delete :is(svg,path) {
+  color: rgba(235,248,255,.96) !important;
+  fill: currentColor !important;
+}
+
+@media (max-width: 980px) {
+  .app-shell.page-alerts .alert-metrics,
+  .app-shell.content-mode .alert-metrics,
+  .portal-floating-body .alert-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+/* Final targeted corrections: train artwork, tracking title and personnel contrast */
+.app-shell.page-overview :is(.metric-grid, .overview-metrics, .dashboard-metrics),
+.app-shell.page-overview :is(.metric-card, .train-card),
+.app-shell.page-tracking :is(.cargo-stage-grid, .cargo-stage-panel) {
+  background-image: none !important;
+}
+
+.app-shell.page-overview :is(.metric-grid, .overview-metrics, .dashboard-metrics, .metric-card, .train-card)::before,
+.app-shell.page-overview :is(.metric-grid, .overview-metrics, .dashboard-metrics, .metric-card, .train-card)::after,
+.app-shell.page-tracking :is(.cargo-stage-grid, .cargo-stage-panel)::before,
+.app-shell.page-tracking :is(.cargo-stage-grid, .cargo-stage-panel)::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  animation: none !important;
+}
+
+.app-shell.page-overview .metric-grid {
+  background: linear-gradient(135deg, rgba(8, 25, 38, 0.82), rgba(6, 18, 30, 0.92)) !important;
+}
+
+.app-shell.page-tracking .tracking-v6-page > .filter-strip {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  min-height: 150px !important;
+  padding: 26px 32px !important;
+}
+
+.app-shell.page-tracking .tracking-v6-page > .filter-strip > div:first-child {
+  display: block !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 420px !important;
+  max-width: none !important;
+}
+
+.app-shell.page-tracking .tracking-v6-page > .filter-strip :is(.section-kicker, h2) {
+  display: block !important;
+  width: auto !important;
+  max-width: none !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+.app-shell.page-tracking .tracking-v6-page > .filter-strip h2 {
+  margin: 10px 0 0 !important;
+  font-size: 36px !important;
+  line-height: 1.15 !important;
+}
+
+.app-shell.page-tracking .tracking-v6-page > .filter-strip .filter-actions {
+  flex: 0 0 auto !important;
+  margin-left: 24px !important;
+}
+
+.app-shell.page-personnel :is(.personnel-table-card, .personnel-table-scroll, .data-table, .vehicle-detail-table) {
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  color: rgba(235, 245, 255, 0.92) !important;
+}
+
+.app-shell.page-personnel .personnel-table-card {
+  background: linear-gradient(145deg, rgba(10, 28, 43, 0.96), rgba(7, 20, 33, 0.98)) !important;
+  border-color: rgba(87, 214, 255, 0.24) !important;
+}
+
+.app-shell.page-personnel :is(.personnel-table-card, .personnel-table-scroll, .vehicle-detail-table)::before,
+.app-shell.page-personnel :is(.personnel-table-card, .personnel-table-scroll, .vehicle-detail-table)::after,
+.app-shell.page-personnel .vehicle-table-image::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}
+
+.app-shell.page-personnel :is(th, .panel-title, .vehicle-name, .driver-name) {
+  color: rgba(239, 248, 255, 0.96) !important;
+}
+
+.app-shell.page-personnel :is(td, .vehicle-meta, .driver-meta) {
+  color: rgba(207, 226, 240, 0.86) !important;
+}
+
+.app-shell.page-personnel :is(thead, tbody, tr, td, th) {
+  opacity: 1 !important;
+  filter: none !important;
+  background-color: transparent !important;
+}
+
+.app-shell.page-personnel tbody tr {
+  border-color: rgba(120, 220, 255, 0.12) !important;
+}
+
+.app-shell.page-personnel tbody tr:hover {
+  background: rgba(87, 214, 255, 0.07) !important;
+}
+
+.app-shell.page-personnel .vehicle-table-image,
+.app-shell.page-personnel .vehicle-table-image img {
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+@media (max-width: 720px) {
+  .app-shell.page-tracking .tracking-v6-page > .filter-strip > div:first-child {
+    min-width: 0 !important;
+  }
+
+  .app-shell.page-tracking .tracking-v6-page > .filter-strip h2 {
+    white-space: normal !important;
+    font-size: 28px !important;
+  }
+}
+
+/* Component-scoped visual repair for views rendered inside the portal overlay. */
+.compact-kpis {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: #07131f !important;
+  background-image: none !important;
+}
+
+.compact-kpis::before,
+.compact-kpis::after,
+.compact-kpis .metric-card::before,
+.compact-kpis .metric-card::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  background-image: none !important;
+}
+
+.compact-kpis .metric-card {
+  position: relative !important;
+  z-index: 2 !important;
+  min-height: 160px !important;
+  background: linear-gradient(145deg, #10283a, #091a29) !important;
+  background-image: none !important;
+}
+
+.tracking-v6-page > .filter-strip {
+  display: grid !important;
+  grid-template-columns: minmax(460px, 1fr) auto !important;
+  align-items: center !important;
+  min-height: 150px !important;
+  padding: 28px 34px !important;
+  overflow: hidden !important;
+}
+
+.tracking-v6-page > .filter-strip > div:first-child {
+  display: block !important;
+  width: 100% !important;
+  min-width: 460px !important;
+  max-width: none !important;
+}
+
+.tracking-v6-page > .filter-strip :is(.section-kicker, h2) {
+  display: block !important;
+  width: max-content !important;
+  max-width: none !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  transform: none !important;
+}
+
+.tracking-v6-page > .filter-strip h2 {
+  margin: 10px 0 0 !important;
+  font-size: 34px !important;
+  line-height: 1.2 !important;
+}
+
+.tracking-v6-page > .filter-strip .filter-actions {
+  justify-self: end !important;
+  flex: none !important;
+}
+
+/* Vehicle media stays crisp and naturally lit. */
+.vehicle-photo-card {
+  background: #0b2131 !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .20) !important;
+}
+
+.vehicle-photo-card::before,
+.vehicle-photo-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+.vehicle-photo-card > img {
+  opacity: 1 !important;
+  filter: brightness(1.08) saturate(1.02) contrast(1.02) !important;
+  mix-blend-mode: normal !important;
+}
+
+.vehicle-photo-action {
+  color: #eefaff !important;
+  background: linear-gradient(135deg, rgba(41, 139, 181, .96), rgba(28, 108, 143, .96)) !important;
+  border: 1px solid rgba(133, 229, 255, .46) !important;
+}
+
+/* Personnel tables: both columns use the same readable surface. */
+.personnel-page .personnel-layout,
+.personnel-page .personnel-table-card,
+.personnel-page .personnel-table-scroll,
+.personnel-page .data-table,
+.personnel-page .vehicle-detail-table {
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+.personnel-page .personnel-table-card {
+  background: linear-gradient(145deg, #10283a 0%, #0a1d2c 100%) !important;
+  border: 1px solid rgba(103, 216, 255, .25) !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .22) !important;
+}
+
+.personnel-page .personnel-table-card::before,
+.personnel-page .personnel-table-card::after,
+.personnel-page .personnel-table-scroll::before,
+.personnel-page .personnel-table-scroll::after,
+.personnel-page .vehicle-detail-table::before,
+.personnel-page .vehicle-detail-table::after,
+.personnel-page .vehicle-table-image::after {
+  content: none !important;
+  display: none !important;
+}
+
+.personnel-page .panel-head,
+.personnel-page .table-row {
+  background: transparent !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.personnel-page .table-row {
+  color: rgba(220, 237, 248, .90) !important;
+  border-color: rgba(103, 216, 255, .13) !important;
+}
+
+.personnel-page .table-head,
+.personnel-page .panel-head h3,
+.personnel-page .table-primary b {
+  color: #f0f8ff !important;
+}
+
+.personnel-page .table-row small,
+.personnel-page .personnel-stat-note {
+  color: rgba(179, 207, 225, .76) !important;
+}
+
+.personnel-page .vehicle-table-image,
+.personnel-page .vehicle-table-image img {
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+/* Alerts: discard the old conveyor positioning and use a balanced KPI grid. */
+.alert-metrics.alert-conveyor-scene {
+  display: block !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.alert-metrics :is(.alert-scene-machine, .alert-scene-worker, .box-label, .box-barcode) {
+  display: none !important;
+}
+
+.alert-metrics .alert-conveyor-track,
+.alert-metrics .alert-conveyor-set {
+  position: static !important;
+  inset: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  width: 100% !important;
+  height: auto !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+.alert-metrics .metric-card {
+  position: relative !important;
+  inset: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 156px !important;
+  transform: none !important;
+  opacity: 1 !important;
+  overflow: hidden !important;
+  background: linear-gradient(145deg, #102a3d, #0a1d2c) !important;
+}
+
+.alert-metrics .metric-card > div:last-child {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  transform: none !important;
+}
+
+/* AI assistant: clear visual separation between user prompts and answers. */
+.chat-panel,
+.chat-messages {
+  background: linear-gradient(180deg, rgba(8, 25, 39, .96), rgba(5, 17, 28, .98)) !important;
+}
+
+.message.assistant .bubble {
+  color: #dcecf7 !important;
+  border: 1px solid rgba(87, 214, 255, .22) !important;
+  background: linear-gradient(145deg, #123148, #0d2638) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .16) !important;
+}
+
+.message.user .bubble {
+  color: #f4fbff !important;
+  border: 1px solid rgba(126, 222, 255, .38) !important;
+  background: linear-gradient(135deg, #176f91, #1d8893) !important;
+  box-shadow: 0 10px 24px rgba(21, 134, 166, .18) !important;
+}
+
+.message.user .bubble :is(.markdown-body, .markdown-body p, span),
+.message.assistant .bubble :is(.markdown-body, .markdown-body p, span) {
+  color: inherit !important;
+}
+
+@media (max-width: 900px) {
+  .tracking-v6-page > .filter-strip {
+    grid-template-columns: 1fr auto !important;
+  }
+
+  .tracking-v6-page > .filter-strip > div:first-child {
+    min-width: 0 !important;
+  }
+
+  .tracking-v6-page > .filter-strip h2 {
+    width: auto !important;
+    white-space: normal !important;
+    font-size: 27px !important;
+  }
+
+  .alert-metrics .alert-conveyor-track,
+  .alert-metrics .alert-conveyor-set {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Overview KPI structure no longer contains train/wagon artwork. */
+.overview-tech .core-kpis {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.overview-tech .core-kpis::before,
+.overview-tech .core-kpis::after,
+.overview-tech .core-kpi::before,
+.overview-tech .core-kpi::after {
+  content: none !important;
+  display: none !important;
+}
+
+.overview-tech .core-kpi {
+  position: relative !important;
+  inset: auto !important;
+  min-height: 168px !important;
+  padding: 24px !important;
+  transform: none !important;
+  background: linear-gradient(145deg, #153247, #0c2131) !important;
+  border: 1px solid rgba(104, 218, 255, .24) !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .20), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+/* Lift overly black surfaces while keeping the console dark and controlled. */
+.personnel-page .personnel-head,
+.personnel-page .personnel-stats > div,
+.personnel-page .personnel-table-card,
+.alert-metrics .metric-card,
+.assistant-layout :is(.conversation-side, .chat-panel, .assistant-context .panel),
+.chat-messages {
+  background-color: #10283a !important;
+}
+
+.personnel-page .personnel-table-card,
+.assistant-layout :is(.conversation-side, .chat-panel, .assistant-context .panel) {
+  background-image: linear-gradient(145deg, rgba(19, 48, 68, .98), rgba(10, 31, 47, .98)) !important;
+}
+
+@media (max-width: 1100px) {
+  .overview-tech .core-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Screenshot follow-up: brighter personnel visual and a composed alert photo panel. */
+.personnel-page .personnel-head {
+  min-height: 285px !important;
+  background-color: #12364d !important;
+  background-image:
+    linear-gradient(90deg, rgba(7, 24, 37, .48) 0%, rgba(7, 25, 39, .16) 48%, rgba(8, 28, 42, .08) 100%),
+    url('./assets/console-slide-1.png') !important;
+  background-size: cover !important;
+  background-position: center 54% !important;
+  filter: none !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(139, 226, 255, .15) !important;
+}
+
+.personnel-page .personnel-head::before,
+.personnel-page .personnel-head::after {
+  content: none !important;
+  display: none !important;
+}
+
+.personnel-page .personnel-head > * {
+  position: relative !important;
+  z-index: 2 !important;
+  color: #f2f9ff !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .45) !important;
+}
+
+.personnel-page .personnel-stats > div {
+  background: linear-gradient(145deg, #1a4057, #102f44) !important;
+  border-color: rgba(122, 221, 255, .28) !important;
+}
+
+.alert-metrics.alert-conveyor-scene {
+  position: relative !important;
+  min-height: 430px !important;
+  padding: 220px 24px 24px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(101, 215, 255, .25) !important;
+  border-radius: 18px !important;
+  background-image:
+    linear-gradient(180deg, rgba(5, 18, 29, .04) 0%, rgba(5, 18, 29, .18) 46%, rgba(5, 18, 29, .94) 72%, #071521 100%),
+    url('./assets/console-slide-2.png') !important;
+  background-size: cover !important;
+  background-position: center 46% !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, .22) !important;
+}
+
+.alert-metrics.alert-conveyor-scene::before,
+.alert-metrics.alert-conveyor-scene::after {
+  content: none !important;
+  display: none !important;
+}
+
+.alert-metrics .alert-conveyor-track {
+  position: relative !important;
+  z-index: 2 !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+.alert-metrics .alert-conveyor-set {
+  position: static !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+.alert-metrics .metric-card {
+  min-height: 164px !important;
+  padding: 22px !important;
+  background: linear-gradient(145deg, rgba(22, 57, 78, .96), rgba(10, 31, 47, .97)) !important;
+  border: 1px solid rgba(124, 222, 255, .26) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+.alert-metrics .metric-card .metric-icon {
+  flex: 0 0 52px !important;
+  width: 52px !important;
+  height: 52px !important;
+}
+
+.alert-metrics .metric-card :is(span, strong, small) {
+  opacity: 1 !important;
+}
+
+@media (max-width: 980px) {
+  .alert-metrics.alert-conveyor-scene {
+    padding-top: 180px !important;
+  }
+
+  .alert-metrics .alert-conveyor-set {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Local three-image logistics carousel; no remote runtime dependency. */
+@keyframes personnelLogisticsCarousel {
+  0%, 30% {
+    background-image: linear-gradient(90deg, rgba(5, 20, 31, .38), rgba(7, 28, 41, .05) 64%), url('./assets/logistics-carousel-1.jpg');
+  }
+  33%, 63% {
+    background-image: linear-gradient(90deg, rgba(5, 20, 31, .38), rgba(7, 28, 41, .05) 64%), url('./assets/logistics-carousel-2.jpg');
+  }
+  66%, 96% {
+    background-image: linear-gradient(90deg, rgba(5, 20, 31, .38), rgba(7, 28, 41, .05) 64%), url('./assets/logistics-carousel-3.jpg');
+  }
+  100% {
+    background-image: linear-gradient(90deg, rgba(5, 20, 31, .38), rgba(7, 28, 41, .05) 64%), url('./assets/logistics-carousel-1.jpg');
+  }
+}
+
+.personnel-page .personnel-head {
+  min-height: 290px !important;
+  background-color: #17445c !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-position: center 52% !important;
+  animation: personnelLogisticsCarousel 18s ease-in-out infinite !important;
+}
+
+.personnel-page .personnel-head > div:first-child {
+  display: none !important;
+}
+
+.personnel-page .personnel-head::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset: auto 24px 20px auto !important;
+  width: 82px !important;
+  height: 4px !important;
+  border-radius: 99px !important;
+  background: linear-gradient(90deg, #57d6ff 0 30%, rgba(255,255,255,.35) 30% 35%, #6ef3d6 35% 65%, rgba(255,255,255,.35) 65% 70%, #86a8ff 70%) !important;
+  box-shadow: 0 0 18px rgba(87,214,255,.42) !important;
+}
+
+@keyframes alertLogisticsCarousel {
+  0%, 30% {
+    background-image: linear-gradient(180deg, rgba(5,18,29,.02) 0%, rgba(5,18,29,.10) 42%, rgba(5,18,29,.93) 72%, #071521 100%), url('./assets/logistics-carousel-2.jpg');
+  }
+  33%, 63% {
+    background-image: linear-gradient(180deg, rgba(5,18,29,.02) 0%, rgba(5,18,29,.10) 42%, rgba(5,18,29,.93) 72%, #071521 100%), url('./assets/logistics-carousel-3.jpg');
+  }
+  66%, 96% {
+    background-image: linear-gradient(180deg, rgba(5,18,29,.02) 0%, rgba(5,18,29,.10) 42%, rgba(5,18,29,.93) 72%, #071521 100%), url('./assets/logistics-carousel-1.jpg');
+  }
+  100% {
+    background-image: linear-gradient(180deg, rgba(5,18,29,.02) 0%, rgba(5,18,29,.10) 42%, rgba(5,18,29,.93) 72%, #071521 100%), url('./assets/logistics-carousel-2.jpg');
+  }
+}
+
+.alert-metrics.alert-conveyor-scene {
+  min-height: 470px !important;
+  padding-top: 245px !important;
+  background-color: #12384e !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-position: center 48% !important;
+  animation: alertLogisticsCarousel 18s ease-in-out infinite !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .personnel-page .personnel-head,
+  .alert-metrics.alert-conveyor-scene {
+    animation-play-state: paused !important;
+  }
+}
+
+/* Real DOM image carousel: immune to theme background overrides. */
+@keyframes logisticsSlideFade {
+  0%, 28% { opacity: 1; transform: scale(1.01); }
+  33%, 94% { opacity: 0; transform: scale(1.055); }
+  100% { opacity: 1; transform: scale(1.01); }
+}
+
+.visual-carousel {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  display: block !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  border-radius: inherit !important;
+  background: #12384e !important;
+}
+
+.visual-carousel::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  background: linear-gradient(90deg, rgba(4, 17, 28, .28), rgba(4, 17, 28, .03) 60%, rgba(4, 17, 28, .12)) !important;
+}
+
+.visual-carousel img {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  opacity: 0;
+  filter: brightness(1.08) saturate(1.04) !important;
+  animation: logisticsSlideFade 18s ease-in-out infinite !important;
+  animation-delay: calc(var(--slide-index) * -6s) !important;
+}
+
+.personnel-page .personnel-head {
+  position: relative !important;
+  isolation: isolate !important;
+  animation: none !important;
+  background: #12384e !important;
+}
+
+.personnel-page .personnel-head > .visual-carousel {
+  display: block !important;
+}
+
+.personnel-page .personnel-head > :not(.visual-carousel) {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.alert-metrics.alert-conveyor-scene {
+  position: relative !important;
+  isolation: isolate !important;
+  animation: none !important;
+  background: #12384e !important;
+}
+
+.alert-metrics > .visual-carousel {
+  display: block !important;
+  height: 260px !important;
+  bottom: auto !important;
+}
+
+.alert-metrics > .visual-carousel::after {
+  background: linear-gradient(180deg, rgba(4,17,28,.03), rgba(4,17,28,.18) 58%, #0b2435 100%) !important;
+}
+
+.alert-metrics .alert-conveyor-track {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual-carousel img {
+    animation-play-state: paused !important;
+  }
+}
+
+/* Phone dialog: readable number on the dark console. */
+.el-dialog.phone-dialog .phone-dialog-body {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.el-dialog.phone-dialog .phone-dialog-body > span {
+  color: rgba(207, 225, 239, .82) !important;
+  font-weight: 650 !important;
+}
+
+.el-dialog.phone-dialog .phone-dialog-body > strong {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 72px !important;
+  padding: 16px 20px !important;
+  border: 1px solid rgba(87, 214, 255, .28) !important;
+  border-radius: 12px !important;
+  color: #f2f9ff !important;
+  background: linear-gradient(145deg, #15364b, #0c2638) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.18) !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  letter-spacing: .04em !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+/* Dedicated, subject-appropriate hero photos. */
+.personnel-page .personnel-head,
+.driver-hero {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+  background: #123247 !important;
+  animation: none !important;
+}
+
+.personnel-page .personnel-head::before,
+.personnel-page .personnel-head::after,
+.driver-hero::before,
+.driver-hero::after {
+  content: none !important;
+  display: none !important;
+}
+
+.personnel-hero-photo,
+.driver-hero-photo {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  animation: none !important;
+}
+
+.personnel-hero-photo {
+  object-position: center 52% !important;
+  filter: brightness(.90) saturate(.94) contrast(1.02) !important;
+}
+
+.driver-hero-photo {
+  object-position: center 48% !important;
+  filter: brightness(.72) saturate(.88) contrast(1.04) !important;
+}
+
+.personnel-page .personnel-head > :not(.personnel-hero-photo),
+.driver-hero > :not(.driver-hero-photo) {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.personnel-page .personnel-head > :not(.personnel-hero-photo) {
+  display: none !important;
+}
+
+.driver-hero {
+  min-height: 210px !important;
+  padding: 34px 42px !important;
+}
+
+.driver-hero > div:first-of-type {
+  max-width: 620px !important;
+  padding: 18px 22px !important;
+  border-radius: 12px !important;
+  background: rgba(5, 19, 31, .68) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+/* Revert oversized personnel/driver photography to compact console banners. */
+.personnel-page .personnel-head {
+  min-height: 160px !important;
+  padding: 26px 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  background:
+    radial-gradient(circle at 78% 45%, rgba(87,214,255,.13), transparent 28%),
+    linear-gradient(110deg, #102d41, #0b2132 58%, #12384a) !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+
+.personnel-page .personnel-head > * {
+  display: block !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.personnel-page .personnel-head h2 {
+  margin: 8px 0 !important;
+  color: #f1f8ff !important;
+}
+
+.personnel-page .personnel-head p {
+  margin: 0 !important;
+  color: rgba(199,219,234,.82) !important;
+}
+
+.driver-hero {
+  min-height: 180px !important;
+  padding: 30px 38px !important;
+  background:
+    linear-gradient(90deg, rgba(5,18,30,.90), rgba(8,31,47,.56) 58%, rgba(8,35,50,.78)),
+    url('./assets/console-slide-1.png') center 52% / cover no-repeat !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+
+.driver-hero > div:first-of-type {
+  max-width: 620px !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+.personnel-hero-photo,
+.driver-hero-photo {
+  display: none !important;
+}
+
+/* Personnel banner: compact right-side photo, text remains primary. */
+.personnel-page .personnel-head {
+  position: relative !important;
+  min-height: 180px !important;
+  padding: 30px 46% 30px 34px !important;
+  overflow: hidden !important;
+  background: linear-gradient(110deg, #102d41 0%, #0b2132 58%, #12384a 100%) !important;
+}
+
+.personnel-page .personnel-head > div:first-child {
+  display: block !important;
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+.personnel-page .personnel-banner-media {
+  position: absolute !important;
+  z-index: 1 !important;
+  inset: 0 0 0 auto !important;
+  display: block !important;
+  width: 46% !important;
+  overflow: hidden !important;
+  border-left: 1px solid rgba(103,216,255,.15) !important;
+  background: #14384c !important;
+}
+
+.personnel-page .personnel-banner-media::before {
+  content: '' !important;
+  position: absolute !important;
+  z-index: 2 !important;
+  inset: 0 !important;
+  display: block !important;
+  background: linear-gradient(90deg, #0c2435 0%, rgba(12,36,53,.60) 14%, transparent 48%, rgba(5,17,27,.12) 100%) !important;
+}
+
+.personnel-page .personnel-banner-media img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 50% !important;
+  opacity: .92 !important;
+  filter: brightness(.88) saturate(.88) contrast(1.02) !important;
+}
+
+@media (max-width: 800px) {
+  .personnel-page .personnel-head {
+    padding-right: 34px !important;
+  }
+
+  .personnel-page .personnel-banner-media {
+    width: 100% !important;
+    opacity: .28 !important;
+    border-left: 0 !important;
+  }
+}
+
+/* Definitive personnel banner visibility fix over legacy hide rules. */
+html body .app-shell .page-content .personnel-page .personnel-head {
+  position: relative !important;
+  min-height: 190px !important;
+  padding: 32px 47% 32px 34px !important;
+  overflow: hidden !important;
+}
+
+html body .app-shell .page-content .personnel-page .personnel-head::before,
+html body .app-shell .page-content .personnel-page .personnel-head::after,
+html body .portal-floating-body .personnel-page .personnel-head::before,
+html body .portal-floating-body .personnel-page .personnel-head::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body .app-shell .page-content .personnel-page .personnel-head > div:first-child,
+html body .portal-floating-body .personnel-page .personnel-head > div:first-child {
+  position: relative !important;
+  z-index: 12 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+html body .app-shell .page-content .personnel-page .personnel-head > .personnel-banner-media,
+html body .portal-floating-body .personnel-page .personnel-head > .personnel-banner-media {
+  position: absolute !important;
+  z-index: 10 !important;
+  inset: 0 0 0 auto !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 47% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  background: #173c51 !important;
+}
+
+html body .personnel-page .personnel-head > .personnel-banner-media::before {
+  content: '' !important;
+  position: absolute !important;
+  z-index: 2 !important;
+  inset: 0 !important;
+  display: block !important;
+  background: linear-gradient(90deg, #0c2435 0%, rgba(12,36,53,.55) 18%, transparent 58%) !important;
+}
+
+html body .personnel-page .personnel-head > .personnel-banner-media > img {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  visibility: visible !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  opacity: 1 !important;
+  object-fit: cover !important;
+  object-position: center 48% !important;
+  filter: brightness(.96) saturate(.94) contrast(1.02) !important;
+  transform: none !important;
+}
+
+/* Personnel banner left information block. */
+html body .app-shell .page-content .personnel-page .personnel-head > .personnel-banner-copy,
+html body .portal-floating-body .personnel-page .personnel-head > .personnel-banner-copy,
+.personnel-page .personnel-head > .personnel-banner-copy {
+  position: relative !important;
+  z-index: 30 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  width: min(580px, 100%) !important;
+  min-height: 126px !important;
+  padding: 18px 22px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  border: 1px solid rgba(103,216,255,.18) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(145deg, rgba(9,30,45,.90), rgba(11,40,56,.72)) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.17), inset 0 1px 0 rgba(255,255,255,.05) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+.personnel-page .personnel-banner-copy :is(.section-kicker, h2, p) {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.personnel-page .personnel-banner-copy .section-kicker {
+  color: #70e8d3 !important;
+}
+
+.personnel-page .personnel-banner-copy h2 {
+  margin: 7px 0 6px !important;
+  font-size: 30px !important;
+  line-height: 1.15 !important;
+}
+
+.personnel-page .personnel-banner-copy p {
+  color: rgba(211,229,240,.82) !important;
+}
+
+.personnel-page .personnel-banner-chips {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: 13px !important;
+}
+
+.personnel-page .personnel-banner-chips span {
+  display: inline-flex !important;
+  padding: 5px 10px !important;
+  border: 1px solid rgba(87,214,255,.22) !important;
+  border-radius: 999px !important;
+  color: rgba(226,241,250,.88) !important;
+  background: rgba(31,92,118,.34) !important;
+  font-size: 12px !important;
+}
+
+html body .personnel-page .personnel-head::before,
+html body .personnel-page .personnel-head::after {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+}

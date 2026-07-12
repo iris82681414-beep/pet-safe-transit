@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1280" viewBox="0 0 2200 1280">
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+<rect width="2200" height="1280" fill="#f6f8fb"/>
+<text x="1100" y="66" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="800" fill="#0f172a">智慧物流 IoT 平台系统架构草稿</text>
+<text x="1100" y="104" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="400" fill="#64748b">主链路清晰表达：前端运营台 → 后端业务 API → 实时设备流 → 数据与外部智能能力</text>
+<rect x="70" y="150" width="300" height="450" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8 8"/>
+<text x="94" y="184" text-anchor="start" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="700" fill="#334155">用户与客户端</text>
+<rect x="110" y="220" width="220" height="86" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" filter="url(#softShadow)"/>
+<text x="220" y="254" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="650" fill="#0f172a">调度员 / 仓管</text>
+<text x="220" y="272" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="400" fill="#475569">Web 运营台</text>
+<rect x="110" y="350" width="220" height="86" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" filter="url(#softShadow)"/>
+<text x="220" y="384" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="650" fill="#0f172a">货主 / 管理员</text>
+<text x="220" y="402" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="400" fill="#475569">查询与管理</text>
+<rect x="110" y="480" width="220" height="86" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" filter="url(#softShadow)"/>
+<text x="220" y="514" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="650" fill="#0f172a">司机 / 车载终端</text>
+<text x="220" y="532" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="400" fill="#475569">GPS / 心跳 / 回执</text>
+<rect x="450" y="150" width="350" height="450" rx="18" fill="#eef6ff" stroke="#60a5fa" stroke-width="2" stroke-dasharray="8 8"/>
+<text x="474" y="184" text-anchor="start" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="700" fill="#334155">接入层</text>
+<rect x="500" y="230" width="250" height="106" rx="12" fill="#ffffff" stroke="#60a5fa" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/nginx.png" x="522" y="245" width="76" height="76" preserveAspectRatio="xMidYMid meet"/>
+<text x="644" y="264" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="25" font-weight="650" fill="#0f172a">Nginx</text>
+<text x="625" y="292" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="400" fill="#475569">静态资源 / 反向代理</text>
+<rect x="500" y="402" width="250" height="106" rx="12" fill="#ffffff" stroke="#60a5fa" stroke-width="2" filter="url(#softShadow)"/>
+<text x="625" y="436" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="23" font-weight="650" fill="#0f172a">HTTP / WebSocket</text>
+<text x="625" y="464" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="400" fill="#475569">/api/v1 / ws</text>
+<rect x="880" y="150" width="430" height="450" rx="18" fill="#f0fdf4" stroke="#22c55e" stroke-width="2" stroke-dasharray="8 8"/>
+<text x="904" y="184" text-anchor="start" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="700" fill="#334155">前端应用层</text>
+<rect x="930" y="230" width="330" height="106" rx="12" fill="#ffffff" stroke="#22c55e" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1095" y="264" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="25" font-weight="650" fill="#0f172a">Vue 3 + Vite</text>
+<text x="1095" y="292" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="400" fill="#475569">运营总览 / 追踪 / 调度 / 告警</text>
+<rect x="930" y="402" width="330" height="106" rx="12" fill="#ffffff" stroke="#22c55e" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1095" y="436" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="650" fill="#0f172a">Voice Action 执行器</text>
+<text x="1095" y="464" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="400" fill="#475569">跳转 / 地图定位 / 确认弹窗</text>
+<rect x="1390" y="150" width="740" height="450" rx="18" fill="#fff7ed" stroke="#f97316" stroke-width="2" stroke-dasharray="8 8"/>
+<text x="1414" y="184" text-anchor="start" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="700" fill="#334155">后端应用层：Spring Boot 模块化单体</text>
+<rect x="1438" y="222" width="240" height="118" rx="12" fill="#ffffff" stroke="#fb923c" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/Spring.svg" x="1460" y="242" width="78" height="78" preserveAspectRatio="xMidYMid meet"/>
+<text x="1577" y="256" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="23" font-weight="650" fill="#0f172a">Spring Boot Core</text>
+<text x="1558" y="296" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="400" fill="#475569">Controller / Service / M</text>
+<text x="1558" y="314" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="400" fill="#475569">apper</text>
+<rect x="1728" y="218" width="146" height="88" rx="10" fill="#ffffff" stroke="#fb923c" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1801" y="252" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="650" fill="#0f172a">认证与用户</text>
+<text x="1801" y="272" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">/auth / users</text>
+<rect x="1910" y="218" width="146" height="88" rx="10" fill="#ffffff" stroke="#fb923c" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1983" y="252" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="650" fill="#0f172a">车辆货物</text>
+<text x="1983" y="272" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">/vehicles / cargo</text>
+<rect x="1728" y="344" width="146" height="88" rx="10" fill="#ffffff" stroke="#fb923c" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1801" y="378" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="650" fill="#0f172a">路线地图</text>
+<text x="1801" y="398" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">/routes / amap</text>
+<rect x="1910" y="344" width="146" height="88" rx="10" fill="#ffffff" stroke="#fb923c" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1983" y="378" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="650" fill="#0f172a">告警调度</text>
+<text x="1983" y="398" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">/alerts / command</text>
+<rect x="1438" y="410" width="146" height="88" rx="10" fill="#ffffff" stroke="#fb923c" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1511" y="444" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="650" fill="#0f172a">RAG 知识库</text>
+<text x="1511" y="464" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">/assistant / rag</text>
+<rect x="1606" y="410" width="146" height="88" rx="10" fill="#ffffff" stroke="#fb923c" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1679" y="444" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="650" fill="#0f172a">语音 Agent</text>
+<text x="1679" y="464" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">/voice / agent</text>
+<rect x="450" y="690" width="680" height="330" rx="18" fill="#ecfeff" stroke="#06b6d4" stroke-width="2" stroke-dasharray="8 8"/>
+<text x="474" y="724" text-anchor="start" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="700" fill="#334155">实时设备链路</text>
+<rect x="510" y="780" width="170" height="118" rx="12" fill="#ffffff" stroke="#06b6d4" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/emqx.png" x="532" y="801" width="76" height="76" preserveAspectRatio="xMidYMid meet"/>
+<text x="614" y="814" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="650" fill="#0f172a">EMQX</text>
+<text x="595" y="854" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="400" fill="#475569">MQTT Broker</text>
+<rect x="732" y="780" width="170" height="118" rx="12" fill="#ffffff" stroke="#06b6d4" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/kafka.png" x="754" y="801" width="76" height="76" preserveAspectRatio="xMidYMid meet"/>
+<text x="836" y="814" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="650" fill="#0f172a">Kafka</text>
+<text x="817" y="854" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="400" fill="#475569">gps / alert / cmd</text>
+<rect x="954" y="780" width="120" height="118" rx="12" fill="#ffffff" stroke="#06b6d4" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1014" y="814" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="650" fill="#0f172a">WS</text>
+<text x="1014" y="854" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="400" fill="#475569">实时推送</text>
+<rect x="1210" y="690" width="920" height="330" rx="18" fill="#f8fafc" stroke="#64748b" stroke-width="2" stroke-dasharray="8 8"/>
+<text x="1234" y="724" text-anchor="start" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="700" fill="#334155">数据与对象存储</text>
+<rect x="1260" y="780" width="170" height="124" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/postgres.png" x="1282" y="806" width="72" height="72" preserveAspectRatio="xMidYMid meet"/>
+<text x="1363" y="814" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="19" font-weight="650" fill="#0f172a">PostgreSQL</text>
+<text x="1345" y="860" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="400" fill="#475569">业务数据</text>
+<rect x="1480" y="780" width="170" height="124" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/timescale.svg" x="1502" y="806" width="72" height="72" preserveAspectRatio="xMidYMid meet"/>
+<text x="1583" y="814" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="19" font-weight="650" fill="#0f172a">TimescaleDB</text>
+<text x="1565" y="860" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="400" fill="#475569">时序 GPS</text>
+<rect x="1700" y="780" width="170" height="124" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/redis.png" x="1722" y="806" width="72" height="72" preserveAspectRatio="xMidYMid meet"/>
+<text x="1803" y="814" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="19" font-weight="650" fill="#0f172a">Redis</text>
+<text x="1785" y="860" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="400" fill="#475569">最新状态 / 去重</text>
+<rect x="1920" y="780" width="170" height="124" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/minio-seeklogo.png" x="1942" y="806" width="72" height="72" preserveAspectRatio="xMidYMid meet"/>
+<text x="2023" y="814" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="19" font-weight="650" fill="#0f172a">MinIO</text>
+<text x="2005" y="860" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="14" font-weight="400" fill="#475569">附件 / 知识库</text>
+<rect x="70" y="1082" width="2060" height="134" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8 8"/>
+<text x="94" y="1116" text-anchor="start" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="21" font-weight="700" fill="#334155">外部能力与本地基础设施</text>
+<rect x="132" y="1124" width="340" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" filter="url(#softShadow)"/>
+<text x="302" y="1158" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="19" font-weight="650" fill="#0f172a">高德地图</text>
+<text x="302" y="1150" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">路线规划 / 地理编码 / 偏航辅助</text>
+<rect x="546" y="1124" width="340" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" filter="url(#softShadow)"/>
+<text x="716" y="1158" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="19" font-weight="650" fill="#0f172a">百度语音 / 人脸</text>
+<text x="716" y="1150" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">ASR / 人脸登录</text>
+<rect x="960" y="1124" width="340" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" filter="url(#softShadow)"/>
+<text x="1130" y="1158" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="19" font-weight="650" fill="#0f172a">DeepSeek</text>
+<text x="1130" y="1150" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">意图解析 / RAG 回答</text>
+<rect x="1374" y="1124" width="340" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" filter="url(#softShadow)"/>
+<image href="../../Icons/docker.png" x="1396" y="1133" width="42" height="42" preserveAspectRatio="xMidYMid meet"/>
+<text x="1554" y="1158" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="19" font-weight="650" fill="#0f172a">Docker Compose</text>
+<text x="1544" y="1150" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">PostgreSQL / Redis / Kaf</text>
+<text x="1544" y="1168" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569">ka / EMQX / MinIO</text>
+<line x1="330" y1="262" x2="500" y2="282" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="337" y="242" width="156" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="415" y="262" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">访问</text>
+<line x1="330" y1="522" x2="510" y2="840" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="342" y="651" width="156" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="420" y="671" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">MQTT 上报</text>
+<line x1="750" y1="282" x2="930" y2="282" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="762" y="252" width="156" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="840" y="272" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">页面</text>
+<line x1="1260" y1="282" x2="1438" y2="282" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1271" y="252" width="156" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="1349" y="272" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">API</text>
+<line x1="1910" y1="432" x2="902" y2="840" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1328" y="606" width="156" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="1406" y="626" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">指令下发</text>
+<line x1="680" y1="840" x2="732" y2="840" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="628" y="810" width="156" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="706" y="830" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">入流</text>
+<line x1="902" y1="840" x2="954" y2="840" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="850" y="810" width="156" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="928" y="830" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">消费</text>
+<line x1="1074" y1="840" x2="1260" y2="840" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1089" y="810" width="156" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="1167" y="830" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">推送/保存</text>
+<path d="M 1560 340 C 1440 554, 1360 650, 1345 780" fill="none" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1324" y="620" width="164" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="1406" y="640" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">业务落库</text>
+<path d="M 1850 432 C 1790 600, 1784 690, 1785 780" fill="none" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1734" y="626" width="164" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="1816" y="646" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">缓存状态</text>
+<path d="M 1520 498 C 1750 610, 1940 648, 2005 780" fill="none" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1766" y="634" width="164" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="1848" y="654" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">文档对象</text>
+<path d="M 1900 262 C 2040 484, 1988 952, 1114 1124" fill="none" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8 8"/>
+<rect x="1826" y="1020" width="164" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="1908" y="1040" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">AI / 地图调用</text>
+<path d="M 1095 454 C 1062 680, 1064 962, 960 1124" fill="none" stroke="#334155" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8 8"/>
+<rect x="942" y="1014" width="164" height="28" rx="14" fill="#ffffff" opacity="0.92"/>
+<text x="1024" y="1034" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="500" fill="#334155">语音 action</text>
+</svg>

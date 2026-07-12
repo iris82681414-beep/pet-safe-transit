@@ -1,0 +1,530 @@
+/* Login motion overrides intentionally load last. */
+.neo-login-split .neo-map-pulse-image {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 112%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+  transform-origin: 54% 52%;
+  mix-blend-mode: screen;
+  filter: brightness(1.75) saturate(1.35) contrast(1.08);
+  mask-image:
+    radial-gradient(circle at 66% 39%, #000 0 1.2%, rgba(0,0,0,.72) 2.3%, transparent 4.8%),
+    radial-gradient(circle at 64% 43%, #000 0 1.4%, rgba(0,0,0,.72) 2.6%, transparent 5.2%),
+    radial-gradient(circle at 58% 46%, #000 0 1.3%, rgba(0,0,0,.7) 2.5%, transparent 5%),
+    radial-gradient(circle at 47% 51%, #000 0 1.5%, rgba(0,0,0,.74) 2.8%, transparent 5.5%),
+    radial-gradient(circle at 64% 54%, #000 0 1.6%, rgba(0,0,0,.72) 3%, transparent 5.8%),
+    radial-gradient(circle at 56% 61%, #000 0 1.5%, rgba(0,0,0,.72) 2.8%, transparent 5.5%);
+  animation: baked-node-breathe 2.35s ease-in-out infinite;
+}
+
+/* Keep the map pixel grid stable; depth comes from luminance, not zoom. */
+.neo-login-split .neo-map-image {
+  transform: scale(1.32);
+  animation: map-luminance-breathe 6.8s ease-in-out infinite;
+  will-change: opacity, filter;
+}
+
+@keyframes map-luminance-breathe {
+  0%, 100% {
+    transform: scale(1.32);
+    opacity: .7;
+    filter: saturate(.82) contrast(1.08) brightness(.76);
+  }
+  50% {
+    transform: scale(1.32);
+    opacity: .86;
+    filter: saturate(1.02) contrast(1.12) brightness(.9);
+  }
+}
+
+.neo-login-split .neo-map-node-pulse {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 112%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+  transform: scale(1.32);
+  transform-origin: 54% 52%;
+  mix-blend-mode: screen;
+  opacity: 0;
+  will-change: opacity, filter;
+  animation: node-independent-breathe var(--pulse-duration) var(--pulse-delay) ease-in-out infinite;
+}
+
+.neo-login-split .neo-map-node-pulse.pulse-1 {
+  --pulse-duration: 2.2s;
+  --pulse-delay: -1.3s;
+  mask-image: radial-gradient(circle at 66% 39%, #000 0 1.2%, rgba(0,0,0,.76) 2.3%, transparent 4.8%);
+}
+.neo-login-split .neo-map-node-pulse.pulse-2 {
+  --pulse-duration: 2.85s;
+  --pulse-delay: -.35s;
+  mask-image: radial-gradient(circle at 64% 43%, #000 0 1.4%, rgba(0,0,0,.72) 2.6%, transparent 5.2%);
+}
+.neo-login-split .neo-map-node-pulse.pulse-3 {
+  --pulse-duration: 3.4s;
+  --pulse-delay: -2.1s;
+  mask-image: radial-gradient(circle at 58% 46%, #000 0 1.3%, rgba(0,0,0,.7) 2.5%, transparent 5%);
+}
+.neo-login-split .neo-map-node-pulse.pulse-4 {
+  --pulse-duration: 2.55s;
+  --pulse-delay: -1.75s;
+  mask-image: radial-gradient(circle at 47% 51%, #000 0 1.5%, rgba(0,0,0,.74) 2.8%, transparent 5.5%);
+}
+.neo-login-split .neo-map-node-pulse.pulse-5 {
+  --pulse-duration: 3.05s;
+  --pulse-delay: -.8s;
+  mask-image: radial-gradient(circle at 64% 54%, #000 0 1.6%, rgba(0,0,0,.72) 3%, transparent 5.8%);
+}
+.neo-login-split .neo-map-node-pulse.pulse-6 {
+  --pulse-duration: 3.75s;
+  --pulse-delay: -2.6s;
+  mask-image: radial-gradient(circle at 56% 61%, #000 0 1.5%, rgba(0,0,0,.72) 2.8%, transparent 5.5%);
+}
+
+@keyframes node-independent-breathe {
+  0%, 100% {
+    opacity: .03;
+    filter: brightness(1.15) saturate(1.05) contrast(1.02);
+  }
+  24% {
+    opacity: .24;
+    filter: brightness(1.5) saturate(1.18) contrast(1.06);
+  }
+  52% {
+    opacity: .88;
+    filter: brightness(2.2) saturate(1.55) contrast(1.14) drop-shadow(0 0 9px rgba(84,255,198,.46));
+  }
+  72% {
+    opacity: .34;
+    filter: brightness(1.62) saturate(1.25) contrast(1.08);
+  }
+}
+
+@keyframes baked-node-breathe {
+  0%, 100% {
+    opacity: .08;
+    transform: scale(1.28);
+    filter: brightness(1.35) saturate(1.1) contrast(1.04);
+  }
+  46% {
+    opacity: .82;
+    transform: scale(1.38);
+    filter: brightness(2.15) saturate(1.55) contrast(1.12) drop-shadow(0 0 12px rgba(91,255,203,.45));
+  }
+  64% {
+    opacity: .3;
+    transform: scale(1.33);
+    filter: brightness(1.62) saturate(1.25) contrast(1.08);
+  }
+}
+
+.neo-login-split .energy-fiber,
+.neo-login-split .energy-fiber-glow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation:
+    fiber-grow 1.25s var(--fiber-delay) cubic-bezier(.18,.72,.22,1) forwards,
+    fiber-dissolve .4s calc(var(--fiber-delay) + 1.34s) ease-out forwards;
+}
+
+.neo-login-split .energy-fiber-glow {
+  stroke: rgba(75,255,190,.52);
+  stroke-width: 11;
+  filter: blur(7px);
+}
+
+.neo-login-split .energy-fiber {
+  stroke: rgba(139,255,211,.84);
+  stroke-width: 1.35;
+  filter: drop-shadow(0 0 4px #83ffd0);
+}
+
+.neo-login-split .energy-fiber.main {
+  stroke: #e4fff0;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 0 4px white) drop-shadow(0 0 11px #62ffc1);
+}
+
+.neo-login-split .fiber-tip {
+  fill: #caffdf;
+  opacity: 0;
+  filter: drop-shadow(0 0 5px white) drop-shadow(0 0 14px #61ffc0);
+}
+
+.neo-login-split .fiber-tip.main {
+  fill: white;
+  filter: drop-shadow(0 0 6px white) drop-shadow(0 0 18px #61ffc0) drop-shadow(0 0 32px rgba(97,255,192,.8));
+}
+
+@keyframes fiber-grow {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  6% { opacity: .3; }
+  28% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@keyframes fiber-dissolve {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.neo-login-split .login-origin-bloom > i {
+  height: 72px;
+  animation-duration: 1.05s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+.neo-login-split .login-origin-bloom > b,
+.neo-login-split .login-origin-bloom > b::before {
+  animation-iteration-count: 2;
+}
+
+.neo-login-split .ip-target {
+  opacity: 0;
+  animation: target-arrive .42s 1.28s cubic-bezier(.18,.8,.2,1) both;
+}
+
+.neo-login-split .ip-target::before,
+.neo-login-split .ip-target::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.neo-login-split .ip-target::before {
+  inset: -28px;
+  border: 1px solid rgba(174,255,220,.72);
+  box-shadow: inset 0 0 20px rgba(98,255,193,.18), 0 0 22px rgba(98,255,193,.22);
+  animation: gateway-converge 1.05s 1.28s cubic-bezier(.16,.8,.2,1) both;
+}
+
+.neo-login-split .ip-target::after {
+  inset: -58px;
+  background: radial-gradient(circle, rgba(187,255,222,.22), rgba(76,255,186,.08) 28%, transparent 66%);
+  animation: gateway-aura 1.4s 1.42s ease-out both;
+}
+
+@keyframes gateway-converge {
+  0% { opacity: 0; transform: scale(2.8); }
+  58% { opacity: 1; transform: scale(.82); }
+  78% { transform: scale(1.12); }
+  100% { opacity: .85; transform: scale(1); }
+}
+
+@keyframes gateway-aura {
+  0% { opacity: 0; transform: scale(.2); }
+  45% { opacity: 1; }
+  100% { opacity: .25; transform: scale(1.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neo-login-split .energy-fiber,
+  .neo-login-split .energy-fiber-glow,
+  .neo-login-split .fiber-tip {
+    animation-duration: .01ms !important;
+  }
+}
+
+/* Performance pass: compositor-only breathing with lightweight native-node halos. */
+.neo-login-split .neo-map-image {
+  filter: saturate(.92) contrast(1.1) brightness(.82);
+  animation: map-opacity-breathe 6.8s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+@keyframes map-opacity-breathe {
+  0%, 100% { opacity: .72; transform: scale(1.32); }
+  50% { opacity: .9; transform: scale(1.32); }
+}
+
+.native-node-pulses {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.native-node-pulses i {
+  --pulse-size: 42px;
+  position: absolute;
+  width: var(--pulse-size);
+  height: var(--pulse-size);
+  margin: calc(var(--pulse-size) / -2) 0 0 calc(var(--pulse-size) / -2);
+  border-radius: 50%;
+  opacity: .08;
+  background: radial-gradient(circle,
+    rgba(211,255,235,.42) 0 7%,
+    rgba(96,255,199,.22) 25%,
+    rgba(65,229,182,.08) 48%,
+    transparent 72%);
+  mix-blend-mode: screen;
+  will-change: opacity, transform;
+  animation: native-node-breathe var(--pulse-duration) var(--pulse-delay) ease-in-out infinite;
+}
+
+.native-node-pulses .pulse-1 { left: 78.2%; top: 34.8%; --pulse-duration: 2.2s; --pulse-delay: -1.3s; --pulse-size: 34px; }
+.native-node-pulses .pulse-2 { left: 75.3%; top: 40.1%; --pulse-duration: 2.85s; --pulse-delay: -.35s; --pulse-size: 46px; }
+.native-node-pulses .pulse-3 { left: 66.4%; top: 44.1%; --pulse-duration: 3.4s; --pulse-delay: -2.1s; --pulse-size: 40px; }
+.native-node-pulses .pulse-4 { left: 50.1%; top: 50.7%; --pulse-duration: 2.55s; --pulse-delay: -1.75s; --pulse-size: 50px; }
+.native-node-pulses .pulse-5 { left: 75.3%; top: 54.6%; --pulse-duration: 3.05s; --pulse-delay: -.8s; --pulse-size: 54px; }
+.native-node-pulses .pulse-6 { left: 63.4%; top: 63.9%; --pulse-duration: 3.75s; --pulse-delay: -2.6s; --pulse-size: 48px; }
+
+@keyframes native-node-breathe {
+  0%, 100% { opacity: .04; transform: scale(.72); }
+  28% { opacity: .25; transform: scale(.9); }
+  54% { opacity: .88; transform: scale(1.18); }
+  72% { opacity: .32; transform: scale(.94); }
+}
+
+.neo-login-split .scene-depth-stars {
+  filter: none;
+  animation: depth-stars-opacity 7s ease-in-out infinite;
+}
+@keyframes depth-stars-opacity {
+  0%, 100% { opacity: .12; }
+  50% { opacity: .3; }
+}
+
+.neo-login-split .neo-auth-card {
+  animation: none;
+}
+
+.neo-login-split.is-complete .neo-map-zone,
+.neo-login-split.is-complete .neo-auth-card,
+.neo-login-split.is-complete .neo-auth-zone {
+  filter: none;
+}
+
+.neo-login-split.is-complete .neo-auth-card,
+.neo-login-split.is-complete .neo-auth-zone {
+  opacity: 0;
+}
+
+.gateway-canvas-entry {
+  clip-path: none;
+  filter: none;
+  animation: none;
+}
+
+/* 3D camera breathing and shared-point handoff to the infinite canvas. */
+.neo-login-split {
+  perspective: 1400px;
+}
+
+.neo-login-split::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle at var(--focus-x) var(--focus-y),
+      rgba(238,255,246,.96) 0,
+      rgba(116,255,202,.68) 1.2%,
+      rgba(61,232,177,.2) 6%,
+      transparent 18%);
+}
+
+.neo-login-split .scene-depth-stars {
+  position: absolute;
+  z-index: 1;
+  inset: -8%;
+  opacity: .22;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(146,255,216,.52) 0 1px, transparent 1.4px),
+    radial-gradient(circle, rgba(74,170,157,.32) 0 1px, transparent 1.4px);
+  background-position: 0 0, 17px 23px;
+  background-size: 74px 74px, 113px 113px;
+  transform: perspective(1000px) rotateX(var(--scene-rx)) rotateY(var(--scene-ry)) translateZ(-80px);
+  animation: depth-stars-breathe 7s ease-in-out infinite;
+  transition: transform .22s ease-out;
+}
+
+.neo-login-split .scene-depth-plane {
+  position: absolute;
+  z-index: 2;
+  left: -8%;
+  right: -8%;
+  bottom: -33%;
+  height: 72%;
+  pointer-events: none;
+  opacity: .24;
+  background:
+    linear-gradient(rgba(101,255,205,.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(101,255,205,.1) 1px, transparent 1px);
+  background-size: 68px 48px;
+  transform: perspective(540px) rotateX(64deg) translateZ(-90px);
+  transform-origin: center bottom;
+  mask-image: linear-gradient(180deg, transparent, #000 35%, transparent 92%);
+  animation: depth-plane-breathe 6.4s ease-in-out infinite;
+}
+
+@keyframes depth-stars-breathe {
+  0%, 100% { opacity: .12; filter: brightness(.8); }
+  50% { opacity: .3; filter: brightness(1.25); }
+}
+@keyframes depth-plane-breathe {
+  0%, 100% { opacity: .12; background-position: 0 0; }
+  50% { opacity: .3; background-position: 0 18px; }
+}
+
+.neo-login-split .neo-map-zone {
+  transform: perspective(1400px) rotateX(var(--scene-rx)) rotateY(var(--scene-ry)) translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform .22s ease-out, opacity .7s, filter .7s;
+}
+
+.neo-login-split .neo-auth-card {
+  transform: translateY(-44%) perspective(1200px) rotateX(var(--scene-rx)) rotateY(var(--scene-ry)) translateZ(34px);
+  transform-style: preserve-3d;
+  animation: auth-card-breathe 5.6s ease-in-out infinite;
+  transition: transform .28s ease-out, opacity .62s, filter .62s;
+}
+
+@keyframes auth-card-breathe {
+  0%, 100% { box-shadow: 0 30px 90px rgba(0,0,0,.46), inset 0 1px rgba(255,255,255,.04); }
+  50% { box-shadow: 0 38px 115px rgba(0,0,0,.62), 0 0 48px rgba(74,235,183,.08), inset 0 1px rgba(255,255,255,.06); }
+}
+
+.scene-focus-dot {
+  position: absolute;
+  z-index: 36;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: rgba(214,255,233,.72);
+  box-shadow: 0 0 12px rgba(113,255,203,.62);
+  transition:
+    left .82s cubic-bezier(.2,.72,.18,1),
+    top .82s cubic-bezier(.2,.72,.18,1),
+    transform .82s cubic-bezier(.2,.72,.18,1),
+    opacity .4s;
+  animation: camera-focus-breathe 2.6s ease-in-out infinite;
+}
+.scene-focus-dot i,
+.scene-focus-dot b {
+  position: absolute;
+  border: 1px solid rgba(144,255,213,.32);
+  border-radius: 50%;
+}
+.scene-focus-dot i { inset: -11px; }
+.scene-focus-dot b { inset: -24px; opacity: .45; }
+@keyframes camera-focus-breathe {
+  50% { box-shadow: 0 0 24px 5px rgba(113,255,203,.42); }
+}
+
+.neo-login-split.is-routing .neo-auth-card {
+  transform: translateY(-44%) perspective(1200px) rotateX(var(--scene-rx)) rotateY(var(--scene-ry)) translateZ(18px) scale(.985);
+}
+
+.neo-login-split.is-complete {
+  animation: none;
+}
+.neo-login-split.is-complete .scene-focus-dot {
+  left: var(--focus-x);
+  top: var(--focus-y);
+  z-index: 62;
+  transform: scale(1.8);
+  opacity: 1;
+}
+.neo-login-split.is-complete .neo-map-zone {
+  transform-origin: var(--focus-x) var(--focus-y);
+  transform: perspective(900px) scale(1.72) translateZ(130px);
+  filter: brightness(1.35) saturate(1.18);
+  transition: transform 1s cubic-bezier(.18,.76,.16,1), filter 1s ease;
+}
+.neo-login-split.is-complete .neo-auth-card,
+.neo-login-split.is-complete .neo-auth-zone {
+  opacity: 0;
+  filter: blur(12px);
+}
+.neo-login-split.is-complete .neo-login-head,
+.neo-login-split.is-complete .routing-status {
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: opacity .5s, transform .5s;
+}
+.neo-login-split.is-complete::after {
+  animation: gateway-camera-flash 1.02s cubic-bezier(.2,.72,.2,1) forwards;
+}
+
+@keyframes gateway-camera-flash {
+  0% { opacity: 0; transform: scale(.35); }
+  48% { opacity: .42; }
+  82% { opacity: .9; transform: scale(2.2); }
+  100% { opacity: 1; transform: scale(4); }
+}
+
+.gateway-canvas-entry {
+  animation: canvas-gateway-reveal 1.38s cubic-bezier(.18,.76,.16,1) both;
+  transform-origin: var(--entry-x) var(--entry-y);
+}
+.gateway-canvas-entry::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--entry-x) var(--entry-y), rgba(225,255,239,.95), rgba(93,255,197,.25) 6%, transparent 22%);
+  animation: canvas-entry-flare 1.25s ease-out both;
+}
+.gateway-canvas-entry .canvas-world {
+  animation: canvas-entry-world 1.35s cubic-bezier(.18,.76,.16,1) both;
+}
+.app-shell:has(.gateway-canvas-entry) .sidebar,
+.app-shell:has(.gateway-canvas-entry) .topbar {
+  animation: canvas-chrome-entry 1.25s .38s ease-out both;
+}
+
+@keyframes canvas-gateway-reveal {
+  0% {
+    clip-path: circle(0% at var(--entry-x) var(--entry-y));
+    filter: brightness(2) blur(8px);
+    transform: scale(1.18);
+  }
+  62% { filter: brightness(1.25) blur(1px); }
+  100% {
+    clip-path: circle(150% at var(--entry-x) var(--entry-y));
+    filter: none;
+    transform: scale(1);
+  }
+}
+@keyframes canvas-entry-flare {
+  0% { opacity: 1; transform: scale(.3); }
+  100% { opacity: 0; transform: scale(2.3); }
+}
+@keyframes canvas-entry-world {
+  from { opacity: .35; transform: translate3d(34px,34px,0) scale(.92); }
+}
+@keyframes canvas-chrome-entry {
+  from { opacity: 0; transform: translateY(-14px); filter: blur(5px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neo-login-split .scene-depth-stars,
+  .neo-login-split .scene-depth-plane,
+  .scene-focus-dot,
+  .gateway-canvas-entry,
+  .gateway-canvas-entry::before {
+    animation-duration: .01ms !important;
+  }
+}

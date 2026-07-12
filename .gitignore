@@ -1,0 +1,8 @@
+/.idea
+/.waylog
+/uploads/
+/smart-logistics-ui/.git.standalone-backup/
+/smart-logistics-ui/.env.local
+/smart-logistics-ui/dist/
+/smart-logistics-ui/node_modules/
+/smart-logistics-ui/smart-logistics-ui/

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sky.logistics.mapper.OrderExtensionMapper">
+
+    <sql id="AddressChangeColumns">
+        id,
+        request_id AS requestId,
+        order_id AS orderId,
+        customer_id AS customerId,
+        old_address AS oldAddress,
+        old_lng AS oldLng,
+        old_lat AS oldLat,
+        new_address AS newAddress,
+        new_lng AS newLng,
+        new_lat AS newLat,
+        contact_name AS contactName,
+        contact_phone AS contactPhone,
+        reason,
+        status,
+        impact_level AS impactLevel,
+        extra_distance_km AS extraDistanceKm,
+        estimated_delay_minutes AS estimatedDelayMinutes,
+        extra_cost AS extraCost,
+        need_dispatcher_review AS needDispatcherReview,
+        need_driver_confirm AS needDriverConfirm,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+    </sql>
+
+    <insert id="insertAddressChange" parameterType="com.sky.logistics.entity.AddressChangeRequest">
+        INSERT INTO address_change_requests (
+            request_id, order_id, customer_id,
+            old_address, old_lng, old_lat,
+            new_address, new_lng, new_lat,
+            contact_name, contact_phone, reason,
+            status, impact_level, extra_distance_km,
+            estimated_delay_minutes, extra_cost,
+            need_dispatcher_review, need_driver_confirm,
+            created_at, updated_at
+        ) VALUES (
+            #{requestId}, #{orderId}, #{customerId},
+            #{oldAddress}, #{oldLng}, #{oldLat},
+            #{newAddress}, #{newLng}, #{newLat},
+            #{contactName}, #{contactPhone}, #{reason},
+            #{status}, #{impactLevel}, #{extraDistanceKm},
+            #{estimatedDelayMinutes}, #{extraCost},
+            #{needDispatcherReview}, #{needDriverConfirm},
+            now(), now()
+        )
+    </insert>
+
+    <insert id="insertAddressChangeLog" parameterType="com.sky.logistics.entity.AddressChangeLog">
+        INSERT INTO address_change_logs (
+            request_id, operator_id, operator_role, action, remark, created_at
+        ) VALUES (
+            #{requestId}, #{operatorId}, #{operatorRole}, #{action}, #{remark}, now()
+        )
+    </insert>
+
+    <select id="findAddressChangeByRequestId" resultType="com.sky.logistics.entity.AddressChangeRequest">
+        SELECT
+        <include refid="AddressChangeColumns"/>
+        FROM address_change_requests
+        WHERE request_id = #{requestId}
+    </select>
+
+    <select id="findAddressChangesByOrderId" resultType="com.sky.logistics.entity.AddressChangeRequest">
+        SELECT
+        <include refid="AddressChangeColumns"/>
+        FROM address_change_requests
+        WHERE order_id = #{orderId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findAddressChangeLogs" resultType="com.sky.logistics.entity.AddressChangeLog">
+        SELECT
+            id,
+            request_id AS requestId,
+            operator_id AS operatorId,
+            operator_role AS operatorRole,
+            action,
+            remark,
+            created_at AS createdAt
+        FROM address_change_logs
+        WHERE request_id = #{requestId}
+        ORDER BY created_at ASC
+    </select>
+
+    <update id="updateAddressChangeStatus">
+        UPDATE address_change_requests
+        SET status = #{status},
+            updated_at = now()
+        WHERE request_id = #{requestId}
+    </update>
+
+    <insert id="insertDriverRating" parameterType="com.sky.logistics.entity.DriverRating">
+        INSERT INTO driver_ratings (
+            rating_id, order_id, customer_id, driver_id, plate,
+            score, punctuality, service_attitude, cargo_integrity, communication,
+            comment, created_at, updated_at
+        ) VALUES (
+            #{ratingId}, #{orderId}, #{customerId}, #{driverId}, #{plate},
+            #{score}, #{punctuality}, #{serviceAttitude}, #{cargoIntegrity}, #{communication},
+            #{comment}, now(), now()
+        )
+    </insert>
+
+    <insert id="insertDriverRatingTag" parameterType="com.sky.logistics.entity.DriverRatingTag">
+        INSERT INTO driver_rating_tags (rating_id, tag_name)
+        VALUES (#{ratingId}, #{tagName})
+    </insert>
+
+    <select id="findDriverRatingByOrderId" resultType="com.sky.logistics.entity.DriverRating">
+        SELECT
+            id,
+            rating_id AS ratingId,
+            order_id AS orderId,
+            customer_id AS customerId,
+            driver_id AS driverId,
+            plate,
+            score,
+            punctuality,
+            service_attitude AS serviceAttitude,
+            cargo_integrity AS cargoIntegrity,
+            communication,
+            comment,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM driver_ratings
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="findDriverRatingTags" resultType="com.sky.logistics.entity.DriverRatingTag">
+        SELECT id, rating_id AS ratingId, tag_name AS tagName
+        FROM driver_rating_tags
+        WHERE rating_id = #{ratingId}
+        ORDER BY id ASC
+    </select>
+
+    <select id="ratingSummary" resultType="java.util.LinkedHashMap">
+        SELECT
+            driver_id AS "driverId",
+            ROUND(AVG(score)::numeric, 2) AS "averageScore",
+            COUNT(1) AS "ratingCount",
+            ROUND(AVG(punctuality)::numeric, 2) AS punctuality,
+            ROUND(AVG(service_attitude)::numeric, 2) AS "serviceAttitude",
+            ROUND(AVG(cargo_integrity)::numeric, 2) AS "cargoIntegrity",
+            ROUND(AVG(communication)::numeric, 2) AS communication
+        FROM driver_ratings
+        WHERE driver_id = #{driverId}
+        GROUP BY driver_id
+    </select>
+
+    <select id="ratingTagStats" resultType="java.util.LinkedHashMap">
+        SELECT t.tag_name AS name, COUNT(1) AS count
+        FROM driver_rating_tags t
+        JOIN driver_ratings r ON r.rating_id = t.rating_id
+        WHERE r.driver_id = #{driverId}
+        GROUP BY t.tag_name
+        ORDER BY COUNT(1) DESC, t.tag_name ASC
+        LIMIT 10
+    </select>
+
+    <select id="findRatingsByDriverId" resultType="com.sky.logistics.entity.DriverRating">
+        SELECT
+            id,
+            rating_id AS ratingId,
+            order_id AS orderId,
+            customer_id AS customerId,
+            driver_id AS driverId,
+            plate,
+            score,
+            punctuality,
+            service_attitude AS serviceAttitude,
+            cargo_integrity AS cargoIntegrity,
+            communication,
+            comment,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM driver_ratings
+        WHERE driver_id = #{driverId}
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countRatingsByDriverId" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM driver_ratings
+        WHERE driver_id = #{driverId}
+    </select>
+
+    <insert id="insertUnloadAddressRecord" parameterType="com.sky.logistics.entity.UnloadAddressRecord">
+        INSERT INTO unload_address_records (
+            record_id, order_id, record_type, address, lng, lat,
+            abnormal_type, description, photos, remark,
+            operator_id, operator_role, created_at
+        ) VALUES (
+            #{recordId}, #{orderId}, #{recordType}, #{address}, #{lng}, #{lat},
+            #{abnormalType}, #{description}, #{photos}, #{remark},
+            #{operatorId}, #{operatorRole}, now()
+        )
+    </insert>
+
+    <select id="findUnloadAddressRecords" resultType="com.sky.logistics.entity.UnloadAddressRecord">
+        SELECT
+            id,
+            record_id AS recordId,
+            order_id AS orderId,
+            record_type AS recordType,
+            address,
+            lng,
+            lat,
+            abnormal_type AS abnormalType,
+            description,
+            photos,
+            remark,
+            operator_id AS operatorId,
+            operator_role AS operatorRole,
+            created_at AS createdAt
+        FROM unload_address_records
+        WHERE order_id = #{orderId}
+        <if test="recordType != null and recordType != ''">
+            AND record_type = #{recordType}
+        </if>
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findAlertEventsByOrderId" resultType="java.util.LinkedHashMap">
+        SELECT
+            alert_type AS type,
+            title,
+            status,
+            triggered_at AS "occurredAt",
+            resolved_at AS "handledAt",
+            severity,
+            summary
+        FROM alerts
+        WHERE cargo_id = #{orderId}
+        ORDER BY triggered_at DESC
+        LIMIT 20
+    </select>
+
+</mapper>

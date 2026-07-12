@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.logistics.mapper.KnowledgeMapper">
+
+    <sql id="DocumentColumns">
+        document_id AS documentId,
+        title,
+        category,
+        object_key AS objectKey,
+        status,
+        chunk_count AS chunkCount,
+        created_at AS createdAt
+    </sql>
+
+    <sql id="ChunkColumns">
+        chunk_id AS chunkId,
+        document_id AS documentId,
+        chunk_index AS chunkIndex,
+        content,
+        embedding::text AS embedding,
+        created_at AS createdAt
+    </sql>
+
+    <!-- ================= knowledge_documents ================= -->
+
+    <insert id="insertDocument">
+        INSERT INTO knowledge_documents (document_id, title, category, object_key, status, chunk_count, created_at)
+        VALUES (#{documentId}, #{title}, #{category}, #{objectKey}, #{status}, #{chunkCount}, now())
+    </insert>
+
+    <select id="findDocuments" resultType="com.sky.logistics.entity.KnowledgeDocument">
+        SELECT <include refid="DocumentColumns"/>
+        FROM knowledge_documents
+        <where>
+            <if test="title != null and title != ''">
+                AND title ILIKE '%' || #{title} || '%'
+            </if>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countDocuments" resultType="java.lang.Long">
+        SELECT count(*) FROM knowledge_documents
+        <where>
+            <if test="title != null and title != ''">
+                AND title ILIKE '%' || #{title} || '%'
+            </if>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+        </where>
+    </select>
+
+    <select id="findDocumentById" resultType="com.sky.logistics.entity.KnowledgeDocument">
+        SELECT <include refid="DocumentColumns"/>
+        FROM knowledge_documents
+        WHERE document_id = #{documentId}
+    </select>
+
+    <update id="updateDocumentStatus">
+        UPDATE knowledge_documents
+        SET status = #{status}, chunk_count = #{chunkCount}
+        WHERE document_id = #{documentId}
+    </update>
+
+    <delete id="deleteDocument">
+        DELETE FROM knowledge_documents WHERE document_id = #{documentId}
+    </delete>
+
+    <!-- ================= knowledge_chunks ================= -->
+
+    <insert id="insertChunk">
+        INSERT INTO knowledge_chunks (chunk_id, document_id, chunk_index, content, embedding, created_at)
+        VALUES (#{chunkId}, #{documentId}, #{chunkIndex}, #{content}, #{embedding}::vector, now())
+    </insert>
+
+    <delete id="deleteChunksByDocumentId">
+        DELETE FROM knowledge_chunks WHERE document_id = #{documentId}
+    </delete>
+
+    <select id="findChunksByDocumentId" resultType="com.sky.logistics.entity.KnowledgeChunk">
+        SELECT <include refid="ChunkColumns"/>
+        FROM knowledge_chunks
+        WHERE document_id = #{documentId}
+        ORDER BY chunk_index
+    </select>
+
+    <select id="findSimilarChunksByVector" resultType="com.sky.logistics.entity.KnowledgeChunk">
+        SELECT <include refid="ChunkColumns"/>
+        FROM knowledge_chunks
+        ORDER BY embedding &lt;=&gt; #{embedding}::vector
+        LIMIT #{limit}
+    </select>
+
+    <select id="findChunksByKeyword" resultType="com.sky.logistics.entity.KnowledgeChunk">
+        SELECT <include refid="ChunkColumns"/>
+        FROM knowledge_chunks
+        WHERE
+        <foreach collection="keywords" item="kw" separator=" OR ">
+            content ILIKE '%' || #{kw} || '%'
+        </foreach>
+        ORDER BY created_at DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sky.logistics.mapper.FaceAuthMapper">
+
+    <resultMap id="FaceBindingResultMap" type="com.sky.logistics.entity.FaceBinding">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="groupId" column="baidu_group_id"/>
+        <result property="baiduUserId" column="baidu_user_id"/>
+        <result property="faceImageUrl" column="face_image_url"/>
+        <result property="faceImageObjectKey" column="face_image_object_key"/>
+        <result property="enabled" column="enabled"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="lastUpdatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findBinding" resultMap="FaceBindingResultMap">
+        SELECT
+            id,
+            user_id,
+            baidu_group_id,
+            baidu_user_id,
+            face_image_url,
+            face_image_object_key,
+            enabled,
+            created_at,
+            updated_at
+        FROM user_face_bindings
+        WHERE user_id = #{userId}
+          AND enabled = TRUE
+        LIMIT 1
+    </select>
+
+    <select id="findBindingByBaiduUserId" resultMap="FaceBindingResultMap">
+        SELECT
+            id,
+            user_id,
+            baidu_group_id,
+            baidu_user_id,
+            face_image_url,
+            face_image_object_key,
+            enabled,
+            created_at,
+            updated_at
+        FROM user_face_bindings
+        WHERE baidu_group_id = #{groupId}
+          AND baidu_user_id = #{baiduUserId}
+          AND enabled = TRUE
+        LIMIT 1
+    </select>
+
+    <delete id="deleteBinding">
+        DELETE FROM user_face_bindings
+        WHERE user_id = #{userId}
+    </delete>
+
+    <insert id="insertBinding">
+        INSERT INTO user_face_bindings (
+            id, user_id, baidu_group_id, baidu_user_id, face_image_url, face_image_object_key,
+            enabled, created_at, updated_at
+        ) VALUES (
+            #{id}, #{userId}, #{groupId}, #{baiduUserId}, #{faceImageUrl}, #{faceImageObjectKey},
+            TRUE, now(), now()
+        )
+    </insert>
+
+    <insert id="insertLog">
+        INSERT INTO face_login_logs (
+            id, user_id, confidence, success, reason, ip, device_id, created_at
+        ) VALUES (
+            #{id}, #{userId}, #{confidence}, #{success}, #{reason}, #{ip}, #{deviceId}, now()
+        )
+    </insert>
+
+</mapper>

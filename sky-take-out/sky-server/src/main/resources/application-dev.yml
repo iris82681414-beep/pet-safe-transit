@@ -1,0 +1,119 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:15432}/${POSTGRES_DATABASE:smart_logistics}
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${DB_PASSWORD:123456}
+    druid:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:15432}/${POSTGRES_DATABASE:smart_logistics}
+      username: ${POSTGRES_USERNAME:postgres}
+      password: ${DB_PASSWORD:123456}
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: ${REDIS_DATABASE:0}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    listener:
+      auto-startup: ${KAFKA_ENABLED:true}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:logistics-consumer-group}
+      auto-offset-reset: earliest
+
+sky:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    host: ${POSTGRES_HOST:localhost}
+    port: ${POSTGRES_PORT:15432}
+    database: ${POSTGRES_DATABASE:smart_logistics}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${DB_PASSWORD:123456}
+  alioss:
+    endpoint: ${ALIOSS_ENDPOINT:local}
+    access-key-id: ${ALIOSS_ACCESS_KEY_ID:local}
+    access-key-secret: ${ALIOSS_ACCESS_KEY_SECRET:local}
+    bucket-name: ${ALIOSS_BUCKET_NAME:local}
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: ${REDIS_DATABASE:0}
+  wechat:
+    appid: ${WECHAT_APPID:local}
+    secret: ${WECHAT_SECRET:local}
+    mchid: ${WECHAT_MCHID:local}
+    mchSerialNo: ${WECHAT_MCH_SERIAL_NO:local}
+    privateKeyFilePath: ${WECHAT_PRIVATE_KEY_FILE_PATH:local}
+    apiV3Key: ${WECHAT_API_V3_KEY:local}
+    weChatPayCertFilePath: ${WECHAT_PAY_CERT_FILE_PATH:local}
+    notifyUrl: ${WECHAT_NOTIFY_URL:local}
+    refundNotifyUrl: ${WECHAT_REFUND_NOTIFY_URL:local}
+
+mqtt:
+  enabled: ${MQTT_ENABLED:true}
+  broker-url: ${MQTT_BROKER_URL:tcp://localhost:11883}
+  client-id: ${MQTT_CLIENT_ID:backend-realtime-service-01}
+  username: ${MQTT_USERNAME:}
+  password: ${MQTT_PASSWORD:}
+
+# TimescaleDB 时序库（第二数据源），存储 gps_points 和 device_heartbeats
+timescaledb:
+  datasource:
+    jdbc-url: jdbc:postgresql://${TIMESCALEDB_HOST:localhost}:${TIMESCALEDB_PORT:5433}/${TIMESCALEDB_DATABASE:gps}?options=-c%20TimeZone=Asia/Shanghai
+    username: ${TIMESCALEDB_USERNAME:postgres}
+    password: ${TIMESCALEDB_PASSWORD:123456}
+    driver-class-name: org.postgresql.Driver
+
+# SiliconFlow SenseVoice 语音识别
+siliconflow:
+  asr:
+    endpoint: ${SILICONFLOW_ASR_ENDPOINT:https://api.siliconflow.cn/v1/audio/transcriptions}
+    api-key: ${SILICONFLOW_ASR_API_KEY:}
+    model: ${SILICONFLOW_ASR_MODEL:FunAudioLLM/SenseVoiceSmall}
+
+# ElevenLabs 智能问答桌宠语音播报
+elevenlabs:
+  endpoint: ${ELEVENLABS_ENDPOINT:https://api.elevenlabs.io/v1}
+  api-key: ${ELEVENLABS_API_KEY:}
+  voice-id: ${ELEVENLABS_VOICE_ID:JBFqnCBsd6RMkjVDRZzb}
+  model-id: ${ELEVENLABS_MODEL_ID:eleven_v3}
+  output-format: ${ELEVENLABS_OUTPUT_FORMAT:mp3_44100_128}
+
+baidu:
+  face:
+    api-key: ${BAIDU_FACE_API_KEY:nlYZVgmaavJcOv1qY8dn7GmA}
+    secret-key: ${BAIDU_FACE_SECRET_KEY:ZazxaxYM2sh1MGw8JOVDBxXVHygbP3vL}
+    group-id: ${BAIDU_FACE_GROUP_ID:logistics_user}
+    threshold: ${FACE_LOGIN_THRESHOLD:80}
+
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:minioadmin}
+  secret-key: ${MINIO_SECRET_KEY:minioadmin}
+  bucket: ${MINIO_BUCKET:knowledge-docs}
+
+ai:
+  llm:
+    endpoint: ${AI_LLM_ENDPOINT:https://api.deepseek.com}
+    api-key: sk-8267ab2c28c64f4cb944064a1fa356c5
+    model: ${AI_LLM_MODEL:deepseek-v4-flash}
+  embedding:
+    endpoint: ${AI_EMBEDDING_ENDPOINT:https://api.siliconflow.cn}
+    api-key: ${SILICONFLOW_API_KEY:}
+    model: ${AI_EMBEDDING_MODEL:BAAI/bge-m3}
+
+amap:
+  web-key: 5c5f3cfbb3dc7f155d20f3f414d5c1df
+  base-url: ${AMAP_BASE_URL:https://restapi.amap.com}
+  connect-timeout-ms: ${AMAP_CONNECT_TIMEOUT_MS:3000}
+  read-timeout-ms: ${AMAP_READ_TIMEOUT_MS:5000}
+  cache-minutes: ${AMAP_CACHE_MINUTES:30}
+
+logging:
+  level:
+    org.springframework.web.client.RestTemplate: info
+    com:
+      sky:
+        logistics: debug
