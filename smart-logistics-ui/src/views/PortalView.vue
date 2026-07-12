@@ -153,7 +153,7 @@ onBeforeUnmount(() => {
     <iframe
       :key="store.user?.role"
       :src="iframeSrc"
-      title="智慧物流导航窗口"
+      title="伴生云途导航窗口"
       allow="fullscreen; autoplay; microphone"
     />
     <button v-if="floatingComponent" class="portal-page-return" type="button" @click="closeFloatingPage">
@@ -170,7 +170,7 @@ onBeforeUnmount(() => {
       <div v-if="floatingComponent" class="portal-floating-page" @dragover.prevent @drop.prevent>
         <header class="portal-floating-header">
           <div class="portal-floating-title">
-            <span>SMART LOGISTICS MODULE</span>
+            <span>伴生云途 · 智能宠物托运与全程感知平台</span>
             <strong>{{ floatingTitle }}</strong>
           </div>
         </header>

@@ -18,9 +18,9 @@ const emit = defineEmits<{
 const store = useLogisticsStore()
 const router = useRouter()
 const form = reactive<{ username: string; password: string; role: UserRole }>({
-  username: 'dispatcher',
+  username: 'shipper',
   password: '123456',
-  role: 'DISPATCHER',
+  role: 'SHIPPER',
 })
 const mode = ref<'password' | 'face'>('password')
 const phase = ref<'idle' | 'authenticating' | 'locating' | 'complete'>('idle')
@@ -144,7 +144,7 @@ async function playEntrySequence() {
   await delay(520)
   phase.value = 'complete'
   await delay(280)
-  await router.push('/portal')
+  await router.push(store.user?.role === 'SHIPPER' ? '/pet-owner' : '/portal')
   emit('transitionEnd')
 }
 
@@ -291,7 +291,7 @@ onBeforeUnmount(() => {
   >
     <div class="scene-depth-stars"></div>
     <div class="scene-depth-plane"></div>
-    <section ref="mapPanel" class="neo-map-zone" aria-label="实时物流网络地图">
+    <section ref="mapPanel" class="neo-map-zone" aria-label="伴生云途实时运输网络地图">
       <img class="neo-map-image" :src="mapImage" alt="" aria-hidden="true" />
       <div class="native-node-pulses" aria-hidden="true">
         <i v-for="node in 6" :key="node" :class="`pulse-${node}`"></i>
@@ -311,7 +311,7 @@ onBeforeUnmount(() => {
     <header class="neo-login-head">
       <div class="neo-brand">
         <span><el-icon><Van /></el-icon></span>
-        <div><strong>灵枢物流</strong><small>LINGSHU LOGISTICS CLOUD</small></div>
+        <div><strong>伴生云途</strong><small>智能宠物托运与全程感知平台</small></div>
       </div>
       <div class="neo-security"><i></i> SECURE NODE · CN-07</div>
     </header>
@@ -351,7 +351,7 @@ onBeforeUnmount(() => {
         </label>
         <p v-if="loginError" class="login-error-tip">{{ loginError }}</p>
         <button ref="loginButton" class="neo-login-button" type="submit" :disabled="loading">
-          <span>{{ loading ? '正在验证身份' : '进入物流网络' }}</span>
+          <span>{{ loading ? '正在验证身份' : '进入伴生云途' }}</span>
           <el-icon><ArrowRight /></el-icon>
           <i class="login-spark"></i>
         </button>
@@ -377,7 +377,7 @@ onBeforeUnmount(() => {
         <p>真实接口：<code>POST /auth/face-login</code></p>
       </div>
 
-      <footer><span><i></i> AES-256 ENCRYPTED</span><small>演示账号 dispatcher / 123456</small></footer>
+      <footer><span><i></i> AES-256 ENCRYPTED</span><small>演示账号 shipper / 123456</small></footer>
     </section>
 
     <svg v-if="isTransitioning" class="login-route-beams" :viewBox="routeViewBox" preserveAspectRatio="none" aria-hidden="true">

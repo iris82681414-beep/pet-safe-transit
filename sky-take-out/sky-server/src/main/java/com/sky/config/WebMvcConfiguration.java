@@ -69,9 +69,9 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     public Docket logisticsDocket(){
         log.info("准备生成智慧物流接口文档...");
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .title("智慧物流 IoT 平台接口文档")
+                .title("伴生云途——智能宠物托运与全程感知平台接口文档")
                 .version("0.1-starter")
-                .description("智慧物流 IoT 平台 starter 接口文档")
+                .description("伴生云途智能宠物托运与全程感知平台接口文档")
                 .build();
 
         return new Docket(DocumentationType.SWAGGER_2)

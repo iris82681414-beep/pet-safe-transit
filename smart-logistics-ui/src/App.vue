@@ -9,7 +9,6 @@ import { useRoute, useRouter } from 'vue-router'
 import LoginPortal from '@/components/LoginPortal.vue'
 import SpatialAtmosphere from '@/components/SpatialAtmosphere.vue'
 import VoiceAssistantButton from '@/components/VoiceAssistant/VoiceAssistantButton.vue'
-import YangSmartPet from '@/components/DeskPet/YangSmartPet.vue'
 import UserAccountMenu from '@/components/UserAccountMenu.vue'
 import { preloadAMap } from '@/services/amap'
 
@@ -26,6 +25,7 @@ const AssistantView = defineAsyncComponent(() => import('@/views/AssistantView.v
 const DriverView = defineAsyncComponent(() => import('@/views/DriverView.vue'))
 const PersonnelView = defineAsyncComponent(() => import('@/views/PersonnelView.vue'))
 const PortalView = defineAsyncComponent(() => import('@/views/PortalView.vue'))
+const PetOwnerDashboardView = defineAsyncComponent(() => import('@/views/PetOwnerDashboardView.vue'))
 
 const { user, vehicles, transitCount, pendingAlertCount, unreadCount, notifications } = storeToRefs(store)
 const active = computed({
@@ -66,6 +66,7 @@ const loginSlides = [
 ]
 
 const menus = [
+  { key: 'pet-owner', label: '萌宠护送', icon: 'FirstAidKit', roles: ['SHIPPER', 'ADMIN'] },
   { key: 'overview', label: '运营总览', icon: 'DataBoard', roles: ['SHIPPER', 'WAREHOUSE', 'DISPATCHER', 'DRIVER', 'ADMIN'] },
   { key: 'tracking', label: '货物追踪', icon: 'Location', roles: ['SHIPPER', 'DISPATCHER', 'ADMIN'] },
   { key: 'dispatch', label: '车辆调度', icon: 'Van', roles: ['DISPATCHER', 'ADMIN'] },
@@ -87,6 +88,7 @@ const pageMap: Record<string, Component> = {
   assistant: AssistantView,
   driver: DriverView,
   portal: PortalView,
+  'pet-owner': PetOwnerDashboardView,
 }
 
 const pageTitle = computed(() => active.value === 'portal' ? '导航窗口' : menus.find((item) => item.key === active.value)?.label || '运营总览')
@@ -179,8 +181,8 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
 
     <section class="login-story">
       <div class="brand-mark large"><el-icon><Van /></el-icon></div>
-      <p class="eyebrow">SMART LOGISTICS · IOT</p>
-      <h1>智慧物流<br />实时协同平台</h1>
+      <p class="eyebrow">PET TRANSIT · IOT</p>
+      <h1>伴生云途<br />智能宠物托运与全程感知平台</h1>
       <p class="login-description">
         连接车辆、仓储、订单与运输链路，让调度决策更清晰，让每一次运输都有迹可循。
       </p>
@@ -214,7 +216,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
     </section>
 
     <section class="login-auth-stack">
-      <div class="login-carousel" aria-label="智慧物流场景轮播">
+      <div class="login-carousel" aria-label="伴生云途宠物托运场景轮播">
         <div class="login-carousel-track">
           <article v-for="slide in loginSlides" :key="slide.title" class="login-slide">
             <img :src="slide.image" :alt="slide.title" />
@@ -230,7 +232,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
       <div class="login-card">
         <div class="mobile-brand">
           <div class="brand-mark"><el-icon><Van /></el-icon></div>
-          <strong>智慧物流 IoT</strong>
+          <strong>伴生云途</strong>
         </div>
         <p class="eyebrow">WELCOME BACK</p>
         <h2>登录工作台</h2>
@@ -252,7 +254,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
             </el-select>
           </el-form-item>
           <el-button class="login-button" type="primary" native-type="submit" :loading="loginLoading" @click="enterPlatform">
-            进入智慧物流平台
+            进入伴生云途
           </el-button>
         </el-form>
         <div class="demo-tip"><el-icon><InfoFilled /></el-icon>演示账号 dispatcher / 123456</div>
@@ -260,14 +262,14 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
     </section>
   </div>
 
-  <div v-if="user && active !== 'login'" class="app-shell" :class="[{ collapsed, 'canvas-mode': active === 'portal', 'portal-mode': active === 'portal', 'content-mode': active !== 'portal' }, `page-${active}`]">
-    <SpatialAtmosphere v-if="active !== 'overview' && active !== 'portal'" />
+  <div v-if="user && active !== 'login'" class="app-shell" :class="[{ collapsed, 'canvas-mode': active === 'portal', 'portal-mode': active === 'portal', 'content-mode': active !== 'portal' && active !== 'pet-owner', 'pet-owner-mode': active === 'pet-owner' }, `page-${active}`]">
+    <SpatialAtmosphere v-if="active !== 'overview' && active !== 'portal' && active !== 'pet-owner'" />
     <aside v-if="false" class="sidebar">
       <div class="brand">
         <div class="brand-mark"><el-icon><Van /></el-icon></div>
         <div class="brand-copy">
-          <strong>智慧物流</strong>
-          <span>SMART LOGISTICS</span>
+          <strong>伴生云途</strong>
+          <span>智能宠物托运与全程感知平台</span>
         </div>
       </div>
 
@@ -296,7 +298,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
     </aside>
 
     <main class="workspace">
-      <header v-if="active !== 'portal'" class="topbar">
+      <header v-if="active !== 'portal' && active !== 'pet-owner'" class="topbar">
         <div>
           <p class="eyebrow">LIVE LOGISTICS COMMAND CENTER</p>
           <h1>{{ pageTitle }}</h1>
@@ -311,7 +313,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
       </header>
 
       <div class="page-content">
-        <el-alert v-if="store.error" :title="store.error" type="error" show-icon closable style="margin-bottom: 16px" />
+        <el-alert v-if="store.error && active !== 'pet-owner'" :title="store.error" type="error" show-icon closable style="margin-bottom: 16px" />
         <component :is="pageMap[active]" @navigate="active = $event" />
       </div>
     </main>
@@ -338,7 +340,6 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
       </div>
     </el-drawer>
 
-    <VoiceAssistantButton :context="{ sourcePage: active }" />
-    <YangSmartPet />
+    <VoiceAssistantButton v-if="active !== 'pet-owner'" :context="{ sourcePage: active }" />
   </div>
 </template>

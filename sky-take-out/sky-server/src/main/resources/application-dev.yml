@@ -66,22 +66,24 @@ timescaledb:
     password: ${TIMESCALEDB_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
 
-# SiliconFlow SenseVoice 语音识别
-siliconflow:
-  asr:
-    endpoint: ${SILICONFLOW_ASR_ENDPOINT:https://api.siliconflow.cn/v1/audio/transcriptions}
-    api-key: ${SILICONFLOW_ASR_API_KEY:}
-    model: ${SILICONFLOW_ASR_MODEL:FunAudioLLM/SenseVoiceSmall}
-
-# ElevenLabs 智能问答桌宠语音播报
-elevenlabs:
-  endpoint: ${ELEVENLABS_ENDPOINT:https://api.elevenlabs.io/v1}
-  api-key: ${ELEVENLABS_API_KEY:}
-  voice-id: ${ELEVENLABS_VOICE_ID:JBFqnCBsd6RMkjVDRZzb}
-  model-id: ${ELEVENLABS_MODEL_ID:eleven_v3}
-  output-format: ${ELEVENLABS_OUTPUT_FORMAT:mp3_44100_128}
+# 豆包 Seed Audio 智能问答语音播报。密钥仅从服务端环境变量读取。
+doubao:
+  tts:
+    endpoint: ${DOUBAO_TTS_ENDPOINT:https://openspeech.bytedance.com/api/v3/tts/create}
+    stream-endpoint: ${DOUBAO_TTS_STREAM_ENDPOINT:wss://openspeech.bytedance.com/api/v3/tts/unidirectional/stream}
+    api-key: ${DOUBAO_TTS_API_KEY:}
+    model: ${DOUBAO_TTS_MODEL:seed-audio-1.0}
+    resource-id: ${DOUBAO_TTS_RESOURCE_ID:seed-tts-2.0}
+    stream-model: ${DOUBAO_TTS_STREAM_MODEL:seed-tts-2.0-standard}
+    speaker: ${DOUBAO_TTS_SPEAKER:zh_male_xionger_uranus_bigtts}
 
 baidu:
+  asr:
+    endpoint: ${BAIDU_ASR_ENDPOINT:https://vop.baidu.com/server_api}
+    app-id: ${BAIDU_ASR_APP_ID:}
+    api-key: ${BAIDU_ASR_API_KEY:}
+    secret-key: ${BAIDU_ASR_SECRET_KEY:}
+    dev-pid: ${BAIDU_ASR_DEV_PID:1537}
   face:
     api-key: ${BAIDU_FACE_API_KEY:nlYZVgmaavJcOv1qY8dn7GmA}
     secret-key: ${BAIDU_FACE_SECRET_KEY:ZazxaxYM2sh1MGw8JOVDBxXVHygbP3vL}
@@ -98,7 +100,7 @@ ai:
   llm:
     endpoint: ${AI_LLM_ENDPOINT:https://api.deepseek.com}
     api-key: sk-8267ab2c28c64f4cb944064a1fa356c5
-    model: ${AI_LLM_MODEL:deepseek-v4-flash}
+    model: ${AI_LLM_MODEL:deepseek-chat}
   embedding:
     endpoint: ${AI_EMBEDDING_ENDPOINT:https://api.siliconflow.cn}
     api-key: ${SILICONFLOW_API_KEY:}

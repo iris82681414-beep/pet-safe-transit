@@ -101,6 +101,12 @@ public class AssistantServiceImpl implements AssistantService {
     @Override
     public SseEmitter chatStream(String question, String sessionId, String authorization) {
         SseEmitter emitter = new SseEmitter(120000L);
+        try {
+            emitter.send(SseEmitter.event().name("ready").data(Collections.singletonMap("sessionId", sessionId), MediaType.APPLICATION_JSON));
+        } catch (Exception e) {
+            emitter.completeWithError(e);
+            return emitter;
+        }
         new Thread(() -> doChatStream(question, sessionId, authorization, emitter),
                 "assistant-stream-" + UUID.randomUUID().toString().substring(0, 8)).start();
         return emitter;
@@ -125,8 +131,9 @@ public class AssistantServiceImpl implements AssistantService {
         try {
             Map<String, String> entities = extractEntities(question);
             Map<String, Object> businessContext = buildBusinessContext(entities);
-            String rewrittenQuery = llmService.rewriteQuery(question);
-            List<KnowledgeChunk> chunks = hybridSearch(rewrittenQuery, TOP_K);
+            // Keep RAG in the streaming path, but avoid waiting for the remote
+            // embedding service before the first model token is visible.
+            List<KnowledgeChunk> chunks = keywordSearch(question, TOP_K);
             String systemPrompt = buildSystemPrompt(role, userName, businessContext, chunks);
             List<Map<String, Object>> sources = buildSources(chunks);
 
@@ -313,6 +320,21 @@ public class AssistantServiceImpl implements AssistantService {
             if (c != null) merged.add(c);
         }
         return merged;
+    }
+
+    private List<KnowledgeChunk> keywordSearch(String query, int topK) {
+        List<String> keywords = extractKeywords(query);
+        if (keywords.isEmpty()) return Collections.emptyList();
+        try {
+            List<KnowledgeChunk> results = knowledgeMapper.findChunksByKeyword(keywords, topK);
+            if (results == null || results.size() <= topK) {
+                return results == null ? Collections.emptyList() : results;
+            }
+            return results.subList(0, topK);
+        } catch (Exception e) {
+            log.warn("流式问答关键词检索失败，将使用业务上下文继续回答: {}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private List<String> extractKeywords(String query) {

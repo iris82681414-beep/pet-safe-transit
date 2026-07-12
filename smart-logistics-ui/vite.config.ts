@@ -6,6 +6,14 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:8080'
+  const apiProxy = {
+    '/api': {
+      target: apiProxyTarget,
+      changeOrigin: true,
+      ws: true,
+    },
+  }
 
   return {
     base: './',
@@ -22,15 +30,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      proxy: env.VITE_API_PROXY_TARGET
-        ? {
-            '/api': {
-              target: env.VITE_API_PROXY_TARGET,
-              changeOrigin: true,
-              ws: true,
-            },
-          }
-        : undefined,
+      proxy: apiProxy,
+    },
+    preview: {
+      proxy: apiProxy,
     },
     build: {
       chunkSizeWarningLimit: 1100,

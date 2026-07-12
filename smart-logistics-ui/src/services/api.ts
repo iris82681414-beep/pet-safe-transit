@@ -203,6 +203,24 @@ async function synthesizeAssistantSpeech(text: string) {
   return response.blob()
 }
 
+async function streamAssistantSpeech(text: string) {
+  const headers: Record<string, string> = {
+    Accept: 'audio/mpeg',
+    'Content-Type': 'application/json',
+    'X-Client': 'smart-logistics-web',
+  }
+  const token = tokenManager.getAccessToken()
+  if (token && token !== 'demo-token') headers.Authorization = `Bearer ${token}`
+  const response = await fetch(apiUrl('/assistant/speech/stream'), {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ text }),
+  })
+  if (!response.ok) throw new Error(`豆包流式语音生成失败：HTTP ${response.status}`)
+  if (!response.body) throw new Error('当前浏览器不支持流式音频读取')
+  return response
+}
+
 export const authApi = {
   async login(payload: LoginRequest): Promise<LoginResponse> {
     const result = await apiClient.post<LoginResponse, LoginRequest>('/auth/login', payload, { skipAuth: true, skipTokenRefresh: true })
@@ -338,6 +356,7 @@ export const assistantApi = {
   suggestions: (cargoId?: string) => apiClient.get<string[]>('/assistant/suggestions', { params: cargoId ? { cargoId } : undefined }),
   messages: (sessionId: string) => apiClient.get<AssistantMessage[]>(`/assistant/sessions/${encode(sessionId)}/messages`),
   speech: synthesizeAssistantSpeech,
+  speechStream: streamAssistantSpeech,
 }
 
 export interface AgentCommandResponse {

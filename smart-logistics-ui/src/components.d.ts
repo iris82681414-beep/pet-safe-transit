@@ -33,13 +33,13 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     LeafletFleetMap: typeof import('./components/LeafletFleetMap.vue')['default']
     LoginPortal: typeof import('./components/LoginPortal.vue')['default']
+    OwnerVoiceDialog: typeof import('./components/PetOwner/OwnerVoiceDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SmartMap: typeof import('./components/SmartMap.vue')['default']
     SpatialAtmosphere: typeof import('./components/SpatialAtmosphere.vue')['default']
     UserAccountMenu: typeof import('./components/UserAccountMenu.vue')['default']
     VoiceAssistantButton: typeof import('./components/VoiceAssistant/VoiceAssistantButton.vue')['default']
-    YangSmartPet: typeof import('./components/DeskPet/YangSmartPet.vue')['default']
   }
   export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

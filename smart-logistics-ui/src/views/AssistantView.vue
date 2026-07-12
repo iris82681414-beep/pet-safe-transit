@@ -245,14 +245,14 @@ async function speak(content: string, messageId?: number) {
     speechAudio.onended = () => stopSpeech()
     speechAudio.onerror = () => {
       stopSpeech()
-      ElMessage.error('ElevenLabs 语音播放失败')
+      ElMessage.error('豆包语音播放失败')
     }
     await speechAudio.play()
   } catch (error) {
     if (generationId === speechGenerationId) {
       speakingMessageId.value = null
       if (petMood.value === 'thinking' || petMood.value === 'speaking') setPetMood('idle')
-      ElMessage.error(error instanceof Error ? error.message : 'ElevenLabs 语音生成失败')
+      ElMessage.error(error instanceof Error ? error.message : '豆包语音生成失败')
     }
   }
 }
@@ -619,7 +619,7 @@ onUnmounted(() => {
           <span class="pet-effect pet-effect-sparkle">✦</span>
           <span class="pet-effect pet-effect-wave">)))</span>
           <span class="pet-effect pet-effect-panel"><i></i><i></i><i></i></span>
-          <img :src="petImage" alt="智慧物流智能小羊桌面宠物" />
+          <img :src="petImage" alt="伴生云途智能小羊桌面宠物" />
           <span class="pet-shadow"></span>
         </div>
         <div class="pet-status"><i></i><span>{{ petStatusText }}</span></div>

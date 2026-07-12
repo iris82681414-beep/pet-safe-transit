@@ -2,8 +2,9 @@ package com.sky.logistics.controller;
 
 import com.sky.logistics.common.ApiResponse;
 import com.sky.logistics.dto.AgentCommandRequest;
-import com.sky.logistics.service.SiliconFlowAsrService;
-import com.sky.logistics.service.ElevenLabsTtsService;
+import com.sky.logistics.service.BaiduAsrService;
+import com.sky.logistics.service.DoubaoTtsService;
+import com.sky.logistics.service.DoubaoStreamingTtsService;
 import com.sky.logistics.service.VoiceAgentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,28 +33,31 @@ import java.util.Map;
 public class VoiceAgentController {
 
     private final VoiceAgentService voiceAgentService;
-    private final SiliconFlowAsrService asrService;
-    private final ElevenLabsTtsService ttsService;
+    private final BaiduAsrService asrService;
+    private final DoubaoTtsService ttsService;
+    private final DoubaoStreamingTtsService streamingTtsService;
 
     public VoiceAgentController(VoiceAgentService voiceAgentService,
-                                SiliconFlowAsrService asrService,
-                                ElevenLabsTtsService ttsService) {
+                                BaiduAsrService asrService,
+                                DoubaoTtsService ttsService,
+                                DoubaoStreamingTtsService streamingTtsService) {
         this.voiceAgentService = voiceAgentService;
         this.asrService = asrService;
         this.ttsService = ttsService;
+        this.streamingTtsService = streamingTtsService;
     }
 
     /**
-     * 录音 → SiliconFlow SenseVoice → 文字
+     * 录音 → 百度短语音识别 → 文字
      */
     @PostMapping("/voice/recognize")
-    @ApiOperation("语音转文字：上传录音文件，调用 SiliconFlow SenseVoice 返回识别文字")
+    @ApiOperation("语音转文字：上传录音文件，调用百度短语音识别返回文字")
     public ApiResponse<Map<String, Object>> recognize(@RequestPart("audio") MultipartFile audioFile) {
         try {
             String text = asrService.recognize(audioFile);
             Map<String, Object> ok = new LinkedHashMap<>();
             ok.put("text", text);
-            ok.put("source", "SILICONFLOW_ASR");
+            ok.put("source", "BAIDU_ASR");
             ok.put("fileName", audioFile.getOriginalFilename());
             return ApiResponse.success(ok);
         } catch (Exception e) {
@@ -65,10 +70,10 @@ public class VoiceAgentController {
     }
 
     /**
-     * 录音 → SiliconFlow ASR → Agent 意图识别 → Action（全链路）
+     * 录音 → 百度 ASR → Agent 意图识别 → Action（全链路）
      */
     @PostMapping("/voice/command")
-    @ApiOperation("语音转Action：上传录音 → SiliconFlow ASR → LLM Agent → 返回操作指令")
+    @ApiOperation("语音转Action：上传录音 → 百度 ASR → LLM Agent → 返回操作指令")
     public ApiResponse<Map<String, Object>> voiceCommand(
             @RequestPart("audio") MultipartFile audioFile,
             @RequestPart(value = "sourcePage", required = false) String sourcePage,
@@ -97,7 +102,7 @@ public class VoiceAgentController {
 
     /** 智能问答桌宠文字转语音，音频二进制直接返回浏览器。 */
     @PostMapping(value = "/assistant/speech", produces = "audio/mpeg")
-    @ApiOperation("ElevenLabs 智能问答语音播报")
+    @ApiOperation("豆包 Seed Audio 智能问答语音播报")
     public ResponseEntity<byte[]> speech(@RequestBody Map<String, String> request) {
         try {
             byte[] audio = ttsService.synthesize(request.get("text"));
@@ -109,6 +114,26 @@ public class VoiceAgentController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage(), e);
         }
+    }
+
+    /** 豆包 TTS 2.0 WebSocket 音频流代理，避免向浏览器暴露 API Key。 */
+    @PostMapping(value = "/assistant/speech/stream", produces = "audio/mpeg")
+    @ApiOperation("豆包 TTS 2.0 单向 WebSocket 流式语音播报")
+    public ResponseEntity<StreamingResponseBody> speechStream(@RequestBody Map<String, String> request) {
+        String text = request == null ? null : request.get("text");
+        StreamingResponseBody body = output -> streamingTtsService.stream(text, chunk -> {
+            try {
+                output.write(chunk);
+                output.flush();
+            } catch (java.io.IOException e) {
+                throw new java.io.UncheckedIOException(e);
+            }
+        });
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("audio/mpeg"))
+                .cacheControl(CacheControl.noStore())
+                .header("X-Accel-Buffering", "no")
+                .body(body);
     }
 
     /**

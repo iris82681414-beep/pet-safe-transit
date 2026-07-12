@@ -9,6 +9,7 @@ const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', name: 'login', component: EmptyRoute, meta: { public: true } },
   { path: '/portal', name: 'portal', component: EmptyRoute },
+  { path: '/pet-owner', name: 'pet-owner', component: EmptyRoute, meta: { roles: ['SHIPPER', 'ADMIN'] } },
   { path: '/overview', name: 'overview', component: EmptyRoute },
   { path: '/tracking', name: 'tracking', component: EmptyRoute, meta: { roles: ['SHIPPER', 'DISPATCHER', 'ADMIN'] } },
   { path: '/dispatch', name: 'dispatch', component: EmptyRoute, meta: { roles: ['DISPATCHER', 'ADMIN'] } },
