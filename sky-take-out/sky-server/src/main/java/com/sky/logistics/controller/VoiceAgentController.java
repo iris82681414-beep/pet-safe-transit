@@ -2,8 +2,8 @@ package com.sky.logistics.controller;
 
 import com.sky.logistics.common.ApiResponse;
 import com.sky.logistics.dto.AgentCommandRequest;
+import com.sky.logistics.service.DoubaoStreamingTtsService;
 import com.sky.logistics.service.SiliconFlowAsrService;
-import com.sky.logistics.service.ElevenLabsTtsService;
 import com.sky.logistics.service.VoiceAgentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +25,8 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -33,11 +35,11 @@ public class VoiceAgentController {
 
     private final VoiceAgentService voiceAgentService;
     private final SiliconFlowAsrService asrService;
-    private final ElevenLabsTtsService ttsService;
+    private final DoubaoStreamingTtsService ttsService;
 
     public VoiceAgentController(VoiceAgentService voiceAgentService,
                                 SiliconFlowAsrService asrService,
-                                ElevenLabsTtsService ttsService) {
+                                DoubaoStreamingTtsService ttsService) {
         this.voiceAgentService = voiceAgentService;
         this.asrService = asrService;
         this.ttsService = ttsService;
@@ -98,7 +100,7 @@ public class VoiceAgentController {
 
     /** 智能问答桌宠文字转语音，音频二进制直接返回浏览器。 */
     @PostMapping(value = "/assistant/speech", produces = "audio/mpeg")
-    @ApiOperation("ElevenLabs 智能问答语音播报")
+    @ApiOperation("豆包智能问答语音播报")
     public ResponseEntity<byte[]> speech(@RequestBody Map<String, String> request) {
         try {
             byte[] audio = ttsService.synthesize(request.get("text"));
@@ -112,24 +114,30 @@ public class VoiceAgentController {
         }
     }
 
-    /** 宠物家长端使用的流式地址；由 ElevenLabs 生成后以流式响应写回。 */
+    /** 宠物家长端使用的流式地址；豆包生成音频后按块写回。 */
     @PostMapping(value = "/assistant/speech/stream", produces = "audio/mpeg")
-    @ApiOperation("ElevenLabs 羊小智流式语音播报")
+    @ApiOperation("豆包羊小智流式语音播报")
     public ResponseEntity<StreamingResponseBody> speechStream(@RequestBody Map<String, String> request) {
-        try {
-            byte[] audio = ttsService.synthesize(request == null ? null : request.get("text"));
-            StreamingResponseBody body = output -> {
-                output.write(audio);
-                output.flush();
-            };
-            return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf("audio/mpeg"))
-                    .cacheControl(CacheControl.noStore())
-                    .header("X-Accel-Buffering", "no")
-                    .body(body);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage(), e);
-        }
+        String text = request == null ? null : request.get("text");
+        StreamingResponseBody body = output -> {
+            try {
+                ttsService.stream(text, audio -> {
+                    try {
+                        output.write(audio);
+                        output.flush();
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
+            } catch (UncheckedIOException e) {
+                throw e.getCause();
+            }
+        };
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("audio/mpeg"))
+                .cacheControl(CacheControl.noStore())
+                .header("X-Accel-Buffering", "no")
+                .body(body);
     }
 
     /**

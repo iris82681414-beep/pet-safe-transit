@@ -43,13 +43,14 @@ public class CargoServiceImpl implements CargoService {
         int offset = (page - 1) * size;
         String status = trimToNull(queryDTO == null ? null : queryDTO.getStatus());
         String keyword = trimToNull(queryDTO == null ? null : queryDTO.getKeyword());
+        String ownerId = trimToNull(queryDTO == null ? null : queryDTO.getOwnerId());
 
-        Long total = cargoMapper.count(status, keyword);
+        Long total = cargoMapper.count(status, keyword, ownerId);
         if (total == null || total == 0) {
             return new PageResponse<>(Collections.<CargoVO>emptyList(), page, size, 0L, 0);
         }
 
-        List<CargoRecord> cargoList = cargoMapper.findPage(status, keyword, offset, size);
+        List<CargoRecord> cargoList = cargoMapper.findPage(status, keyword, ownerId, offset, size);
         List<CargoVO> content = cargoList == null
                 ? Collections.<CargoVO>emptyList()
                 : cargoList.stream().map(this::toVO).collect(Collectors.toList());
@@ -91,9 +92,19 @@ public class CargoServiceImpl implements CargoService {
 
         Cargo cargo = new Cargo();
         cargo.setCargoId(cargoId);
+        cargo.setOwnerId(trimToNull(createDTO.getOwnerId()));
         cargo.setCargoType(trimToNull(createDTO.getCargoType()));
+        cargo.setPetName(trimToNull(createDTO.getPetName()));
+        cargo.setPetBreed(trimToNull(createDTO.getPetBreed()));
+        cargo.setPetAge(trimToNull(createDTO.getPetAge()));
+        cargo.setPetGender(trimToNull(createDTO.getPetGender()));
         cargo.setWeight(createDTO.getWeight());
         cargo.setStatus(DEFAULT_STATUS);
+        cargo.setContactName(trimToNull(createDTO.getContactName()));
+        cargo.setContactPhone(trimToNull(createDTO.getContactPhone()));
+        cargo.setReceiverName(trimToNull(createDTO.getReceiverName()));
+        cargo.setReceiverPhone(trimToNull(createDTO.getReceiverPhone()));
+        cargo.setRequestNote(trimToNull(createDTO.getRequestNote()));
         fillLocation(cargo, createDTO.getOrigin(), true);
         fillLocation(cargo, createDTO.getDestination(), false);
 
@@ -120,7 +131,12 @@ public class CargoServiceImpl implements CargoService {
 
         Cargo cargo = new Cargo();
         cargo.setCargoId(current.getCargoId());
+        cargo.setOwnerId(current.getOwnerId());
         cargo.setCargoType(valueOrCurrent(updateDTO.getCargoType(), current.getCargoType()));
+        cargo.setPetName(valueOrCurrent(updateDTO.getPetName(), current.getPetName()));
+        cargo.setPetBreed(valueOrCurrent(updateDTO.getPetBreed(), current.getPetBreed()));
+        cargo.setPetAge(valueOrCurrent(updateDTO.getPetAge(), current.getPetAge()));
+        cargo.setPetGender(valueOrCurrent(updateDTO.getPetGender(), current.getPetGender()));
         cargo.setWeight(updateDTO.getWeight() == null ? current.getWeight() : updateDTO.getWeight());
         cargo.setStatus(current.getStatus());
         cargo.setOriginName(current.getOriginName());
@@ -129,6 +145,11 @@ public class CargoServiceImpl implements CargoService {
         cargo.setDestinationName(current.getDestinationName());
         cargo.setDestinationLat(current.getDestinationLat());
         cargo.setDestinationLng(current.getDestinationLng());
+        cargo.setContactName(valueOrCurrent(updateDTO.getContactName(), current.getContactName()));
+        cargo.setContactPhone(valueOrCurrent(updateDTO.getContactPhone(), current.getContactPhone()));
+        cargo.setReceiverName(valueOrCurrent(updateDTO.getReceiverName(), current.getReceiverName()));
+        cargo.setReceiverPhone(valueOrCurrent(updateDTO.getReceiverPhone(), current.getReceiverPhone()));
+        cargo.setRequestNote(valueOrCurrent(updateDTO.getRequestNote(), current.getRequestNote()));
         cargo.setLoadedAt(current.getLoadedAt());
         cargo.setDeliveredAt(current.getDeliveredAt());
 
@@ -306,11 +327,21 @@ public class CargoServiceImpl implements CargoService {
     private CargoVO toVO(CargoRecord cargo) {
         return CargoVO.builder()
                 .cargoId(cargo.getCargoId())
+                .ownerId(cargo.getOwnerId())
                 .cargoType(cargo.getCargoType())
+                .petName(cargo.getPetName())
+                .petBreed(cargo.getPetBreed())
+                .petAge(cargo.getPetAge())
+                .petGender(cargo.getPetGender())
                 .weight(cargo.getWeight())
                 .status(cargo.getStatus())
                 .origin(toLocationVO(cargo.getOriginName(), cargo.getOriginLat(), cargo.getOriginLng()))
                 .destination(toLocationVO(cargo.getDestinationName(), cargo.getDestinationLat(), cargo.getDestinationLng()))
+                .contactName(cargo.getContactName())
+                .contactPhone(cargo.getContactPhone())
+                .receiverName(cargo.getReceiverName())
+                .receiverPhone(cargo.getReceiverPhone())
+                .requestNote(cargo.getRequestNote())
                 .vehicleId(cargo.getVehicleId())
                 .vehiclePlate(cargo.getVehiclePlate())
                 .driverName(cargo.getDriverName())

@@ -13,6 +13,11 @@ public class CargoUpdateDTO {
     @ApiModelProperty(value = "货物类型", example = "电子产品")
     private String cargoType;
 
+    private String petName;
+    private String petBreed;
+    private String petAge;
+    private String petGender;
+
     @ApiModelProperty(value = "重量 kg", example = "2500.00")
     private BigDecimal weight;
 
@@ -21,4 +26,10 @@ public class CargoUpdateDTO {
 
     @ApiModelProperty("终点")
     private CargoLocationDTO destination;
+
+    private String contactName;
+    private String contactPhone;
+    private String receiverName;
+    private String receiverPhone;
+    private String requestNote;
 }

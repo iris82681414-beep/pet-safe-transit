@@ -7,7 +7,9 @@ import com.sky.logistics.mapper.KnowledgeMapper;
 import com.sky.logistics.service.EmbeddingService;
 import com.sky.logistics.service.KnowledgeService;
 import com.sky.logistics.service.MinioService;
+import com.sky.logistics.service.SemanticMarkdownChunker;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,17 +30,21 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     private static final int DEFAULT_PAGE = 1;
     private static final int DEFAULT_SIZE = 20;
     private static final int MAX_SIZE = 100;
-    private static final int MAX_CHUNK_SIZE = 800;
-
     private final KnowledgeMapper knowledgeMapper;
     private final MinioService minioService;
     private final EmbeddingService embeddingService;
+    private final SemanticMarkdownChunker semanticMarkdownChunker;
+    private final String chunkingStrategy;
 
     public KnowledgeServiceImpl(KnowledgeMapper knowledgeMapper, MinioService minioService,
-                                 EmbeddingService embeddingService) {
+                                 EmbeddingService embeddingService,
+                                 SemanticMarkdownChunker semanticMarkdownChunker,
+                                 @Value("${knowledge.chunking.strategy:semantic}") String chunkingStrategy) {
         this.knowledgeMapper = knowledgeMapper;
         this.minioService = minioService;
         this.embeddingService = embeddingService;
+        this.semanticMarkdownChunker = semanticMarkdownChunker;
+        this.chunkingStrategy = chunkingStrategy;
     }
 
     @Override
@@ -117,7 +123,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         try {
             content = readMinioFile(doc.getObjectKey());
             snippets = splitMarkdown(content);
-            log.info("文档切片完成, documentId={}, 切片数={}", documentId, snippets.size());
+            log.info("文档切片完成, documentId={}, strategy={}, 切片数={}",
+                    documentId, chunkingStrategy, snippets.size());
         } catch (Exception e) {
             log.error("读取文档内容失败, documentId={}: {}", documentId, e.getMessage());
             knowledgeMapper.updateDocumentStatus(documentId, "FAILED", 0);
@@ -131,8 +138,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
 
         List<KnowledgeChunk> chunkEntities = new ArrayList<>();
+        List<List<Double>> chunkEmbeddings = embeddingService.embedBatch(snippets);
         for (int i = 0; i < snippets.size(); i++) {
-            String embeddingStr = embeddingService.embedToString(snippets.get(i));
+            List<Double> vector = i < chunkEmbeddings.size() ? chunkEmbeddings.get(i) : null;
+            String embeddingStr = embeddingService.vectorToString(vector);
             if (embeddingStr.isEmpty()) {
                 log.warn("切片 {} embedding 失败，跳过, documentId={}", i, documentId);
                 continue;
@@ -197,72 +206,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     List<String> splitMarkdown(String content) {
-        List<String> result = new ArrayList<>();
-        if (content == null || content.trim().isEmpty()) {
-            return result;
+        if (!"semantic".equalsIgnoreCase(chunkingStrategy)) {
+            throw new IllegalStateException("不支持的知识库切块策略: " + chunkingStrategy);
         }
-
-        content = content.replace("\r\n", "\n").replace("\r", "\n");
-        String[] sections = content.split("(?=\n## )");
-        StringBuilder current = new StringBuilder();
-
-        for (String section : sections) {
-            String trimmed = section.trim();
-            if (trimmed.isEmpty()) continue;
-
-            if (current.length() == 0) {
-                current = new StringBuilder(trimmed);
-            } else if (current.length() + trimmed.length() + 2 <= MAX_CHUNK_SIZE) {
-                current.append("\n\n").append(trimmed);
-            } else {
-                flushChunk(result, current.toString());
-                current = new StringBuilder(trimmed);
-            }
-        }
-
-        flushChunk(result, current.toString());
-        return result;
-    }
-
-    private void flushChunk(List<String> result, String text) {
-        if (text.trim().isEmpty()) return;
-        if (text.length() <= MAX_CHUNK_SIZE) {
-            result.add(text);
-            return;
-        }
-
-        String[] paragraphs = text.split("\n\n");
-        StringBuilder current = new StringBuilder();
-        for (String p : paragraphs) {
-            String para = p.trim();
-            if (para.isEmpty()) continue;
-            if (para.length() > MAX_CHUNK_SIZE) {
-                if (current.length() > 0) {
-                    result.add(current.toString());
-                    current = new StringBuilder();
-                }
-                splitLongParagraph(result, para);
-            } else if (current.length() + para.length() + 2 <= MAX_CHUNK_SIZE) {
-                if (current.length() > 0) current.append("\n\n");
-                current.append(para);
-            } else {
-                if (current.length() > 0) result.add(current.toString());
-                current = new StringBuilder(para);
-            }
-        }
-        if (current.length() > 0) result.add(current.toString());
-    }
-
-    private void splitLongParagraph(List<String> result, String para) {
-        int start = 0;
-        while (start < para.length()) {
-            int end = Math.min(start + MAX_CHUNK_SIZE, para.length());
-            if (end < para.length()) {
-                int breakAt = para.lastIndexOf("。", end);
-                if (breakAt > start + 200) end = breakAt + 1;
-            }
-            result.add(para.substring(start, end));
-            start = end;
-        }
+        return semanticMarkdownChunker.split(content);
     }
 }

@@ -8,6 +8,7 @@ import com.sky.logistics.dto.StatusVerifyDTO;
 import com.sky.logistics.dto.UnloadAddressAbnormalDTO;
 import com.sky.logistics.dto.UnloadAddressConfirmDTO;
 import com.sky.logistics.service.OrderExtensionService;
+import com.sky.logistics.service.ShipperAccessService;
 import com.sky.logistics.vo.AddressChangeImpactVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,15 +28,20 @@ import java.util.Map;
 public class OrderExtensionController {
 
     private final OrderExtensionService orderExtensionService;
+    private final ShipperAccessService shipperAccessService;
 
-    public OrderExtensionController(OrderExtensionService orderExtensionService) {
+    public OrderExtensionController(OrderExtensionService orderExtensionService,
+                                    ShipperAccessService shipperAccessService) {
         this.orderExtensionService = orderExtensionService;
+        this.shipperAccessService = shipperAccessService;
     }
 
     @PostMapping("/{orderId}/address-change-impact")
     @ApiOperation("计算改址影响")
     public ApiResponse<AddressChangeImpactVO> addressChangeImpact(@PathVariable String orderId,
-                                                                  @RequestBody AddressChangeImpactDTO request) {
+                                                                  @RequestBody AddressChangeImpactDTO request,
+                                                                  @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.calculateAddressChangeImpact(orderId, request));
     }
 
@@ -44,43 +50,56 @@ public class OrderExtensionController {
     public ApiResponse<Map<String, Object>> createAddressChange(@PathVariable String orderId,
                                                                 @RequestBody AddressChangeCreateDTO request,
                                                                 @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.createAddressChangeRequest(orderId, request, authorization));
     }
 
     @GetMapping("/{orderId}/address-change-history")
     @ApiOperation("查看改址历史")
-    public ApiResponse<Map<String, Object>> addressChangeHistory(@PathVariable String orderId) {
+    public ApiResponse<Map<String, Object>> addressChangeHistory(@PathVariable String orderId,
+                                                                 @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.addressChangeHistory(orderId));
     }
 
     @GetMapping("/{orderId}/delay-prediction")
     @ApiOperation("订单延误预测")
-    public ApiResponse<Map<String, Object>> delayPrediction(@PathVariable String orderId) {
+    public ApiResponse<Map<String, Object>> delayPrediction(@PathVariable String orderId,
+                                                            @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.delayPrediction(orderId));
     }
 
     @GetMapping("/{orderId}/risk-score")
     @ApiOperation("订单风险评分")
-    public ApiResponse<Map<String, Object>> riskScore(@PathVariable String orderId) {
+    public ApiResponse<Map<String, Object>> riskScore(@PathVariable String orderId,
+                                                      @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.riskScore(orderId));
     }
 
     @PostMapping("/{orderId}/status/verify")
     @ApiOperation("订单状态可信度校验")
     public ApiResponse<Map<String, Object>> verifyStatus(@PathVariable String orderId,
-                                                         @RequestBody StatusVerifyDTO request) {
+                                                         @RequestBody StatusVerifyDTO request,
+                                                         @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.verifyStatus(orderId, request));
     }
 
     @GetMapping("/{orderId}/exception-summary")
     @ApiOperation("客户订单异常摘要")
-    public ApiResponse<Map<String, Object>> exceptionSummary(@PathVariable String orderId) {
+    public ApiResponse<Map<String, Object>> exceptionSummary(@PathVariable String orderId,
+                                                             @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.exceptionSummary(orderId));
     }
 
     @GetMapping("/{orderId}/unload-address/suggestions")
     @ApiOperation("卸货点建议")
-    public ApiResponse<Map<String, Object>> unloadAddressSuggestions(@PathVariable String orderId) {
+    public ApiResponse<Map<String, Object>> unloadAddressSuggestions(@PathVariable String orderId,
+                                                                     @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.unloadAddressSuggestions(orderId));
     }
 
@@ -89,6 +108,7 @@ public class OrderExtensionController {
     public ApiResponse<Map<String, Object>> confirmUnloadAddress(@PathVariable String orderId,
                                                                  @RequestBody UnloadAddressConfirmDTO request,
                                                                  @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.confirmUnloadAddress(orderId, request, authorization));
     }
 
@@ -105,12 +125,15 @@ public class OrderExtensionController {
     public ApiResponse<Map<String, Object>> submitDriverRating(@PathVariable String orderId,
                                                                @RequestBody DriverRatingCreateDTO request,
                                                                @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.submitDriverRating(orderId, request, authorization));
     }
 
     @GetMapping("/{orderId}/driver-rating")
     @ApiOperation("查询订单司机评分")
-    public ApiResponse<Map<String, Object>> getDriverRating(@PathVariable String orderId) {
+    public ApiResponse<Map<String, Object>> getDriverRating(@PathVariable String orderId,
+                                                            @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireOwnedIfShipper(orderId, authorization);
         return ApiResponse.success(orderExtensionService.getDriverRating(orderId));
     }
 }

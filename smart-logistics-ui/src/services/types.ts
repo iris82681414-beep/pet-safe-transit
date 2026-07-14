@@ -512,10 +512,20 @@ export interface LocationDto extends GeoPoint {
 
 export interface CreateCargoRequest {
   cargoId: string
+  ownerId?: string
   cargoType: string
+  petName?: string
+  petBreed?: string
+  petAge?: string
+  petGender?: string
   weight: number
   origin: LocationDto
   destination: LocationDto
+  contactName?: string
+  contactPhone?: string
+  receiverName?: string
+  receiverPhone?: string
+  requestNote?: string
 }
 
 export interface CargoListQuery extends PageQuery {
@@ -525,7 +535,12 @@ export interface CargoListQuery extends PageQuery {
 
 export interface CargoDto {
   cargoId: string
+  ownerId?: string
   cargoType: string
+  petName?: string
+  petBreed?: string
+  petAge?: string
+  petGender?: string
   weight: number
   vehicleId?: number
   vehiclePlate?: string
@@ -534,6 +549,11 @@ export interface CargoDto {
   status: CargoStatus
   origin: LocationDto
   destination: LocationDto
+  contactName?: string
+  contactPhone?: string
+  receiverName?: string
+  receiverPhone?: string
+  requestNote?: string
   loadedAt?: string
   deliveredAt?: string
   createdAt?: string
@@ -542,6 +562,26 @@ export interface CargoDto {
   progress?: number
   distanceTotal?: number
   distanceRemaining?: number
+}
+
+export interface ShipperEnvironment {
+  cargoId: string
+  status: 'NORMAL' | 'NO_DATA' | string
+  temperature?: number
+  humidity?: number
+  airQuality?: string
+  vibration?: string
+  recordedAt?: string
+}
+
+export interface ShipperNotification {
+  alertId: string
+  alertType: string
+  severity: AlertSeverity
+  status: AlertStatus
+  title: string
+  summary?: string
+  triggeredAt: string
 }
 
 export interface UpdateCargoStatusRequest {

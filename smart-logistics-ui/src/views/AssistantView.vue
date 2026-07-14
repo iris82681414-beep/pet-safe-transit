@@ -73,8 +73,6 @@ function restoreConversations() {
 
 const question = ref('')
 const sending = ref(false)
-const recording = ref(false)
-const recognizingVoice = ref(false)
 const globalVoiceStatus = ref('idle')
 const speechEnabled = ref(localStorage.getItem('smart-logistics-assistant-speech') !== 'off')
 const approvalMode = ref<AgentApprovalMode>(getAgentApprovalMode())
@@ -108,14 +106,6 @@ const sessionId = computed<string | undefined>({
   },
 })
 
-let voiceStream: MediaStream | null = null
-let voiceContext: AudioContext | null = null
-let voiceSource: MediaStreamAudioSourceNode | null = null
-let voiceProcessor: ScriptProcessorNode | null = null
-let voiceSampleRate = 16000
-let voiceLength = 0
-let voiceChunks: Float32Array[] = []
-let voiceMaxTimer: number | null = null
 let speechAudio: HTMLAudioElement | null = null
 let speechObjectUrl = ''
 let speechGenerationId = 0
@@ -216,7 +206,7 @@ function moodForAgentFunction(name: unknown): PetMood {
 function handleGlobalVoiceState(event: Event) {
   const status = String((event as CustomEvent<{ status?: string }>).detail?.status || '')
   globalVoiceStatus.value = status || 'idle'
-  if (recording.value || recognizingVoice.value || sending.value || speakingMessageId.value != null) return
+  if (sending.value || speakingMessageId.value != null) return
   if (status === 'requesting' || status === 'recording') setPetMood('listening')
   else if (status === 'uploading') setPetMood('thinking')
   else if (status === 'executing') setPetMood('working')
@@ -293,7 +283,7 @@ async function speak(content: string, messageId?: number) {
     speechAudio.onended = () => stopSpeech()
     speechAudio.onerror = () => {
       stopSpeech()
-      ElMessage.error('ElevenLabs 语音播放失败')
+      ElMessage.error('语音播放失败，请检查豆包语音服务配置')
     }
     await speechAudio.play()
   } catch (error) {
@@ -302,116 +292,6 @@ async function speak(content: string, messageId?: number) {
       if (petMood.value === 'thinking' || petMood.value === 'speaking') setPetMood('idle')
       if (!browserSpeak(text)) ElMessage.warning(error instanceof Error ? error.message : '语音播报暂时不可用')
     }
-  }
-}
-
-function stopVoiceHardware() {
-  if (voiceMaxTimer != null) window.clearTimeout(voiceMaxTimer)
-  voiceMaxTimer = null
-  voiceProcessor?.disconnect()
-  voiceSource?.disconnect()
-  voiceProcessor = null
-  voiceSource = null
-  voiceStream?.getTracks().forEach((track) => track.stop())
-  voiceStream = null
-  void voiceContext?.close()
-  voiceContext = null
-}
-
-function mergeVoiceChunks() {
-  const merged = new Float32Array(voiceLength)
-  let offset = 0
-  voiceChunks.forEach((chunk) => {
-    merged.set(chunk, offset)
-    offset += chunk.length
-  })
-  return merged
-}
-
-function resampleVoice(input: Float32Array, fromRate: number, toRate: number) {
-  if (fromRate === toRate) return input
-  const ratio = fromRate / toRate
-  const output = new Float32Array(Math.round(input.length / ratio))
-  for (let i = 0; i < output.length; i += 1) {
-    const start = Math.floor(i * ratio)
-    const end = Math.min(Math.floor((i + 1) * ratio), input.length)
-    let sum = 0
-    for (let j = start; j < end; j += 1) sum += input[j]
-    output[i] = sum / Math.max(1, end - start)
-  }
-  return output
-}
-
-function voiceWavBlob(input: Float32Array, fromRate: number) {
-  const samples = resampleVoice(input, fromRate, 16000)
-  const buffer = new ArrayBuffer(44 + samples.length * 2)
-  const view = new DataView(buffer)
-  const ascii = (offset: number, value: string) => {
-    for (let i = 0; i < value.length; i += 1) view.setUint8(offset + i, value.charCodeAt(i))
-  }
-  ascii(0, 'RIFF'); view.setUint32(4, 36 + samples.length * 2, true); ascii(8, 'WAVE'); ascii(12, 'fmt ')
-  view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true)
-  view.setUint32(24, 16000, true); view.setUint32(28, 32000, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true)
-  ascii(36, 'data'); view.setUint32(40, samples.length * 2, true)
-  samples.forEach((sample, index) => {
-    const value = Math.max(-1, Math.min(1, sample))
-    view.setInt16(44 + index * 2, value < 0 ? value * 0x8000 : value * 0x7fff, true)
-  })
-  return new Blob([view], { type: 'audio/wav' })
-}
-
-async function startVoiceMessage() {
-  if (recording.value || recognizingVoice.value || sending.value) return
-  if (!navigator.mediaDevices?.getUserMedia) return ElMessage.error('当前浏览器不支持录音')
-  try {
-    stopSpeech()
-    voiceChunks = []
-    voiceLength = 0
-    voiceStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } })
-    const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext
-    voiceContext = new AudioContextCtor({ sampleRate: 16000 })
-    if (voiceContext.state === 'suspended') await voiceContext.resume()
-    voiceSampleRate = voiceContext.sampleRate
-    voiceSource = voiceContext.createMediaStreamSource(voiceStream)
-    voiceProcessor = voiceContext.createScriptProcessor(4096, 1, 1)
-    voiceProcessor.onaudioprocess = (event) => {
-      const chunk = new Float32Array(event.inputBuffer.getChannelData(0))
-      voiceChunks.push(chunk)
-      voiceLength += chunk.length
-      event.outputBuffer.getChannelData(0).fill(0)
-    }
-    voiceSource.connect(voiceProcessor)
-    voiceProcessor.connect(voiceContext.destination)
-    recording.value = true
-    setPetMood('listening')
-    voiceMaxTimer = window.setTimeout(() => void stopVoiceMessage(), 20_000)
-    ElMessage.info('正在录音，再次点击麦克风即可发送')
-  } catch (error) {
-    stopVoiceHardware()
-    setPetMood('idle')
-    ElMessage.error(error instanceof Error ? error.message : '无法打开麦克风')
-  }
-}
-
-async function stopVoiceMessage() {
-  if (!recording.value) return
-  recording.value = false
-  const samples = mergeVoiceChunks()
-  stopVoiceHardware()
-  if (!samples.length) return ElMessage.warning('没有录到声音')
-  recognizingVoice.value = true
-  setPetMood('thinking')
-  try {
-    const result = await agentApi.recognize(voiceWavBlob(samples, voiceSampleRate))
-    const text = String(result.text || '').trim()
-    if (!text) throw new Error(result.message || '没有识别到有效语音')
-    question.value = text
-    await send(text)
-  } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '语音识别失败')
-  } finally {
-    recognizingVoice.value = false
-    if (!sending.value && petMood.value === 'thinking') setPetMood('idle')
   }
 }
 
@@ -606,7 +486,6 @@ onUnmounted(() => {
   window.removeEventListener('smart-logistics:voice-action-complete', handleAgentComplete)
   window.removeEventListener('smart-logistics:voice-result', handleGlobalVoiceResult)
   if (petMoodTimer != null) window.clearTimeout(petMoodTimer)
-  stopVoiceHardware()
   stopSpeech()
 })
 </script>
@@ -702,7 +581,7 @@ onUnmounted(() => {
           class="chat-mic-button"
           :class="{ recording: sharedVoiceRecording }"
           circle
-          :type="recording ? 'danger' : 'default'"
+          :type="sharedVoiceRecording ? 'danger' : 'default'"
           icon="Microphone"
           :loading="sharedVoiceBusy"
           :title="sharedVoiceRecording ? '结束录音并发送' : '发送语音消息'"

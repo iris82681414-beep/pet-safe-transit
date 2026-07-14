@@ -8,9 +8,13 @@ import com.sky.logistics.mapper.KnowledgeMapper;
 import com.sky.logistics.mapper.LogisticsVehicleMapper;
 import com.sky.logistics.service.AlertService;
 import com.sky.logistics.service.AssistantService;
+import com.sky.logistics.service.CargoService;
 import com.sky.logistics.service.EmbeddingService;
 import com.sky.logistics.service.LLMService;
+import com.sky.logistics.service.ShipperOrderService;
+import com.sky.logistics.service.TrackingService;
 import com.sky.logistics.service.VehicleStatusService;
+import com.sky.logistics.vo.CargoVO;
 import com.sky.properties.JwtProperties;
 import com.sky.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -44,12 +48,17 @@ public class AssistantServiceImpl implements AssistantService {
     private final AlertService alertService;
     private final StringRedisTemplate redisTemplate;
     private final JwtProperties jwtProperties;
+    private final CargoService cargoService;
+    private final TrackingService trackingService;
+    private final ShipperOrderService shipperOrderService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AssistantServiceImpl(EmbeddingService embeddingService, LLMService llmService,
                                 KnowledgeMapper knowledgeMapper, LogisticsVehicleMapper vehicleMapper,
                                 VehicleStatusService vehicleStatusService, AlertService alertService,
-                                StringRedisTemplate redisTemplate, JwtProperties jwtProperties) {
+                                StringRedisTemplate redisTemplate, JwtProperties jwtProperties,
+                                CargoService cargoService, TrackingService trackingService,
+                                ShipperOrderService shipperOrderService) {
         this.embeddingService = embeddingService;
         this.llmService = llmService;
         this.knowledgeMapper = knowledgeMapper;
@@ -58,10 +67,13 @@ public class AssistantServiceImpl implements AssistantService {
         this.alertService = alertService;
         this.redisTemplate = redisTemplate;
         this.jwtProperties = jwtProperties;
+        this.cargoService = cargoService;
+        this.trackingService = trackingService;
+        this.shipperOrderService = shipperOrderService;
     }
 
     @Override
-    public Map<String, Object> chat(String question, String sessionId, String authorization) {
+    public Map<String, Object> chat(String question, String sessionId, String authorization, String cargoId) {
         Map<String, Object> result = new LinkedHashMap<>();
 
         String userId = null;
@@ -80,7 +92,8 @@ public class AssistantServiceImpl implements AssistantService {
         }
 
         Map<String, String> entities = extractEntities(question);
-        Map<String, Object> businessContext = buildBusinessContext(entities);
+        if (cargoId != null && !cargoId.trim().isEmpty()) entities.put("cargoId", cargoId.trim());
+        Map<String, Object> businessContext = buildBusinessContext(entities, role, authorization);
         result.put("context", businessContext);
 
         String rewrittenQuery = llmService.rewriteQuery(question);
@@ -99,7 +112,7 @@ public class AssistantServiceImpl implements AssistantService {
     }
 
     @Override
-    public SseEmitter chatStream(String question, String sessionId, String authorization) {
+    public SseEmitter chatStream(String question, String sessionId, String authorization, String cargoId) {
         SseEmitter emitter = new SseEmitter(120000L);
         try {
             emitter.send(SseEmitter.event().name("ready").data(Collections.singletonMap("sessionId", sessionId), MediaType.APPLICATION_JSON));
@@ -107,12 +120,12 @@ public class AssistantServiceImpl implements AssistantService {
             emitter.completeWithError(e);
             return emitter;
         }
-        new Thread(() -> doChatStream(question, sessionId, authorization, emitter),
+        new Thread(() -> doChatStream(question, sessionId, authorization, cargoId, emitter),
                 "assistant-stream-" + UUID.randomUUID().toString().substring(0, 8)).start();
         return emitter;
     }
 
-    private void doChatStream(String question, String sessionId, String authorization, SseEmitter emitter) {
+    private void doChatStream(String question, String sessionId, String authorization, String cargoId, SseEmitter emitter) {
         String userId = null;
         String role = null;
         String userName = null;
@@ -130,7 +143,8 @@ public class AssistantServiceImpl implements AssistantService {
 
         try {
             Map<String, String> entities = extractEntities(question);
-            Map<String, Object> businessContext = buildBusinessContext(entities);
+            if (cargoId != null && !cargoId.trim().isEmpty()) entities.put("cargoId", cargoId.trim());
+            Map<String, Object> businessContext = buildBusinessContext(entities, role, authorization);
             // Keep RAG in the streaming path, but avoid waiting for the remote
             // embedding service before the first model token is visible.
             List<KnowledgeChunk> chunks = keywordSearch(question, TOP_K);
@@ -224,8 +238,17 @@ public class AssistantServiceImpl implements AssistantService {
         return entities;
     }
 
-    private Map<String, Object> buildBusinessContext(Map<String, String> entities) {
+    private Map<String, Object> buildBusinessContext(Map<String, String> entities, String role, String authorization) {
         Map<String, Object> context = new LinkedHashMap<>();
+        String cargoId = entities.get("cargoId");
+        if (cargoId != null) {
+            buildCargoContext(context, cargoId, role, authorization);
+            return context;
+        }
+        if ("SHIPPER".equals(role)) {
+            context.put("accessScope", "货主只可查询本人订单，请先从货主服务台选择订单");
+            return context;
+        }
         String plate = entities.get("plate");
         if (plate != null) {
             buildSpecificContext(context, plate);
@@ -233,6 +256,46 @@ public class AssistantServiceImpl implements AssistantService {
             buildOverviewContext(context);
         }
         return context;
+    }
+
+    private void buildCargoContext(Map<String, Object> context, String cargoId,
+                                   String role, String authorization) {
+        try {
+            CargoVO cargo = cargoService.detail(cargoId);
+            Map<String, Object> order = new LinkedHashMap<>();
+            order.put("cargoId", cargo.getCargoId());
+            order.put("petName", cargo.getPetName());
+            order.put("petType", cargo.getCargoType());
+            order.put("petBreed", cargo.getPetBreed());
+            order.put("status", cargo.getStatus());
+            order.put("origin", cargo.getOrigin());
+            order.put("destination", cargo.getDestination());
+            order.put("vehiclePlate", cargo.getVehiclePlate());
+            order.put("driverName", cargo.getDriverName());
+            order.put("loadedAt", cargo.getLoadedAt());
+            order.put("deliveredAt", cargo.getDeliveredAt());
+            context.put("selectedOrder", order);
+            try {
+                context.put("position", trackingService.getPosition(cargoId));
+                context.put("eta", trackingService.getEta(cargoId));
+                context.put("timeline", trackingService.getTimeline(cargoId));
+            } catch (Exception e) {
+                log.warn("获取订单实时旅程失败: cargoId={}, reason={}", cargoId, e.getMessage());
+            }
+            if ("SHIPPER".equals(role)) {
+                try {
+                    context.put("environment", shipperOrderService.environment(cargoId, authorization));
+                    context.put("notifications", shipperOrderService.notifications(cargoId, authorization));
+                } catch (Exception e) {
+                    log.warn("获取货主订单环境或通知失败: cargoId={}, reason={}", cargoId, e.getMessage());
+                }
+                context.put("permissionBoundary", "仅查询该货主本人订单；不得调度车辆、关闭告警或修改司机资料");
+            }
+        } catch (Exception e) {
+            context.put("cargoId", cargoId);
+            context.put("dataStatus", "订单数据暂不可用");
+            log.warn("构建订单问答上下文失败: cargoId={}, reason={}", cargoId, e.getMessage());
+        }
     }
 
     private void buildSpecificContext(Map<String, Object> context, String plate) {

@@ -14,13 +14,17 @@ public interface LogisticsCargoMapper {
 
     List<CargoRecord> findPage(@Param("status") String status,
                                @Param("keyword") String keyword,
+                               @Param("ownerId") String ownerId,
                                @Param("offset") Integer offset,
                                @Param("limit") Integer limit);
 
     Long count(@Param("status") String status,
-               @Param("keyword") String keyword);
+               @Param("keyword") String keyword,
+               @Param("ownerId") String ownerId);
 
     CargoRecord findByCargoId(@Param("cargoId") String cargoId);
+
+    int countOwnedBy(@Param("cargoId") String cargoId, @Param("ownerId") String ownerId);
 
     int insert(Cargo cargo);
 

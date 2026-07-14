@@ -82,7 +82,7 @@ elevenlabs:
   model-id: ${ELEVENLABS_MODEL_ID:eleven_multilingual_v2}
   output-format: ${ELEVENLABS_OUTPUT_FORMAT:mp3_44100_128}
 
-# 远程新增的豆包实现保留为可选供应商，但当前统一入口使用 ElevenLabs。
+# 羊小智默认使用豆包 Seed TTS 2.0；密钥从本地环境配置读取。
 doubao:
   tts:
     endpoint: ${DOUBAO_TTS_ENDPOINT:https://openspeech.bytedance.com/api/v3/tts/create}
@@ -119,8 +119,16 @@ ai:
     model: ${AI_LLM_MODEL:deepseek-chat}
   embedding:
     endpoint: ${AI_EMBEDDING_ENDPOINT:https://api.siliconflow.cn}
-    api-key: ${SILICONFLOW_API_KEY:}
+    api-key: ${SILICONFLOW_API_KEY:${SILICONFLOW_ASR_API_KEY:}}
     model: ${AI_EMBEDDING_MODEL:BAAI/bge-m3}
+
+# 知识文档使用相邻段落 embedding 相似度进行语义分割，Agent 检索流程保持不变。
+knowledge:
+  chunking:
+    strategy: ${KNOWLEDGE_CHUNKING_STRATEGY:semantic}
+    min-size: ${KNOWLEDGE_CHUNK_MIN_SIZE:280}
+    max-size: ${KNOWLEDGE_CHUNK_MAX_SIZE:1000}
+    breakpoint-percentile: ${KNOWLEDGE_CHUNK_BREAKPOINT_PERCENTILE:30}
 
 amap:
   web-key: 5c5f3cfbb3dc7f155d20f3f414d5c1df

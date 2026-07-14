@@ -6,3 +6,25 @@
 /smart-logistics-ui/dist/
 /smart-logistics-ui/node_modules/
 /smart-logistics-ui/smart-logistics-ui/
+
+# Dependencies and generated build artifacts
+**/node_modules/
+**/dist/
+**/target/
+**/coverage/
+**/.cache/
+**/.vite/
+
+# Runtime files and local-only configuration
+**/*.log
+**/*.pid
+**/.env.local
+**/.env.local.*
+**/.env.properties
+**/.env.local.properties
+
+# Downloaded archives and local tool/browser profiles
+*.zip
+*.7z
+*.rar
+/.codex-tools/edge-debug-profile/

@@ -5,9 +5,8 @@ const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/api/v1/ws'
 const mqttUrl = import.meta.env.VITE_MQTT_URL || 'ws://localhost:8083/mqtt'
 const amapKey = import.meta.env.VITE_AMAP_KEY || '8958124e98848d6bbfffc631bb4b58f8'
 const amapSecurityCode = import.meta.env.VITE_AMAP_SECURITY_CODE || '418b7d352a45f90c3870a1d36531d23e'
-// The pet-safe demo is self-contained by default. Set VITE_DATA_MODE=api explicitly
-// when a matching backend is available.
-const dataMode = (import.meta.env.VITE_DATA_MODE || 'mock') as DataMode
+// Real backend data is the default. Mock mode must be enabled explicitly.
+const dataMode = (import.meta.env.VITE_DATA_MODE || 'api') as DataMode
 
 export const serviceConfig = {
   apiBaseUrl,

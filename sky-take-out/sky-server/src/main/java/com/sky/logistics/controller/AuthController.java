@@ -10,6 +10,7 @@ import com.sky.logistics.dto.UserCreateDTO;
 import com.sky.logistics.dto.UserQueryDTO;
 import com.sky.logistics.dto.UserUpdateDTO;
 import com.sky.logistics.service.AuthService;
+import com.sky.logistics.service.ShipperAccessService;
 import com.sky.logistics.service.UserService;
 import com.sky.logistics.vo.FaceBindingVO;
 import com.sky.logistics.vo.FaceStatusVO;
@@ -36,10 +37,13 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final ShipperAccessService shipperAccessService;
 
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService,
+                          ShipperAccessService shipperAccessService) {
         this.authService = authService;
         this.userService = userService;
+        this.shipperAccessService = shipperAccessService;
     }
 
     @PostMapping("/auth/login")
@@ -74,25 +78,33 @@ public class AuthController {
 
     @GetMapping("/users/{id}/face/status")
     @ApiOperation("查询人脸绑定状态")
-    public ApiResponse<FaceStatusVO> faceStatus(@PathVariable String id) {
+    public ApiResponse<FaceStatusVO> faceStatus(@PathVariable String id,
+                                                @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireSelfIfShipper(id, authorization);
         return ApiResponse.success(authService.faceStatus(id));
     }
 
     @PostMapping("/users/{id}/face/register")
     @ApiOperation("注册人脸")
-    public ApiResponse<FaceBindingVO> registerFace(@PathVariable String id, @RequestBody FaceRegisterDTO request) {
+    public ApiResponse<FaceBindingVO> registerFace(@PathVariable String id, @RequestBody FaceRegisterDTO request,
+                                                   @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireSelfIfShipper(id, authorization);
         return ApiResponse.success(authService.registerFace(id, request));
     }
 
     @PutMapping("/users/{id}/face")
     @ApiOperation("更新人脸")
-    public ApiResponse<FaceBindingVO> updateFace(@PathVariable String id, @RequestBody FaceRegisterDTO request) {
+    public ApiResponse<FaceBindingVO> updateFace(@PathVariable String id, @RequestBody FaceRegisterDTO request,
+                                                 @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireSelfIfShipper(id, authorization);
         return ApiResponse.success(authService.updateFace(id, request));
     }
 
     @DeleteMapping("/users/{id}/face")
     @ApiOperation("删除人脸")
-    public ApiResponse<FaceBindingVO> deleteFace(@PathVariable String id) {
+    public ApiResponse<FaceBindingVO> deleteFace(@PathVariable String id,
+                                                 @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireSelfIfShipper(id, authorization);
         return ApiResponse.success(authService.deleteFace(id));
     }
 
@@ -101,7 +113,9 @@ public class AuthController {
     public ApiResponse<PageResponse<UserVO>> users(@RequestParam(required = false) String role,
                                                    @RequestParam(required = false) String keyword,
                                                    @RequestParam(required = false) Integer page,
-                                                   @RequestParam(required = false) Integer size) {
+                                                   @RequestParam(required = false) Integer size,
+                                                   @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.rejectShipper(authorization, "货主不能查看平台用户或司机资料列表");
         UserQueryDTO queryDTO = new UserQueryDTO();
         queryDTO.setRole(role);
         queryDTO.setKeyword(keyword);
@@ -112,25 +126,37 @@ public class AuthController {
 
     @GetMapping("/users/{id}")
     @ApiOperation("获取用户详情")
-    public ApiResponse<UserVO> userDetail(@PathVariable String id) {
+    public ApiResponse<UserVO> userDetail(@PathVariable String id,
+                                          @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireSelfIfShipper(id, authorization);
         return ApiResponse.success(userService.detail(id));
     }
 
     @PostMapping("/users")
     @ApiOperation("新增用户")
-    public ApiResponse<UserVO> createUser(@RequestBody UserCreateDTO request) {
+    public ApiResponse<UserVO> createUser(@RequestBody UserCreateDTO request,
+                                          @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.rejectShipper(authorization, "货主不能新增或管理平台人员");
         return ApiResponse.success(userService.create(request));
     }
 
     @PutMapping("/users/{id}")
     @ApiOperation("修改用户")
-    public ApiResponse<UserVO> updateUser(@PathVariable String id, @RequestBody UserUpdateDTO request) {
+    public ApiResponse<UserVO> updateUser(@PathVariable String id, @RequestBody UserUpdateDTO request,
+                                          @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.requireSelfIfShipper(id, authorization);
+        if ("SHIPPER".equals(shipperAccessService.current(authorization).getRole())
+                && request != null && request.getRole() != null && !"SHIPPER".equals(request.getRole())) {
+            shipperAccessService.rejectShipper(authorization, "货主不能修改自己的角色或司机资料");
+        }
         return ApiResponse.success(userService.update(id, request));
     }
 
     @DeleteMapping("/users/{id}")
     @ApiOperation("删除用户")
-    public ApiResponse<Void> deleteUser(@PathVariable String id) {
+    public ApiResponse<Void> deleteUser(@PathVariable String id,
+                                        @RequestHeader(value = "Authorization", required = false) String authorization) {
+        shipperAccessService.rejectShipper(authorization, "货主不能删除平台用户或司机资料");
         userService.delete(id);
         return ApiResponse.success();
     }

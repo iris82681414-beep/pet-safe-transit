@@ -6,6 +6,7 @@ import com.sky.logistics.dto.VehicleCreateDTO;
 import com.sky.logistics.dto.VehicleQueryDTO;
 import com.sky.logistics.dto.VehicleUpdateDTO;
 import com.sky.logistics.service.CommandService;
+import com.sky.logistics.service.ShipperAccessService;
 import com.sky.logistics.service.VehicleService;
 import com.sky.logistics.vo.VehicleActiveTaskVO;
 import com.sky.logistics.vo.VehicleVO;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,11 +32,14 @@ public class VehicleController {
 
     private final VehicleService vehicleService;
     private final CommandService commandService;
+    private final ShipperAccessService shipperAccessService;
 
     public VehicleController(VehicleService vehicleService,
-                             CommandService commandService) {
+                             CommandService commandService,
+                             ShipperAccessService shipperAccessService) {
         this.vehicleService = vehicleService;
         this.commandService = commandService;
+        this.shipperAccessService = shipperAccessService;
     }
 
     @GetMapping
@@ -42,7 +47,9 @@ public class VehicleController {
     public ApiResponse<PageResponse<VehicleVO>> list(@RequestParam(required = false) String status,
                                                      @RequestParam(required = false) String keyword,
                                                      @RequestParam(required = false) Integer page,
-                                                     @RequestParam(required = false) Integer size) {
+                                                     @RequestParam(required = false) Integer size,
+                                                     @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         VehicleQueryDTO queryDTO = new VehicleQueryDTO();
         queryDTO.setStatus(status);
         queryDTO.setKeyword(keyword);
@@ -53,44 +60,58 @@ public class VehicleController {
 
     @GetMapping("/{id:[0-9]+}")
     @ApiOperation("根据 ID 获取车辆详情")
-    public ApiResponse<VehicleVO> detailById(@PathVariable Long id) {
+    public ApiResponse<VehicleVO> detailById(@PathVariable Long id,
+                                             @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         return ApiResponse.success(vehicleService.detailById(id));
     }
 
     @GetMapping("/plate/{plate}")
     @ApiOperation("根据车牌获取车辆详情")
-    public ApiResponse<VehicleVO> detail(@PathVariable String plate) {
+    public ApiResponse<VehicleVO> detail(@PathVariable String plate,
+                                         @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         return ApiResponse.success(vehicleService.detail(plate));
     }
 
     @PostMapping
     @ApiOperation("新增车辆")
-    public ApiResponse<VehicleVO> create(@RequestBody VehicleCreateDTO request) {
+    public ApiResponse<VehicleVO> create(@RequestBody VehicleCreateDTO request,
+                                         @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         return ApiResponse.success(vehicleService.create(request));
     }
 
     @PutMapping("/{id:[0-9]+}")
     @ApiOperation("修改车辆")
-    public ApiResponse<VehicleVO> update(@PathVariable Long id, @RequestBody VehicleUpdateDTO request) {
+    public ApiResponse<VehicleVO> update(@PathVariable Long id, @RequestBody VehicleUpdateDTO request,
+                                         @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         return ApiResponse.success(vehicleService.update(id, request));
     }
 
     @DeleteMapping("/{id:[0-9]+}")
     @ApiOperation("删除车辆")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable Long id,
+                                    @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         vehicleService.delete(id);
         return ApiResponse.success();
     }
 
     @GetMapping("/{plate}/active-task")
     @ApiOperation("获取车辆当前任务")
-    public ApiResponse<VehicleActiveTaskVO> activeTask(@PathVariable String plate) {
+    public ApiResponse<VehicleActiveTaskVO> activeTask(@PathVariable String plate,
+                                                       @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         return ApiResponse.success(vehicleService.activeTask(plate));
     }
 
     @PostMapping("/{plate}/command")
     @ApiOperation("下发车辆调度指令")
-    public ApiResponse<Map<String, Object>> createCommand(@PathVariable String plate, @RequestBody Map<String, Object> request) {
+    public ApiResponse<Map<String, Object>> createCommand(@PathVariable String plate, @RequestBody Map<String, Object> request,
+                                                          @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         String commandType = request != null ? (String) request.get("commandType") : null;
         String priority = request != null ? (String) request.get("priority") : null;
         @SuppressWarnings("unchecked")
@@ -101,7 +122,9 @@ public class VehicleController {
 
     @GetMapping("/{plate}/command/{commandId}")
     @ApiOperation("获取调度指令详情")
-    public ApiResponse<Map<String, Object>> commandDetail(@PathVariable String plate, @PathVariable String commandId) {
+    public ApiResponse<Map<String, Object>> commandDetail(@PathVariable String plate, @PathVariable String commandId,
+                                                           @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         return ApiResponse.success(commandService.getCommandDetail(plate, commandId));
     }
 
@@ -109,7 +132,13 @@ public class VehicleController {
     @ApiOperation("获取车辆调度指令列表")
     public ApiResponse<Map<String, Object>> commands(@PathVariable String plate,
                                                                    @RequestParam(required = false) Integer page,
-                                                                   @RequestParam(required = false) Integer size) {
+                                                                   @RequestParam(required = false) Integer size,
+                                                                   @RequestHeader(value = "Authorization", required = false) String authorization) {
+        rejectShipper(authorization);
         return ApiResponse.success(commandService.listCommands(plate, page, size));
+    }
+
+    private void rejectShipper(String authorization) {
+        shipperAccessService.rejectShipper(authorization, "货主不能访问全局车辆管理或向司机下发调度命令");
     }
 }

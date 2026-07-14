@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { ElMessage, ElNotification } from 'element-plus'
-import { executeAgentAction } from '@/utils/actionExecutor'
-import { sendVoiceCommand } from '@/utils/voiceCommand'
-import { resolveVoiceFallbackAction } from '@/utils/voiceFallback'
 import { getAgentApprovalMode, setAgentApprovalMode, type AgentApprovalMode } from '@/utils/agentApproval'
+import { runVoiceAgent } from '@/services/voiceAgent'
 
 type VoiceStatus = 'idle' | 'requesting' | 'recording' | 'uploading' | 'executing'
 
@@ -26,7 +24,6 @@ let audioContext: AudioContext | null = null
 let sourceNode: MediaStreamAudioSourceNode | null = null
 let processorNode: ScriptProcessorNode | null = null
 let timer: number | null = null
-let maxTimer: number | null = null
 let dragPointerId: number | null = null
 let dragStartX = 0
 let dragStartY = 0
@@ -116,9 +113,7 @@ watch(status, (value) => {
 
 function clearTimers() {
   if (timer != null) window.clearInterval(timer)
-  if (maxTimer != null) window.clearTimeout(maxTimer)
   timer = null
-  maxTimer = null
 }
 
 function stopStream() {
@@ -174,7 +169,6 @@ async function startRecording() {
     detailMessage.value = '录音中，再次点击结束'
     showInfo('开始录音，再次点击麦克风结束')
     timer = window.setInterval(() => { elapsed.value += 1 }, 1000)
-    maxTimer = window.setTimeout(() => { void stopAndSend() }, 8000)
   } catch (error) {
     clearTimers()
     stopStream()
@@ -204,19 +198,11 @@ async function stopAndSend() {
   showInfo('正在识别语音')
 
   try {
-    const payload = await sendVoiceCommand(audioBlob, props.context || {})
-    const recognizedText = payload.recognizedText || payload.text || ''
-    const serverAction = payload.action && payload.action.type !== 'NOOP' ? payload.action : null
-    // 后端优先：正常情况下执行 LLM 返回的 tool_call；仅在 LLM/后端没有动作时使用本地规则兜底。
-    const fallbackAction = serverAction ? null : resolveVoiceFallbackAction(payload)
-    const action = serverAction || fallbackAction
-    const reply = action?.reply || payload.reply || payload.message || ''
+    const payload = await runVoiceAgent(audioBlob, props.context || {}, {
+      onExecuting: () => { status.value = 'executing' },
+    })
+    const { recognizedText, action, reply } = payload
     lastText.value = recognizedText
-
-    if (payload.intent === 'ERROR') {
-      ElMessage.error(reply || '语音识别失败')
-      return
-    }
 
     if (recognizedText || reply) {
       ElNotification({
@@ -227,23 +213,15 @@ async function stopAndSend() {
       })
     }
 
-    let executionResult: unknown
     if (action) {
-      status.value = 'executing'
-      executionResult = await executeAgentAction({
-        ...action,
-        recognizedText,
-        reply,
-        logId: payload.logId,
-        needConfirm: payload.needConfirm,
-      })
+      detailMessage.value = reply || 'Agent 操作已执行'
     } else if (reply) {
       ElMessage.info(reply)
     } else {
       ElMessage.warning('没有识别到可执行操作')
     }
     window.dispatchEvent(new CustomEvent('smart-logistics:voice-result', {
-      detail: { ...payload, recognizedText, reply, action, result: executionResult },
+      detail: payload,
     }))
   } catch (error) {
     detailMessage.value = friendlyVoiceError(error)

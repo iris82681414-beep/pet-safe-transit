@@ -51,6 +51,13 @@ public class DoubaoStreamingTtsService {
             .connectTimeout(Duration.ofSeconds(15))
             .build();
 
+    /** 使用 TTS 2.0 流式协议合成并聚合为完整 MP3，供普通 HTTP 播放接口使用。 */
+    public byte[] synthesize(String text) throws IOException {
+        ByteArrayOutputStream audio = new ByteArrayOutputStream();
+        stream(text, chunk -> audio.write(chunk, 0, chunk.length));
+        return audio.toByteArray();
+    }
+
     public void stream(String text, Consumer<byte[]> onAudio) throws IOException {
         if (!StringUtils.hasText(apiKey)) throw new IOException("未配置豆包语音 API Key");
         String normalized = text == null ? "" : text.trim();

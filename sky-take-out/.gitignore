@@ -5,4 +5,9 @@
 *Test.java
 **/test/
 .env.properties
+.env.local.properties
 *.log
+
+# 保留知识库语义切块的回归测试。
+!sky-server/src/test/
+!sky-server/src/test/**

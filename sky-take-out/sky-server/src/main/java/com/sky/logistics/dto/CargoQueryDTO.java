@@ -6,6 +6,7 @@ import lombok.Data;
 public class CargoQueryDTO {
     private String status;
     private String keyword;
+    private String ownerId;
     private Integer page;
     private Integer size;
 }

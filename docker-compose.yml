@@ -19,6 +19,8 @@ services:
       - ./sky-take-out/sky-server/src/main/resources/sql/backend1_business_init.sql:/docker-entrypoint-initdb.d/01_backend1.sql
       - ./sky-take-out/sky-server/src/main/resources/sql/backend1_face_auth_init.sql:/docker-entrypoint-initdb.d/02_backend1_face_auth.sql
       - ./sky-take-out/sky-server/src/main/resources/sql/backend3_init.sql:/docker-entrypoint-initdb.d/03_backend3.sql
+      - ./sky-take-out/sky-server/src/main/resources/sql/amap_order_extension_init.sql:/docker-entrypoint-initdb.d/04_order_extension.sql
+      - ./sky-take-out/sky-server/src/main/resources/sql/backend1_shipper_orders.sql:/docker-entrypoint-initdb.d/05_shipper_orders.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d smart_logistics"]
       interval: 5s

@@ -8,6 +8,11 @@ import { agentApi, assistantApi } from '@/services/api'
 type VoiceStatus = 'idle' | 'listening' | 'recognizing' | 'thinking' | 'speaking' | 'error'
 type ChatMessage = { id: number; role: 'user' | 'assistant'; content: string }
 
+const props = withDefaults(defineProps<{ cargoId?: string; petName?: string }>(), {
+  cargoId: '',
+  petName: '我的宠物',
+})
+
 const visible = ref(false)
 const status = ref<VoiceStatus>('idle')
 const input = ref('')
@@ -18,7 +23,7 @@ const audioUrl = ref('')
 const sessionId = ref<string>()
 const streamingMessageId = ref<number | null>(null)
 const messages = ref<ChatMessage[]>([
-  { id: 1, role: 'assistant', content: '你好呀，我是智慧小羊。你可以直接问我布丁的位置、预计到达时间、舱内环境或最近照护记录。' },
+  { id: 1, role: 'assistant', content: `你好呀，我是智慧小羊。你可以直接问我${props.petName}的位置、预计到达时间、舱内环境或最近照护记录。` },
 ])
 let voiceStream: MediaStream | null = null
 let voiceContext: AudioContext | null = null
@@ -27,31 +32,20 @@ let voiceProcessor: ScriptProcessorNode | null = null
 let voiceSampleRate = 16000
 let voiceLength = 0
 let voiceChunks: Float32Array[] = []
-let maxListeningTimer: number | null = null
 let speechQueue: Promise<void> = Promise.resolve()
 let speechBuffer = ''
 let speechQueueId = 0
 let playbackUnlocked = false
 
-const suggestions = ['布丁现在到哪里了？', '车厢温度安全吗？', '还有多久到杭州？', '今天有照护记录吗？']
+const suggestions = computed(() => [`${props.petName}现在到哪里了？`, '车厢温度安全吗？', '还有多久到达？', '今天有照护记录吗？'])
 const statusText = computed(() => ({
   idle: '点击麦克风继续说',
   listening: '正在录音，再次点击即可发送…',
   recognizing: '正在识别语音…',
-  thinking: '正在查询布丁的旅程数据…',
+  thinking: `正在查询${props.petName}的旅程数据…`,
   speaking: '智慧小羊正在回答',
   error: '没有听清，可以再试一次',
 }[status.value]))
-
-function mockOwnerReply(text: string) {
-  if (/位置|哪里|到哪|轨迹/.test(text)) return '布丁目前随沪A·12345行驶在沪昆高速嘉兴段，距离杭州目的地约68公里，车辆正在正常行驶。'
-  if (/温度|湿度|环境|空气|车厢/.test(text)) return '布丁所在舱位温度24.6摄氏度、湿度58%，空气质量良好，震动轻微，全部处于安全范围。'
-  if (/多久|到达|几点|时间|ETA/i.test(text)) return '目前预计14点38分到达杭州，剩余约2小时08分钟。若路况变化，我会及时提醒你。'
-  if (/照护|喝水|喂食|休息|状态/.test(text)) return '今天10点05分照护员完成了饮水检查，布丁精神状态良好；下一次计划检查时间是12点30分。'
-  if (/告警|异常|安全吗|风险/.test(text)) return '当前没有未处理的高风险事件。10点21分出现过一次温度接近上限提醒，已自动恢复并由照护员确认。'
-  if (/你好|是谁|名字/.test(text)) return '你好呀，我是布丁的运输陪伴助手智慧小羊。我只会展示你名下宠物的旅程信息，不会泄露其他用户或车辆的数据。'
-  return `我听到你问“${text}”。目前布丁运输正常、环境安全，预计14点38分到达杭州。你也可以继续追问位置、环境、照护或告警详情。`
-}
 
 async function scrollToLatest() {
   await nextTick()
@@ -275,7 +269,7 @@ async function ask(text = input.value) {
   let streamFailed = false
   try {
     await assistantApi.chatStream(
-      { question: normalized, sessionId: sessionId.value, cargoId: 'CARGO-001' },
+      { question: normalized, sessionId: sessionId.value, cargoId: props.cargoId || undefined },
       {
         onToken: (token) => {
           const message = streamedMessage()
@@ -291,13 +285,12 @@ async function ask(text = input.value) {
     if (!streamedMessage()?.content.trim()) throw new Error('流式回答内容为空')
   } catch (error) {
     streamFailed = true
-    console.warn('货主流式问答暂不可用，使用本地只读数据回答', error)
+    console.warn('货主流式问答暂不可用', error)
   }
   if (streamFailed) {
     const message = streamedMessage()
     if (message) message.content = ''
-    await streamFallback(assistantMessage.id, mockOwnerReply(normalized))
-    feedSpeechToken(streamedMessage()?.content || '', currentSpeechQueueId, true)
+    await streamFallback(assistantMessage.id, '智慧小羊暂时无法连接服务，请稍后重试。')
   } else {
     feedSpeechToken('', currentSpeechQueueId, true)
   }
@@ -309,8 +302,6 @@ async function ask(text = input.value) {
 }
 
 function stopVoiceHardware() {
-  if (maxListeningTimer != null) window.clearTimeout(maxListeningTimer)
-  maxListeningTimer = null
   voiceProcessor?.disconnect()
   voiceSource?.disconnect()
   voiceProcessor = null
@@ -385,8 +376,8 @@ async function finishListening() {
   interimText.value = ''
   try {
     const result = await agentApi.recognize(voiceWavBlob(samples, voiceSampleRate))
-    const text = String(result.text || '').trim()
-    if (!text) throw new Error(result.message || '没有识别到有效语音')
+    const text = result.text?.trim()
+    if (!text) throw new Error('没有识别到有效语音')
     interimText.value = text
     await ask(text)
   } catch (error) {
@@ -432,7 +423,6 @@ async function startListening() {
     voiceSource.connect(voiceProcessor)
     voiceProcessor.connect(voiceContext.destination)
     status.value = 'listening'
-    maxListeningTimer = window.setTimeout(() => void finishListening(), 12_000)
   } catch (error) {
     stopVoiceHardware()
     status.value = 'error'
@@ -467,7 +457,7 @@ onBeforeUnmount(() => { stopVoiceHardware(); stopPlayback() })
           <header>
             <div class="dialog-assistant">
               <span class="assistant-avatar"><img src="@/assets/iot-sheep-pet.png" alt="智慧小羊" /></span>
-              <span><strong>智慧小羊</strong><small>布丁的专属运输助手 · 只读权限</small></span>
+              <span><strong>智慧小羊</strong><small>{{ props.petName }}的专属运输助手 · 只读权限</small></span>
             </div>
             <button type="button" title="关闭对话" @click="close"><el-icon><Close /></el-icon></button>
           </header>
@@ -494,7 +484,7 @@ onBeforeUnmount(() => { stopVoiceHardware(); stopPlayback() })
             <button class="mic-button" :class="{ active: status === 'listening' }" type="button" :title="status === 'listening' ? '结束录音并发送' : '开始语音对话'" :disabled="status === 'thinking' || status === 'recognizing'" @click="startListening">
               <el-icon><Microphone /></el-icon>
             </button>
-            <input v-model="input" type="text" placeholder="也可以输入关于布丁运输的问题" :disabled="status === 'thinking' || status === 'recognizing'" />
+            <input v-model="input" type="text" :placeholder="`也可以输入关于${props.petName}运输的问题`" :disabled="status === 'thinking' || status === 'recognizing'" />
             <button class="send-button" type="submit" title="发送" :disabled="!input.trim() || status === 'thinking' || status === 'recognizing'"><el-icon><Promotion /></el-icon></button>
           </form>
           <footer><el-icon><Lock /></el-icon> 仅可查询当前账户名下宠物，不执行调度、改道或告警处置</footer>

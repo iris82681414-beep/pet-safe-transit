@@ -35,7 +35,12 @@ CREATE TABLE vehicles (
 
 CREATE TABLE cargo (
   cargo_id VARCHAR(64) PRIMARY KEY,
+  owner_id VARCHAR(32) REFERENCES users(id),
   cargo_type VARCHAR(64),
+  pet_name VARCHAR(64),
+  pet_breed VARCHAR(64),
+  pet_age VARCHAR(32),
+  pet_gender VARCHAR(16),
   weight NUMERIC(10,2),
   status VARCHAR(32) DEFAULT 'CREATED',
   origin_name VARCHAR(128),
@@ -44,6 +49,11 @@ CREATE TABLE cargo (
   destination_name VARCHAR(128),
   destination_lat DOUBLE PRECISION,
   destination_lng DOUBLE PRECISION,
+  contact_name VARCHAR(64),
+  contact_phone VARCHAR(32),
+  receiver_name VARCHAR(64),
+  receiver_phone VARCHAR(32),
+  request_note TEXT,
   loaded_at TIMESTAMPTZ,
   delivered_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -98,14 +108,16 @@ INSERT INTO vehicles (
 );
 
 INSERT INTO cargo (
-  cargo_id, cargo_type, weight, status,
+  cargo_id, owner_id, cargo_type, pet_name, pet_breed, pet_age, pet_gender, weight, status,
   origin_name, origin_lat, origin_lng,
   destination_name, destination_lat, destination_lng,
+  contact_name, contact_phone, receiver_name, receiver_phone, request_note,
   loaded_at
 ) VALUES (
-  'SH-HZ-20260629-0291', '电子产品', 2500.00, 'IN_TRANSIT',
+  'SH-HZ-20260629-0291', 'USR-001', '犬', '布丁', '金毛', '2岁', '公', 28.00, 'IN_TRANSIT',
   '上海仓储中心', 31.2304, 121.4737,
   '杭州余杭物流中心', 30.2741, 120.1551,
+  '李货主', '13800000001', '李货主', '13800000001', '运输途中每4小时检查饮水',
   now()
 );
 

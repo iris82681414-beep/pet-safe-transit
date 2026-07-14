@@ -7,7 +7,12 @@
 
     <sql id="CargoViewColumns">
         c.cargo_id AS cargoId,
+        c.owner_id AS ownerId,
         c.cargo_type AS cargoType,
+        c.pet_name AS petName,
+        c.pet_breed AS petBreed,
+        c.pet_age AS petAge,
+        c.pet_gender AS petGender,
         c.weight,
         c.status,
         c.origin_name AS originName,
@@ -16,6 +21,11 @@
         c.destination_name AS destinationName,
         c.destination_lat AS destinationLat,
         c.destination_lng AS destinationLng,
+        c.contact_name AS contactName,
+        c.contact_phone AS contactPhone,
+        c.receiver_name AS receiverName,
+        c.receiver_phone AS receiverPhone,
+        c.request_note AS requestNote,
         c.loaded_at AS loadedAt,
         c.delivered_at AS deliveredAt,
         c.created_at AS createdAt,
@@ -49,6 +59,9 @@
                     OR v.plate ILIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
+            <if test="ownerId != null and ownerId != ''">
+                AND c.owner_id = #{ownerId}
+            </if>
         </where>
     </sql>
 
@@ -72,6 +85,13 @@
         <include refid="CargoViewColumns"/>
         <include refid="CargoFrom"/>
         WHERE c.cargo_id = #{cargoId}
+    </select>
+
+    <select id="countOwnedBy" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM cargo
+        WHERE cargo_id = #{cargoId}
+          AND owner_id = #{ownerId}
     </select>
 
     <select id="countActiveBindingByCargoId" resultType="java.lang.Long">
@@ -145,7 +165,12 @@
     <insert id="insert" parameterType="com.sky.logistics.entity.Cargo">
         INSERT INTO cargo (
             cargo_id,
+            owner_id,
             cargo_type,
+            pet_name,
+            pet_breed,
+            pet_age,
+            pet_gender,
             weight,
             status,
             origin_name,
@@ -154,11 +179,21 @@
             destination_name,
             destination_lat,
             destination_lng,
+            contact_name,
+            contact_phone,
+            receiver_name,
+            receiver_phone,
+            request_note,
             created_at,
             updated_at
         ) VALUES (
             #{cargoId},
+            #{ownerId},
             #{cargoType},
+            #{petName},
+            #{petBreed},
+            #{petAge},
+            #{petGender},
             #{weight},
             #{status},
             #{originName},
@@ -167,6 +202,11 @@
             #{destinationName},
             #{destinationLat},
             #{destinationLng},
+            #{contactName},
+            #{contactPhone},
+            #{receiverName},
+            #{receiverPhone},
+            #{requestNote},
             now(),
             now()
         )
@@ -176,6 +216,10 @@
         UPDATE cargo
         SET
             cargo_type = #{cargoType},
+            pet_name = #{petName},
+            pet_breed = #{petBreed},
+            pet_age = #{petAge},
+            pet_gender = #{petGender},
             weight = #{weight},
             status = #{status},
             origin_name = #{originName},
@@ -184,6 +228,11 @@
             destination_name = #{destinationName},
             destination_lat = #{destinationLat},
             destination_lng = #{destinationLng},
+            contact_name = #{contactName},
+            contact_phone = #{contactPhone},
+            receiver_name = #{receiverName},
+            receiver_phone = #{receiverPhone},
+            request_note = #{requestNote},
             loaded_at = #{loadedAt},
             delivered_at = #{deliveredAt},
             updated_at = now()

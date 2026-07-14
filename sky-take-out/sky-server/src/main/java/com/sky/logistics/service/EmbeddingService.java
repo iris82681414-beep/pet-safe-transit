@@ -8,9 +8,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,12 +73,68 @@ public class EmbeddingService {
     }
 
     public List<List<Double>> embedBatch(List<String> texts) {
-        return texts.stream().map(this::embed).collect(Collectors.toList());
+        if (texts == null || texts.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(apiKey);
+
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("model", model);
+            body.put("input", texts);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+            ResponseEntity<Map> response = restTemplate.postForEntity(
+                    endpoint + "/v1/embeddings", request, Map.class);
+
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody == null || !(responseBody.get("data") instanceof List)) {
+                throw new IllegalStateException("Embedding 批量响应缺少 data");
+            }
+
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) responseBody.get("data");
+            dataList.sort(Comparator.comparingInt(item -> {
+                Object index = item.get("index");
+                return index instanceof Number ? ((Number) index).intValue() : 0;
+            }));
+
+            List<List<Double>> result = new ArrayList<>();
+            for (Map<String, Object> item : dataList) {
+                Object vector = item.get("embedding");
+                result.add(vector instanceof List ? (List<Double>) vector : new ArrayList<>());
+            }
+            if (result.size() != texts.size()) {
+                throw new IllegalStateException("Embedding 批量响应数量不一致");
+            }
+            log.debug("Embedding 批量生成成功, 数量={}", result.size());
+            return result;
+        } catch (HttpClientErrorException.Unauthorized | HttpClientErrorException.Forbidden e) {
+            log.error("Embedding API 鉴权失败，请检查 SiliconFlow API Key");
+            return emptyBatch(texts.size());
+        } catch (Exception e) {
+            log.warn("Embedding 批量调用失败，降级为逐条生成: {}", e.getMessage());
+            return texts.stream().map(this::embed).collect(Collectors.toList());
+        }
     }
 
     public String embedToString(String text) {
         List<Double> vector = embed(text);
-        if (vector.isEmpty()) return "";
+        return vectorToString(vector);
+    }
+
+    public String vectorToString(List<Double> vector) {
+        if (vector == null || vector.isEmpty()) return "";
         return "[" + vector.stream().map(String::valueOf).collect(Collectors.joining(",")) + "]";
+    }
+
+    private List<List<Double>> emptyBatch(int size) {
+        List<List<Double>> result = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            result.add(new ArrayList<>());
+        }
+        return result;
     }
 }

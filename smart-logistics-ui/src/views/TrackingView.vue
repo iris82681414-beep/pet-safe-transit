@@ -22,7 +22,7 @@ import type {
 
 const store = useLogisticsStore()
 const { cargo, vehicles } = storeToRefs(store)
-const timeline = ref<TimelineItem[]>(structuredClone(mockTimeline))
+const timeline = ref<TimelineItem[]>(store.usingDemo ? structuredClone(mockTimeline) : [])
 const trajectory = ref<Array<{ lat: number; lng: number }>>([])
 const correctedTrajectory = ref<Array<{ lat: number; lng: number }>>([])
 const plannedRoute = ref<RoutePlanResult | null>(null)

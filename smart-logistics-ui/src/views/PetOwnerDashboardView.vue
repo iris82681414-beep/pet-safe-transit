@@ -1,52 +1,207 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { storeToRefs } from 'pinia'
 import OwnerVoiceDialog from '@/components/PetOwner/OwnerVoiceDialog.vue'
+import { amapApi, cargoApi, orderExtensionApi, shipperApi } from '@/services/api'
+import type { AddressChangeImpactResult, CargoDto, CargoEta, CargoPosition, CargoTimeline, OrderDriverRatingResult, ShipperEnvironment, ShipperNotification } from '@/services/types'
+import { useLogisticsStore } from '@/stores/logistics'
 
 const router = useRouter()
+const store = useLogisticsStore()
+const { user } = storeToRefs(store)
 const profileOpen = ref(false)
 const voiceDialog = ref<InstanceType<typeof OwnerVoiceDialog> | null>(null)
+const loading = ref(false)
+const submitting = ref(false)
+const orders = ref<CargoDto[]>([])
+const selectedId = ref('')
+const position = ref<CargoPosition | null>(null)
+const eta = ref<CargoEta | null>(null)
+const timeline = ref<CargoTimeline | null>(null)
+const environmentState = ref<ShipperEnvironment | null>(null)
+const notifications = ref<ShipperNotification[]>([])
+const ratingState = ref<OrderDriverRatingResult | null>(null)
+const orderCenterVisible = ref(false)
+const journeyVisible = ref(false)
+const alertsVisible = ref(false)
+const petProfileVisible = ref(false)
+const createVisible = ref(false)
+const addressVisible = ref(false)
+const ratingVisible = ref(false)
+const addressImpact = ref<AddressChangeImpactResult | null>(null)
+const impactLoading = ref(false)
 
-const alerts = [
-  { title: '温度偏高', meta: '沪A·12345 | 10:21', status: '未处理', level: 'warning' },
-  { title: '急刹车', meta: '沪A·12345 | 09:47', status: '已处理', level: 'warning' },
-  { title: '长时间停留', meta: '沪A·12345 | 昨天', status: '已处理', level: 'info' },
-]
+const createForm = reactive({
+  petName: '', petType: '犬', petBreed: '', petAge: '', petGender: '公', weight: 0,
+  origin: '', destination: '', contactName: '', contactPhone: '', receiverName: '', receiverPhone: '', requestNote: '',
+})
+const addressForm = reactive({ address: '', contactName: '', contactPhone: '', reason: '' })
+const ratingForm = reactive({ score: 5, tags: [] as string[], comment: '' })
 
-const environment = [
-  { label: '温度', value: '24.6°C', icon: 'Thermometer', tone: 'red' },
-  { label: '湿度', value: '58%', icon: 'Pouring', tone: 'blue' },
-  { label: '空气质量', value: '优', icon: 'Cloudy', tone: 'green' },
-  { label: '震动', value: '轻微', icon: 'Histogram', tone: 'cyan' },
-  { label: '光照', value: '适中', icon: 'Sunny', tone: 'orange' },
-]
-
+const statusMeta: Record<string, { label: string; tone: string }> = {
+  CREATED: { label: '待受理', tone: 'waiting' },
+  LOADED: { label: '已受理', tone: 'accepted' },
+  IN_TRANSIT: { label: '运输中', tone: 'transit' },
+  DELIVERED: { label: '已送达', tone: 'done' },
+  CANCELLED: { label: '已取消', tone: 'cancelled' },
+}
 const orbitActions = [
   { key: 'tracking', title: '实时追踪', note: '查看位置轨迹', icon: 'LocationFilled', tone: 'blue', position: 'top-left' },
   { key: 'alerts', title: '告警中心', note: '异常主动提醒', icon: 'BellFilled', tone: 'purple', position: 'top-right' },
-  { key: 'tracking', title: '运输管理', note: '运单与车辆管理', icon: 'Van', tone: 'green', position: 'mid-left' },
+  { key: 'orders', title: '运输管理', note: '我的运输订单', icon: 'Van', tone: 'green', position: 'mid-left' },
   { key: 'profile', title: '宠物档案', note: '健康与资料管理', icon: 'Postcard', tone: 'orange', position: 'mid-right' },
-  { key: 'overview', title: '数据分析', note: '运输数据统计', icon: 'TrendCharts', tone: 'indigo', position: 'bottom-left' },
+  { key: 'history', title: '历史记录', note: '运输时间线统计', icon: 'TrendCharts', tone: 'indigo', position: 'bottom-left' },
   { key: 'settings', title: '系统设置', note: '偏好与账户设置', icon: 'Setting', tone: 'cyan', position: 'bottom-right' },
 ]
 
-function navigate(page: string) {
-  if (page === 'profile') {
-    ElMessage.info('布丁的健康档案已准备好，档案详情页将在下一阶段接入')
-    return
-  }
-  if (page === 'settings') {
-    profileOpen.value = true
-    ElMessage.info('可从右上角账户菜单管理个人偏好')
-    return
-  }
-  void router.push({ name: page })
+const selected = computed(() => orders.value.find((item) => item.cargoId === selectedId.value) || null)
+const stats = computed(() => ({
+  transit: orders.value.filter((item) => ['LOADED', 'IN_TRANSIT'].includes(item.status)).length,
+  delivered: orders.value.filter((item) => item.status === 'DELIVERED').length,
+  alert: notifications.value.filter((item) => !['RESOLVED', 'CLOSED'].includes(item.status)).length,
+}))
+const environment = computed(() => [
+  { label: '温度', value: environmentState.value?.temperature != null ? `${environmentState.value.temperature}°C` : '—', icon: 'Thermometer', tone: 'red' },
+  { label: '湿度', value: environmentState.value?.humidity != null ? `${environmentState.value.humidity}%` : '—', icon: 'Pouring', tone: 'blue' },
+  { label: '空气质量', value: environmentState.value?.airQuality || '—', icon: 'Cloudy', tone: 'green' },
+  { label: '震动', value: environmentState.value?.vibration || '—', icon: 'Histogram', tone: 'cyan' },
+  { label: '设备状态', value: environmentState.value?.status === 'NO_DATA' ? '暂无数据' : '正常', icon: 'Connection', tone: 'orange' },
+])
+const recentAlerts = computed(() => notifications.value.slice(0, 3))
+const currentLocation = computed(() => position.value?.locationDesc
+  || (position.value?.lat != null ? `${Number(position.value.lat).toFixed(5)}, ${Number(position.value.lng).toFixed(5)}` : '等待定位上报'))
+const arrivalText = computed(() => eta.value?.eta ? formatClock(eta.value.eta) : '待计算')
+const remainingText = computed(() => eta.value?.remainingMinutes != null ? `${Math.floor(eta.value.remainingMinutes / 60)}小时${eta.value.remainingMinutes % 60}分` : '等待实时数据')
+
+function statusOf(order?: CargoDto | null) {
+  return order ? (statusMeta[order.status] || { label: order.status, tone: 'waiting' }) : { label: '暂无订单', tone: 'waiting' }
+}
+function formatTime(value?: string) {
+  if (!value) return '—'
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('zh-CN', { hour12: false })
+}
+function formatClock(value?: string) {
+  if (!value) return '—'
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false })
+}
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
 }
 
-function startConversation() {
-  void voiceDialog.value?.openAndListen()
+async function loadOrders(preferredId?: string) {
+  loading.value = true
+  try {
+    const page = await cargoApi.list({ page: 1, size: 100 })
+    orders.value = page.content || []
+    const preferred = orders.value.find((item) => item.cargoId === preferredId)
+    const active = orders.value.find((item) => item.status === 'IN_TRANSIT')
+      || orders.value.find((item) => item.status === 'LOADED')
+      || orders.value.find((item) => item.status === 'CREATED')
+      || orders.value[0]
+    selectedId.value = (preferred || active)?.cargoId || ''
+  } catch (error) {
+    ElMessage.error(errorMessage(error, '本人运输订单加载失败'))
+  } finally {
+    loading.value = false
+  }
 }
+
+async function loadSelected(order: CargoDto | null) {
+  position.value = null; eta.value = null; timeline.value = null; environmentState.value = null; notifications.value = []; ratingState.value = null
+  if (!order) return
+  const cargoId = order.cargoId
+  const results = await Promise.allSettled([
+    cargoApi.position(cargoId), cargoApi.eta(cargoId), cargoApi.timeline(cargoId),
+    shipperApi.environment(cargoId), shipperApi.notifications(cargoId), orderExtensionApi.driverRating(cargoId),
+  ])
+  if (selectedId.value !== cargoId) return
+  if (results[0].status === 'fulfilled') position.value = results[0].value
+  if (results[1].status === 'fulfilled') eta.value = results[1].value
+  if (results[2].status === 'fulfilled') timeline.value = results[2].value
+  if (results[3].status === 'fulfilled') environmentState.value = results[3].value
+  if (results[4].status === 'fulfilled') notifications.value = results[4].value
+  if (results[5].status === 'fulfilled') ratingState.value = results[5].value
+}
+
+function navigate(page: string) {
+  if (page === 'tracking') journeyVisible.value = true
+  else if (page === 'alerts') alertsVisible.value = true
+  else if (page === 'orders' || page === 'history') orderCenterVisible.value = true
+  else if (page === 'profile') petProfileVisible.value = true
+  else if (page === 'settings') profileOpen.value = true
+}
+function selectOrder(order: CargoDto) {
+  selectedId.value = order.cargoId
+  orderCenterVisible.value = false
+  journeyVisible.value = true
+}
+function startConversation() { void voiceDialog.value?.openAndListen() }
+function openCreate() {
+  Object.assign(createForm, { petName: '', petType: '犬', petBreed: '', petAge: '', petGender: '公', weight: 0, origin: '', destination: '', contactName: user.value?.name || '', contactPhone: user.value?.phone || '', receiverName: '', receiverPhone: '', requestNote: '' })
+  createVisible.value = true
+}
+async function geocode(address: string) {
+  const result = await amapApi.geocode({ address })
+  if (result.lat == null || result.lng == null) throw new Error(`无法识别地址：${address}`)
+  return { name: result.formattedAddress || address, lat: result.lat, lng: result.lng }
+}
+async function submitCreate() {
+  if (!createForm.petName || !createForm.origin || !createForm.destination || !createForm.contactName || !createForm.contactPhone) return ElMessage.warning('请填写宠物、起点、目的地和联系人必填信息')
+  submitting.value = true
+  try {
+    const [origin, destination] = await Promise.all([geocode(createForm.origin), geocode(createForm.destination)])
+    const cargoId = `PET-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(Date.now()).slice(-6)}`
+    await cargoApi.create({ cargoId, cargoType: createForm.petType, petName: createForm.petName, petBreed: createForm.petBreed, petAge: createForm.petAge, petGender: createForm.petGender, weight: Number(createForm.weight || 0), origin, destination, contactName: createForm.contactName, contactPhone: createForm.contactPhone, receiverName: createForm.receiverName || createForm.contactName, receiverPhone: createForm.receiverPhone || createForm.contactPhone, requestNote: createForm.requestNote })
+    createVisible.value = false
+    await loadOrders(cargoId)
+    ElMessage.success('宠物运输需求已提交，等待平台受理')
+  } catch (error) { ElMessage.error(errorMessage(error, '运输需求提交失败')) } finally { submitting.value = false }
+}
+function openAddressChange() {
+  if (!selected.value) return
+  Object.assign(addressForm, { address: '', contactName: selected.value.receiverName || selected.value.contactName || '', contactPhone: selected.value.receiverPhone || selected.value.contactPhone || '', reason: '' })
+  addressImpact.value = null; addressVisible.value = true
+}
+async function calculateImpact() {
+  if (!selected.value || !addressForm.address) return
+  impactLoading.value = true
+  try {
+    const target = await geocode(addressForm.address)
+    addressImpact.value = await orderExtensionApi.addressChangeImpact(selected.value.cargoId, { newAddress: { detail: target.name, lat: target.lat, lng: target.lng } })
+  } catch (error) { ElMessage.error(errorMessage(error, '改址影响测算失败')) } finally { impactLoading.value = false }
+}
+async function submitAddressChange() {
+  if (!selected.value || !addressForm.address) return
+  submitting.value = true
+  try {
+    const target = await geocode(addressForm.address)
+    await orderExtensionApi.createAddressChange(selected.value.cargoId, { newAddress: { detail: target.name, lat: target.lat, lng: target.lng }, contactName: addressForm.contactName, contactPhone: addressForm.contactPhone, reason: addressForm.reason })
+    addressVisible.value = false; ElMessage.success('改址申请已提交审核，不会直接命令司机改道')
+  } catch (error) { ElMessage.error(errorMessage(error, '改址申请提交失败')) } finally { submitting.value = false }
+}
+async function confirmReceipt() {
+  if (!selected.value) return
+  try {
+    await ElMessageBox.confirm(`确认已安全收到宠物“${selected.value.petName || selected.value.cargoType}”吗？`, '确认签收', { type: 'success' })
+    await shipperApi.confirmReceipt(selected.value.cargoId); await loadOrders(selected.value.cargoId); journeyVisible.value = false
+    ElMessage.success('已确认收到宠物')
+  } catch (error) { if (error !== 'cancel' && error !== 'close') ElMessage.error(errorMessage(error, '确认签收失败')) }
+}
+function openRating() { Object.assign(ratingForm, { score: 5, tags: [], comment: '' }); ratingVisible.value = true }
+async function submitRating() {
+  if (!selected.value) return
+  submitting.value = true
+  try {
+    await orderExtensionApi.submitDriverRating(selected.value.cargoId, ratingForm); ratingVisible.value = false; await loadSelected(selected.value); ElMessage.success('评价已提交')
+  } catch (error) { ElMessage.error(errorMessage(error, '评价提交失败')) } finally { submitting.value = false }
+}
+
+watch(selected, (order) => { void loadSelected(order) }, { immediate: true })
+onMounted(() => { void loadOrders() })
 </script>
 
 <template>
@@ -62,7 +217,7 @@ function startConversation() {
 
       <div class="header-actions">
         <button class="header-chip alert-chip" type="button" @click="navigate('alerts')">
-          <el-icon><Bell /></el-icon><strong>告警</strong><b>3</b>
+          <el-icon><Bell /></el-icon><strong>告警</strong><b>{{ stats.alert }}</b>
         </button>
         <div class="header-chip weather-chip" aria-label="当前天气">
           <el-icon><PartlyCloudy /></el-icon>
@@ -70,8 +225,8 @@ function startConversation() {
         </div>
         <div class="account-wrap">
           <button class="header-chip account-chip" type="button" @click.stop="profileOpen = !profileOpen">
-            <span class="owner-avatar">👩🏻‍⚕️</span>
-            <span><strong>张小爱</strong><small>宠物主人</small></span>
+            <span class="owner-avatar">👤</span>
+            <span><strong>{{ user?.name || '宠物主人' }}</strong><small>宠物主人</small></span>
             <el-icon><ArrowDown /></el-icon>
           </button>
           <transition name="profile-pop">
@@ -90,28 +245,30 @@ function startConversation() {
         <section class="glass-panel overview-panel">
           <div class="panel-heading"><h2>今日运输概览</h2><span>更新时间 10:30:45</span></div>
           <div class="metric-row">
-            <article><strong class="blue">2</strong><span>运输中</span></article>
-            <article><strong class="green">1</strong><span>已送达</span></article>
-            <article><strong class="red">0</strong><span>异常告警</span></article>
+            <article><strong class="blue">{{ stats.transit }}</strong><span>运输中</span></article>
+            <article><strong class="green">{{ stats.delivered }}</strong><span>已送达</span></article>
+            <article><strong class="red">{{ stats.alert }}</strong><span>异常告警</span></article>
           </div>
           <div class="pet-journey-card" role="button" tabindex="0" @click="navigate('tracking')" @keydown.enter="navigate('tracking')">
             <h3>我的宠物</h3>
-            <div class="pet-summary">
-              <span class="pet-avatar">🐶</span>
-              <span><strong>布丁</strong><small>金毛 · 2岁 · 公</small></span>
-              <b>运输中</b>
+            <div v-if="selected" class="pet-summary">
+              <span class="pet-avatar">{{ selected.cargoType === '猫' ? '🐱' : '🐶' }}</span>
+              <span><strong>{{ selected.petName || '待补充宠物名' }}</strong><small>{{ selected.petBreed || selected.cargoType }} · {{ selected.petAge || '年龄待补充' }} · {{ selected.petGender || '性别待补充' }}</small></span>
+              <b>{{ statusOf(selected).label }}</b>
             </div>
-            <div class="journey-foot"><span>沪A·12345</span><strong>预计 14:38 到达</strong></div>
+            <div v-else class="pet-summary empty-summary">还没有宠物运输订单</div>
+            <div class="journey-foot"><span>{{ selected?.vehiclePlate || '待分配车辆' }}</span><strong>预计 {{ arrivalText }} 到达</strong></div>
           </div>
         </section>
 
         <section class="glass-panel recent-panel">
           <div class="panel-heading"><h2>最近告警</h2><button type="button" @click="navigate('alerts')">更多 <el-icon><ArrowRight /></el-icon></button></div>
-          <button v-for="item in alerts" :key="item.title" class="alert-row" type="button" @click="navigate('alerts')">
-            <span class="alert-symbol" :class="item.level"><el-icon><WarningFilled v-if="item.level === 'warning'" /><Clock v-else /></el-icon></span>
-            <span><strong>{{ item.title }}</strong><small>{{ item.meta }}</small></span>
-            <b :class="item.status === '未处理' ? 'pending' : ''">{{ item.status }}</b>
+          <button v-for="item in recentAlerts" :key="item.alertId" class="alert-row" type="button" @click="navigate('alerts')">
+            <span class="alert-symbol" :class="item.severity.toLowerCase()"><el-icon><WarningFilled /></el-icon></span>
+            <span><strong>{{ item.title }}</strong><small>{{ selected?.vehiclePlate || selected?.cargoId }} | {{ formatClock(item.triggeredAt) }}</small></span>
+            <b :class="!['RESOLVED','CLOSED'].includes(item.status) ? 'pending' : ''">{{ ['RESOLVED','CLOSED'].includes(item.status) ? '已处理' : '待关注' }}</b>
           </button>
+          <div v-if="!recentAlerts.length" class="owner-safe-empty"><el-icon><CircleCheckFilled /></el-icon>当前没有风险通知</div>
         </section>
       </aside>
 
@@ -151,14 +308,14 @@ function startConversation() {
         <section class="glass-panel transport-panel">
           <div class="panel-heading"><h2>运输状态</h2><button type="button" @click="navigate('tracking')">更多 <el-icon><ArrowRight /></el-icon></button></div>
           <button class="transport-card" type="button" @click="navigate('tracking')">
-            <div class="transport-head"><strong>沪A·12345</strong><b>运输中</b></div>
-            <div class="route-line"><strong>上海市</strong><span><i></i><el-icon><Right /></el-icon></span><strong>杭州市</strong></div>
-            <small>约 156 km</small>
+            <div class="transport-head"><strong>{{ selected?.vehiclePlate || selected?.cargoId || '暂无运输订单' }}</strong><b>{{ statusOf(selected).label }}</b></div>
+            <div class="route-line"><strong>{{ selected?.origin?.name || '待填写' }}</strong><span><i></i><el-icon><Right /></el-icon></span><strong>{{ selected?.destination?.name || '待填写' }}</strong></div>
+            <small>{{ currentLocation }}</small>
             <div class="truck-scene">
               <span class="tree tree-one"></span><span class="tree tree-two"></span>
               <span class="road"></span><el-icon class="truck"><Van /></el-icon>
             </div>
-            <div class="arrival"><span><small>预计到达</small><strong>14:38</strong></span><p>剩余 <b>2小时08分</b></p></div>
+            <div class="arrival"><span><small>预计到达</small><strong>{{ arrivalText }}</strong></span><p>剩余 <b>{{ remainingText }}</b></p></div>
           </button>
         </section>
 
@@ -173,7 +330,52 @@ function startConversation() {
         </section>
       </aside>
     </main>
-    <OwnerVoiceDialog ref="voiceDialog" />
+
+    <el-dialog v-model="orderCenterVisible" title="我的宠物运输订单" width="820px" class="owner-data-dialog">
+      <div class="dialog-toolbar"><span>只显示当前账号提交的订单</span><el-button type="primary" @click="openCreate"><el-icon><Plus /></el-icon>提交运输需求</el-button></div>
+      <div v-loading="loading" class="owner-order-list">
+        <button v-for="order in orders" :key="order.cargoId" type="button" :class="{ active: order.cargoId === selectedId }" @click="selectOrder(order)">
+          <span class="dialog-pet-icon">{{ order.cargoType === '猫' ? '🐱' : '🐶' }}</span>
+          <span><strong>{{ order.petName || order.cargoType }}</strong><small>{{ order.cargoId }} · {{ order.origin?.name }} → {{ order.destination?.name }}</small></span>
+          <em :class="statusOf(order).tone">{{ statusOf(order).label }}</em>
+          <time>{{ formatTime(order.createdAt) }}</time>
+        </button>
+        <el-empty v-if="!loading && !orders.length" description="还没有运输订单" />
+      </div>
+    </el-dialog>
+
+    <el-dialog v-model="journeyVisible" :title="`${selected?.petName || '宠物'}的运输旅程`" width="760px" class="owner-data-dialog">
+      <div v-if="selected" class="journey-dialog-content">
+        <div class="journey-route"><span><small>起点</small><strong>{{ selected.origin?.name }}</strong></span><i><el-icon><Van /></el-icon></i><span><small>目的地</small><strong>{{ selected.destination?.name }}</strong></span></div>
+        <div class="journey-live-grid">
+          <article><small>当前位置</small><strong>{{ currentLocation }}</strong></article><article><small>车辆 / 司机</small><strong>{{ selected.vehiclePlate || '待分配' }} · {{ selected.driverName || '待分配' }}</strong></article><article><small>预计到达</small><strong>{{ arrivalText }}</strong></article>
+        </div>
+        <div class="dialog-section-title">完整运输时间线</div>
+        <div class="owner-timeline"><div v-for="event in timeline?.events || []" :key="`${event.time}-${event.title}`"><i></i><span><strong>{{ event.title }}</strong><small>{{ event.description }}</small></span><time>{{ formatTime(event.time) }}</time></div><p v-if="!timeline?.events?.length">订单受理后会持续记录装车、运输、照护与签收节点。</p></div>
+        <div class="permission-note"><el-icon><Lock /></el-icon>改址只提交审核申请，不会直接命令司机改道。</div>
+        <div class="dialog-actions"><el-button v-if="['LOADED','IN_TRANSIT'].includes(selected.status)" @click="openAddressChange">申请改址</el-button><el-button v-if="['LOADED','IN_TRANSIT'].includes(selected.status)" type="success" @click="confirmReceipt">确认收到宠物</el-button><el-button v-if="selected.status === 'DELIVERED' && !ratingState?.rated" type="primary" @click="openRating">评价服务</el-button></div>
+      </div>
+    </el-dialog>
+
+    <el-dialog v-model="alertsVisible" title="订单风险通知" width="620px" class="owner-data-dialog">
+      <div class="owner-alert-list"><article v-for="item in notifications" :key="item.alertId"><span><el-icon><WarningFilled /></el-icon></span><div><strong>{{ item.title }}</strong><p>{{ item.summary || item.alertType }}</p><small>{{ formatTime(item.triggeredAt) }}</small></div><b>{{ ['RESOLVED','CLOSED'].includes(item.status) ? '已处理' : '请关注' }}</b></article><el-empty v-if="!notifications.length" description="当前没有风险通知" /></div>
+      <div class="permission-note"><el-icon><Lock /></el-icon>货主只接收本人订单通知，不能关闭或处置系统告警。</div>
+    </el-dialog>
+
+    <el-dialog v-model="petProfileVisible" title="宠物运输档案" width="560px" class="owner-data-dialog">
+      <div v-if="selected" class="pet-profile-card"><span>{{ selected.cargoType === '猫' ? '🐱' : '🐶' }}</span><div><h3>{{ selected.petName || '待补充宠物名' }}</h3><p>{{ selected.cargoType }} · {{ selected.petBreed || '品种待补充' }} · {{ selected.petAge || '年龄待补充' }} · {{ selected.petGender || '性别待补充' }}</p><small>照护说明：{{ selected.requestNote || '暂无特殊照护说明' }}</small></div></div>
+    </el-dialog>
+
+    <el-dialog v-model="createVisible" title="提交宠物运输需求" width="680px" class="owner-data-dialog" destroy-on-close>
+      <el-form label-position="top"><div class="owner-form-grid three"><el-form-item label="宠物名字 *"><el-input v-model="createForm.petName" /></el-form-item><el-form-item label="宠物类型"><el-select v-model="createForm.petType"><el-option label="犬" value="犬" /><el-option label="猫" value="猫" /><el-option label="其他" value="其他宠物" /></el-select></el-form-item><el-form-item label="体重（kg）"><el-input-number v-model="createForm.weight" :min="0" :max="100" /></el-form-item></div><div class="owner-form-grid three"><el-form-item label="品种"><el-input v-model="createForm.petBreed" /></el-form-item><el-form-item label="年龄"><el-input v-model="createForm.petAge" /></el-form-item><el-form-item label="性别"><el-radio-group v-model="createForm.petGender"><el-radio-button label="公" /><el-radio-button label="母" /></el-radio-group></el-form-item></div><div class="owner-form-grid"><el-form-item label="起点 *"><el-input v-model="createForm.origin" /></el-form-item><el-form-item label="目的地 *"><el-input v-model="createForm.destination" /></el-form-item><el-form-item label="联系人 *"><el-input v-model="createForm.contactName" /></el-form-item><el-form-item label="联系电话 *"><el-input v-model="createForm.contactPhone" /></el-form-item><el-form-item label="收件人"><el-input v-model="createForm.receiverName" /></el-form-item><el-form-item label="收件电话"><el-input v-model="createForm.receiverPhone" /></el-form-item></div><el-form-item label="宠物照护说明"><el-input v-model="createForm.requestNote" type="textarea" :rows="3" /></el-form-item></el-form>
+      <template #footer><el-button @click="createVisible = false">取消</el-button><el-button type="primary" :loading="submitting" @click="submitCreate">提交需求</el-button></template>
+    </el-dialog>
+
+    <el-dialog v-model="addressVisible" title="提交目的地改址申请" width="600px" class="owner-data-dialog"><el-alert title="只提交调度审核，不会直接命令司机改道。" type="warning" :closable="false" show-icon /><el-form label-position="top" style="margin-top:16px"><el-form-item label="新目的地"><el-input v-model="addressForm.address" /></el-form-item><div class="owner-form-grid"><el-form-item label="新收件人"><el-input v-model="addressForm.contactName" /></el-form-item><el-form-item label="联系电话"><el-input v-model="addressForm.contactPhone" /></el-form-item></div><el-form-item label="改址原因"><el-input v-model="addressForm.reason" type="textarea" :rows="3" /></el-form-item></el-form><div v-if="addressImpact" class="impact-result">影响等级 {{ addressImpact.impactLevel }} · 增加 {{ addressImpact.extraDistanceKm }} km · 预计延误 {{ addressImpact.estimatedDelayMinutes }} 分钟</div><template #footer><el-button :loading="impactLoading" @click="calculateImpact">测算影响</el-button><el-button type="primary" :loading="submitting" @click="submitAddressChange">提交审核</el-button></template></el-dialog>
+
+    <el-dialog v-model="ratingVisible" title="评价司机与运输服务" width="520px" class="owner-data-dialog"><el-form label-position="top"><el-form-item label="综合评分"><el-rate v-model="ratingForm.score" show-text /></el-form-item><el-form-item label="服务标签"><el-checkbox-group v-model="ratingForm.tags"><el-checkbox-button label="准时送达" /><el-checkbox-button label="沟通及时" /><el-checkbox-button label="照护细致" /><el-checkbox-button label="宠物状态良好" /></el-checkbox-group></el-form-item><el-form-item label="评价内容"><el-input v-model="ratingForm.comment" type="textarea" :rows="4" /></el-form-item></el-form><template #footer><el-button @click="ratingVisible = false">取消</el-button><el-button type="primary" :loading="submitting" @click="submitRating">提交评价</el-button></template></el-dialog>
+
+    <OwnerVoiceDialog ref="voiceDialog" :cargo-id="selected?.cargoId" :pet-name="selected?.petName || '我的宠物'" />
   </div>
 </template>
 
@@ -252,6 +454,8 @@ button { font: inherit; }
 
 .transport-card { width: 100%; min-height: 255px; display: flex; flex-direction: column; padding: 16px; border: 1px solid #c8def8; border-radius: 13px; color: inherit; background: linear-gradient(145deg, rgba(255,255,255,.85), rgba(228,242,255,.75)); text-align: left; }.transport-card:hover { border-color: #78b9f7; }.transport-head, .route-line, .arrival { display: flex; align-items: center; justify-content: space-between; }.transport-head strong { color: #142e61 !important; font-size: 15px; }.transport-head b { padding: 5px 9px; border-radius: 10px; color: #2474e8; background: #e5f0ff; font-size: 10px; }.route-line { margin-top: 17px; }.route-line strong { color: #1d3968 !important; font-size: 13px; }.route-line span { flex: 1; display: flex; align-items: center; margin: 0 12px; color: #2c79ef; }.route-line i { flex: 1; height: 2px; background: linear-gradient(90deg, #b4dcff, #2d83f4); }.transport-card > small { margin-top: 7px; color: #7085a4 !important; font-size: 10px; }.truck-scene { position: relative; height: 82px; margin: 8px -16px 0; overflow: hidden; background: linear-gradient(#f8fcff 55%, #dff3eb 56%, #e8f2fb 78%); }.road { position: absolute; left: 0; right: 0; bottom: 13px; height: 2px; background: repeating-linear-gradient(90deg,#9dc4e8 0 18px,transparent 18px 35px); }.truck { position: absolute; left: 47%; bottom: 15px; color: #1c7dd7; font-size: 53px; filter: drop-shadow(0 6px 5px rgba(27,90,143,.18)); }.tree { position: absolute; bottom: 23px; width: 7px; height: 35px; border-radius: 7px; background: #6cc596; }.tree::before { content: ''; position: absolute; left: -7px; top: -8px; width: 21px; height: 25px; border-radius: 50%; background: #77d4a0; }.tree-one { left: 12px; }.tree-two { right: 16px; transform: scale(.8); }.arrival { margin-top: auto; padding-top: 9px; }.arrival > span { display: flex; flex-direction: column; }.arrival small { color: #6b82a3 !important; font-size: 10px; }.arrival strong { margin-top: 2px; color: #276de2 !important; font-size: 23px; }.arrival p { margin: 15px 0 0; color: #647b9e !important; font-size: 10px; }.arrival p b { color: #223d68; font-size: 12px; }
 .environment-list { display: flex; flex-direction: column; gap: 7px; }.environment-row { display: grid; grid-template-columns: 25px 1fr auto 18px; align-items: center; gap: 5px; min-height: 34px; }.environment-row > .el-icon:first-child { font-size: 17px; }.environment-row span { color: #30496f !important; font-size: 12px; }.environment-row strong { color: #2d4367 !important; font-size: 11px; }.environment-row .ok { color: #26ae5d; font-size: 13px; }.environment-row .red { color: #e45b50 !important; }.environment-row .blue { color: #2f8df4 !important; }.environment-row .green { color: #25ae63 !important; }.environment-row .cyan { color: #28a9d5 !important; }.environment-row .orange { color: #f4a51e !important; }
+.empty-summary,.owner-safe-empty{min-height:54px;display:flex;align-items:center;justify-content:center;color:#7086a6;font-size:11px}.owner-safe-empty{gap:7px;border-top:1px solid #e4edf8}.owner-safe-empty .el-icon{color:#25ae63;font-size:18px}
+:global(.owner-data-dialog){border:1px solid #bcd9fa;border-radius:20px!important;background:linear-gradient(145deg,#fff,#f2f8ff)!important;box-shadow:0 24px 70px rgba(41,91,157,.2)!important}:global(.owner-data-dialog .el-dialog__title){color:#15386c;font-weight:800}:global(.owner-data-dialog .el-dialog__body){color:#294a75}.dialog-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;color:#7890ae;font-size:12px}.owner-order-list{display:flex;max-height:480px;flex-direction:column;gap:8px;overflow:auto}.owner-order-list>button{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:13px;border:1px solid #d7e7f7;border-radius:13px;color:#28476f;background:#fff;text-align:left}.owner-order-list>button:hover,.owner-order-list>button.active{border-color:#78b9fb;background:#f0f7ff}.dialog-pet-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:#eef6ff;font-size:27px}.owner-order-list>button>span:nth-child(2){display:flex;min-width:0;flex-direction:column}.owner-order-list strong{color:#173c72;font-size:13px}.owner-order-list small{overflow:hidden;margin-top:5px;color:#758aa8;font-size:10px;text-overflow:ellipsis;white-space:nowrap}.owner-order-list em{padding:5px 8px;border-radius:10px;font-size:10px;font-style:normal}.owner-order-list em.waiting{color:#a46d19;background:#fff0d1}.owner-order-list em.accepted,.owner-order-list em.transit{color:#176fdb;background:#e5f1ff}.owner-order-list em.done{color:#1b9860;background:#e5f7ef}.owner-order-list em.cancelled{color:#7e8998;background:#edf0f3}.owner-order-list time{color:#91a1b6;font-size:9px}.journey-route{display:grid;grid-template-columns:1fr 130px 1fr;align-items:center;gap:16px;padding:18px;border-radius:14px;background:#eef6ff}.journey-route>span{display:flex;min-width:0;flex-direction:column}.journey-route>span:last-child{text-align:right}.journey-route small{color:#8498b4;font-size:10px}.journey-route strong{overflow:hidden;margin-top:5px;color:#173f75;text-overflow:ellipsis;white-space:nowrap}.journey-route>i{position:relative;height:2px;background:#71aef4}.journey-route>i .el-icon{position:absolute;left:50%;top:50%;width:36px;height:36px;border-radius:50%;color:#fff;background:#2d82ed;transform:translate(-50%,-50%)}.journey-live-grid{display:grid;grid-template-columns:1.4fr 1fr .7fr;gap:9px;margin-top:12px}.journey-live-grid article{display:flex;min-width:0;flex-direction:column;padding:12px;border:1px solid #e0ebf7;border-radius:11px;background:#fff}.journey-live-grid small{color:#8496ae;font-size:9px}.journey-live-grid strong{overflow:hidden;margin-top:5px;color:#284c77;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.dialog-section-title{margin:18px 0 8px;color:#173d72;font-size:13px;font-weight:800}.owner-timeline{max-height:230px;overflow:auto}.owner-timeline>div{display:grid;grid-template-columns:13px 1fr auto;gap:9px;padding:10px 3px;border-top:1px solid #e8eff8}.owner-timeline i{width:8px;height:8px;margin-top:4px;border-radius:50%;background:#3a8df1;box-shadow:0 0 0 4px #e4f1ff}.owner-timeline span{display:flex;flex-direction:column}.owner-timeline strong{color:#315278;font-size:11px}.owner-timeline small{margin-top:3px;color:#8092a9;font-size:9px}.owner-timeline time{color:#94a3b5;font-size:9px}.owner-timeline>p{text-align:center;color:#8193ab;font-size:11px}.permission-note{display:flex;align-items:center;gap:7px;margin-top:13px;padding:10px 12px;border:1px solid #c8def8;border-radius:10px;color:#50739b;background:#eff7ff;font-size:10px}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:13px}.owner-alert-list{display:flex;max-height:430px;flex-direction:column;gap:8px;overflow:auto}.owner-alert-list article{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:11px;padding:12px;border:1px solid #e0eaf6;border-radius:12px;background:#fff}.owner-alert-list article>span{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;color:#f26756;background:#ffebe8}.owner-alert-list article p{margin:4px 0;color:#66809e;font-size:11px}.owner-alert-list article small{color:#91a0b2;font-size:9px}.owner-alert-list article b{color:#e85e50;font-size:10px}.pet-profile-card{display:flex;align-items:center;gap:17px;padding:20px;border:1px solid #d7e6f6;border-radius:16px;background:#fff}.pet-profile-card>span{width:80px;height:80px;display:grid;place-items:center;border-radius:50%;background:#edf6ff;font-size:50px}.pet-profile-card h3{margin:0;color:#173c71;font-size:22px}.pet-profile-card p{margin:7px 0;color:#577393}.pet-profile-card small{color:#8294aa}.owner-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.owner-form-grid.three{grid-template-columns:1fr 1fr 1fr}.impact-result{padding:11px;border-radius:10px;color:#8c641d;background:#fff5df;font-size:11px}
 
 @keyframes pet-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @keyframes radar-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }

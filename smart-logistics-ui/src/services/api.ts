@@ -62,6 +62,8 @@ import type {
   RoutePlanRequest,
   RoutePlanResult,
   SendCommandRequest,
+  ShipperEnvironment,
+  ShipperNotification,
   StatusVerifyRequest,
   StatusVerifyResult,
   TrajectoryCorrectRequest,
@@ -309,7 +311,7 @@ export const orderExtensionApi = {
   exceptionSummary: (orderId: string) =>
     apiClient.get<ExceptionSummary>(`/orders/${encode(orderId)}/exception-summary`),
   unloadAddressSuggestions: (orderId: string) =>
-    apiClient.get<UnloadAddressSuggestionsResult>(`/orders/${encode(orderId)}/unload-address-suggestions`),
+    apiClient.get<UnloadAddressSuggestionsResult>(`/orders/${encode(orderId)}/unload-address/suggestions`),
   confirmUnloadAddress: (orderId: string, payload: UnloadAddressConfirmRequest) =>
     apiClient.post<AddressChangeRecord, UnloadAddressConfirmRequest>(`/orders/${encode(orderId)}/unload-address/confirm`, payload),
   reportUnloadAddressAbnormal: (orderId: string, payload: UnloadAddressAbnormalRequest) =>
@@ -400,6 +402,14 @@ export const fileApi = {
 }
 
 export const systemApi = {
-  health: () => apiClient.get<HealthStatus>('/health', { skipAuth: true }),
-  components: () => apiClient.get<HealthStatus>('/health/components'),
+  health: () => apiClient.get<HealthStatus>('/system/status', { skipAuth: true }),
+}
+
+export const shipperApi = {
+  confirmReceipt: (cargoId: string) =>
+    apiClient.post<CargoDto, Record<string, never>>(`/shipper/orders/${encode(cargoId)}/confirm-receipt`, {}),
+  environment: (cargoId: string) =>
+    apiClient.get<ShipperEnvironment>(`/shipper/orders/${encode(cargoId)}/environment`),
+  notifications: (cargoId: string) =>
+    apiClient.get<ShipperNotification[]>(`/shipper/orders/${encode(cargoId)}/notifications`),
 }

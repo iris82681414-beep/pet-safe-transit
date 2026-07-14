@@ -30,7 +30,7 @@ npm run dev
 复制 `.env.example` 为 `.env.local`，按后端联调环境填写：
 
 ```bash
-VITE_DATA_MODE=mock
+VITE_DATA_MODE=api
 VITE_API_BASE_URL=http://localhost:8080/api/v1
 VITE_WS_URL=ws://localhost:8080/api/v1/ws
 VITE_MQTT_URL=ws://localhost:8083/mqtt

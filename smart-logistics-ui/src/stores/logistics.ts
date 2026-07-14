@@ -26,6 +26,7 @@ const demoAccounts: Record<string, string> = {
 }
 
 export const useLogisticsStore = defineStore('logistics', () => {
+  const demoMode = isDemoMode()
   const defaultCommands = (): CommandRecord[] => [
     { id: 'CMD-0629-001', plate: '沪A·C0291', type: '路线调整', content: '请回到 G60 推荐路线，保持 30 秒一次心跳上报。', status: 'RECEIVED', createdAt: '14:31' },
     { id: 'CMD-0629-002', plate: '浙B·L8821', type: '照护巡检指令', content: '请在下一服务区安全停靠，检查宠物状态、饮水与航空箱固定情况。', status: 'EXECUTED', createdAt: '13:58', executedAt: '14:06' },
@@ -42,10 +43,12 @@ export const useLogisticsStore = defineStore('logistics', () => {
     commands: CommandRecord[]
     notifications: NotificationItem[]
   } | null = null
-  try {
-    saved = JSON.parse(localStorage.getItem('smart-logistics-mock-data') || 'null')
-  } catch {
-    localStorage.removeItem('smart-logistics-mock-data')
+  if (demoMode) {
+    try {
+      saved = JSON.parse(localStorage.getItem('smart-logistics-mock-data') || 'null')
+    } catch {
+      localStorage.removeItem('smart-logistics-mock-data')
+    }
   }
   let savedVehicleImages: Record<string, string> = {}
   try {
@@ -61,13 +64,13 @@ export const useLogisticsStore = defineStore('logistics', () => {
     localStorage.removeItem('smart-logistics-deleted-alerts')
   }
 
-  const vehicles = ref<Vehicle[]>(saved?.vehicles || structuredClone(mockVehicles))
+  const vehicles = ref<Vehicle[]>(demoMode ? (saved?.vehicles || structuredClone(mockVehicles)) : [])
   const vehicleImages = ref<Record<string, string>>(savedVehicleImages)
   vehicles.value.forEach((item) => {
     item.image = vehicleImages.value[item.plate] || item.image
   })
-  const cargo = ref<Cargo[]>(saved?.cargo || structuredClone(mockCargo))
-  const alerts = ref(saved?.alerts || structuredClone(mockAlerts))
+  const cargo = ref<Cargo[]>(demoMode ? (saved?.cargo || structuredClone(mockCargo)) : [])
+  const alerts = ref(demoMode ? (saved?.alerts || structuredClone(mockAlerts)) : [])
   const archivedAlerts = ref<DeletedAlertItem[]>(savedArchivedAlerts)
   const devices = ref<Device[]>([])
   const loading = ref(false)
@@ -80,11 +83,11 @@ export const useLogisticsStore = defineStore('logistics', () => {
   const user = ref<CurrentUser | null>(
     savedApiUser
       ? { ...savedApiUser, roleLabel: roleLabels[savedApiUser.role] }
-      : (localStorage.getItem('smart-logistics-token') || sessionStorage.getItem('smart-logistics-token'))
+      : demoMode && (localStorage.getItem('smart-logistics-token') || sessionStorage.getItem('smart-logistics-token'))
         ? { id: 'demo-user', username: 'demo', name: '林若晨', role: savedRole, phone: '', permissions: [], roleLabel: roleLabels[savedRole] }
         : null,
   )
-  const commands = ref<CommandRecord[]>((saved?.commands || defaultCommands()).map((item) => ({
+  const commands = ref<CommandRecord[]>((demoMode ? (saved?.commands || defaultCommands()) : []).map((item) => ({
     ...item,
     status: item.status === ('DELIVERED' as CommandRecord['status'])
       ? 'RECEIVED'
@@ -92,7 +95,7 @@ export const useLogisticsStore = defineStore('logistics', () => {
         ? 'SENT'
         : item.status,
   })))
-  const notifications = ref<NotificationItem[]>(saved?.notifications || defaultNotifications())
+  const notifications = ref<NotificationItem[]>(demoMode ? (saved?.notifications || defaultNotifications()) : [])
 
   function ensureChongqingHardwareData() {
     const vehicleIndex = vehicles.value.findIndex((item) => item.plate === chongqingVehiclePlate)
@@ -117,9 +120,10 @@ export const useLogisticsStore = defineStore('logistics', () => {
     }
   }
 
-  ensureChongqingHardwareData()
+  if (demoMode) ensureChongqingHardwareData()
 
   watch([vehicles, cargo, alerts, commands, notifications], () => {
+    if (!demoMode) return
     localStorage.setItem('smart-logistics-mock-data', JSON.stringify({
       vehicles: vehicles.value,
       cargo: cargo.value,
@@ -138,7 +142,7 @@ export const useLogisticsStore = defineStore('logistics', () => {
   const pendingAlertCount = computed(() => alerts.value.filter((item) => item.status === 'PENDING').length)
   const unreadCount = computed(() => notifications.value.filter((item) => !item.read).length)
 
-  const usingDemo = computed(() => isDemoMode())
+  const usingDemo = computed(() => demoMode)
 
   function cargoProgress(status: CargoDto['status'], fallback?: number) {
     if (typeof fallback === 'number') return fallback

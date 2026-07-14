@@ -257,7 +257,7 @@ onUnmounted(() => window.removeEventListener('smart-logistics:auth-expired', han
             进入伴生云途工作台
           </el-button>
         </el-form>
-        <div class="demo-tip"><el-icon><InfoFilled /></el-icon>演示账号 dispatcher / 123456</div>
+        <div class="demo-tip"><el-icon><InfoFilled /></el-icon>后端测试账号 dispatcher / 123456</div>
       </div>
     </section>
   </div>

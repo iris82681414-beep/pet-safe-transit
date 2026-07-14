@@ -6,6 +6,7 @@ import com.sky.logistics.common.PageResponse;
 import com.sky.logistics.service.AssistantService;
 import com.sky.logistics.service.KnowledgeService;
 import com.sky.logistics.service.MinioService;
+import com.sky.logistics.service.ShipperAccessService;
 import com.sky.properties.JwtProperties;
 import com.sky.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -43,13 +44,16 @@ public class AssistantController {
     private final KnowledgeService knowledgeService;
     private final MinioService minioService;
     private final JwtProperties jwtProperties;
+    private final ShipperAccessService shipperAccessService;
 
     public AssistantController(AssistantService assistantService, KnowledgeService knowledgeService,
-                                MinioService minioService, JwtProperties jwtProperties) {
+                                MinioService minioService, JwtProperties jwtProperties,
+                                ShipperAccessService shipperAccessService) {
         this.assistantService = assistantService;
         this.knowledgeService = knowledgeService;
         this.minioService = minioService;
         this.jwtProperties = jwtProperties;
+        this.shipperAccessService = shipperAccessService;
     }
 
     @PostMapping("/assistant/chat")
@@ -59,10 +63,15 @@ public class AssistantController {
         String question = request != null ? (String) request.get("question") : null;
         String sessionId = request != null ? (String) request.getOrDefault("sessionId",
                 "SESSION-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase()) : null;
+        String cargoId = request != null && request.get("cargoId") != null
+                ? String.valueOf(request.get("cargoId")).trim() : null;
         if (question == null || question.trim().isEmpty()) {
             return ApiResponse.error(40001, "问题不能为空", null);
         }
-        return ApiResponse.success(assistantService.chat(question, sessionId, authorization));
+        if (cargoId != null && !cargoId.isEmpty()) {
+            shipperAccessService.requireOwnedIfShipper(cargoId, authorization);
+        }
+        return ApiResponse.success(assistantService.chat(question, sessionId, authorization, cargoId));
     }
 
     @PostMapping(value = "/assistant/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -72,6 +81,8 @@ public class AssistantController {
         String question = request != null ? (String) request.get("question") : null;
         String sessionId = request != null ? (String) request.getOrDefault("sessionId",
                 "SESSION-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase()) : null;
+        String cargoId = request != null && request.get("cargoId") != null
+                ? String.valueOf(request.get("cargoId")).trim() : null;
         if (question == null || question.trim().isEmpty()) {
             SseEmitter emitter = new SseEmitter();
             try {
@@ -80,7 +91,10 @@ public class AssistantController {
             emitter.complete();
             return streamResponse(emitter);
         }
-        return streamResponse(assistantService.chatStream(question, sessionId, authorization));
+        if (cargoId != null && !cargoId.isEmpty()) {
+            shipperAccessService.requireOwnedIfShipper(cargoId, authorization);
+        }
+        return streamResponse(assistantService.chatStream(question, sessionId, authorization, cargoId));
     }
 
     @GetMapping("/assistant/suggestions")
